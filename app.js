@@ -1,47 +1,43 @@
-// Archivo: app.js
-
-// Variables globales
+/* VARIABLES GLOBALES */
 var map;
 var currentLocationMarker = null;
-var organizations = []; // Cada organización: { id, title, info, image (dataURL), admin, members: [], chatMessages: [] }
+var organizations = []; // Se llenarán desde Firebase.
 var currentOrg = null;
 
-// Diccionario para almacenar colores asignados a cada usuario del chat
-var userColors = {};
+// CONFIGURACIÓN DE FIREBASE  
+// Se actualizan los valores con los datos reales de tu proyecto en Firebase.
+var firebaseConfig = {
+  apiKey: "AIzaSyCm8fUYcc6VON3F5KPknyvqsNgsm0g80gk",
+  authDomain: "people-for-people-001.firebaseapp.com",
+  databaseURL: "https://people-for-people-001.firebaseio.com",
+  projectId: "people-for-people-001",
+  storageBucket: "people-for-people-001.firebasestorage.app",
+  messagingSenderId: "77800944514",
+  appId: "1:77800944514:web:9b4f35f552f88ab5fe959b",
+  measurementId: "G-BW63R3XK9E"
+};
+firebase.initializeApp(firebaseConfig);
+var database = firebase.database();
 
-// Función para generar un color aleatorio en formato hexadecimal
-function getRandomColor() {
-  return '#' + Math.floor(Math.random() * 16777215).toString(16);
-}
-
-// Función para obtener el color asignado a un usuario; si no existe, se asigna uno nuevo.
-function getUserColor(username) {
-  if (!userColors[username]) {
-    userColors[username] = getRandomColor();
-  }
-  return userColors[username];
-}
-
-// Íconos de Google Maps originales
+// ÍCONOS DE GOOGLE MAPS
 const helpIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
 const volunteerIcon = "http://maps.google.com/mapfiles/ms/icons/purple-dot.png";
 const currentLocationIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
 
-// Función llamada por el callback de Google Maps API
+// FUNCIÓN DE INICIALIZACIÓN DEL MAPA (llamada mediante el callback de Google Maps)
 function initMap() {
-  // Inicializa el mapa con un centro por defecto
-  map = new google.maps.Map(document.getElementById('map'), {
+  map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 40.416775, lng: -3.703790 },
     zoom: 12
   });
 
-  // Usar watchPosition para mantener el marcador de ubicación activo y actualizado
+  // Actualización en tiempo real de la ubicación del usuario
   if (navigator.geolocation) {
     navigator.geolocation.watchPosition(
-      position => {
+      function (position) {
         const pos = {
           lat: position.coords.latitude,
-          lng: position.coords.longitude
+          lng: position.coords.longitude,
         };
         if (currentLocationMarker) {
           currentLocationMarker.setPosition(pos);
@@ -50,276 +46,275 @@ function initMap() {
             position: pos,
             map: map,
             title: "Tu ubicación actual",
-            icon: currentLocationIcon
+            icon: currentLocationIcon,
           });
         }
         map.setCenter(pos);
       },
-      error => {
-        console.log("Error obteniendo la ubicación actual:", error);
+      function (error) {
+        console.error("Error obteniendo la ubicación:", error);
       }
     );
   }
 }
 window.initMap = initMap;
 
-document.addEventListener('DOMContentLoaded', function () {
-  // Elementos de la interfaz
-  const registrationForm = document.getElementById('registration-form');
-  const registrationScreen = document.getElementById('registration-screen');
-  const mainApp = document.getElementById('main-app');
-  const menuButtons = document.querySelectorAll('.menu-btn');
-  const contentSections = document.querySelectorAll('.content-section');
-  const profileBtn = document.getElementById('profile-btn');
+// FUNCIONES PARA EL CHAT (colores aleatorios)
+function getRandomColor() {
+  return "#" + Math.floor(Math.random() * 16777215).toString(16);
+}
+function getUserColor(username) {
+  if (!window.userColors) window.userColors = {};
+  if (!window.userColors[username]) {
+    window.userColors[username] = getRandomColor();
+  }
+  return window.userColors[username];
+}
 
-  // Si existe foto de perfil en localStorage, actualizar la imagen
-  const storedProfilePhoto = localStorage.getItem('profilePhoto');
-  if (storedProfilePhoto) {
-    document.querySelector('.profile-img').src = storedProfilePhoto;
+document.addEventListener("DOMContentLoaded", function () {
+  // ELEMENTOS DE LA INTERFAZ
+  const registrationForm = document.getElementById("registration-form");
+  const registrationScreen = document.getElementById("registration-screen");
+  const mainApp = document.getElementById("main-app");
+  const menuButtons = document.querySelectorAll(".menu-btn");
+  const contentSections = document.querySelectorAll(".content-section");
+  const profileBtn = document.getElementById("profile-btn");
+
+  // Actualizar la imagen de perfil (imagen predeterminada en blanco)
+  const defaultProfilePhoto = "https://via.placeholder.com/40/FFFFFF/FFFFFF?text=";
+  const storedProfilePhoto = localStorage.getItem("profilePhoto");
+  if (
+    storedProfilePhoto &&
+    storedProfilePhoto.trim() !== "" &&
+    storedProfilePhoto !== "null" &&
+    storedProfilePhoto !== "undefined"
+  ) {
+    document.querySelector(".profile-img").src = storedProfilePhoto;
+  } else {
+    document.querySelector(".profile-img").src = defaultProfilePhoto;
   }
 
-  // Comprobar registro (simulado con localStorage)
-  if (localStorage.getItem('userRegistered')) {
-    registrationScreen.style.display = 'none';
-    mainApp.style.display = 'block';
+  // Registro simulado: si ya existiera un usuario registrado, se muestra la app principal
+  if (localStorage.getItem("userRegistered")) {
+    registrationScreen.style.display = "none";
+    mainApp.style.display = "block";
     updateProfileDisplay();
   } else {
-    registrationScreen.style.display = 'flex';
-    mainApp.style.display = 'none';
+    registrationScreen.style.display = "flex";
+    mainApp.style.display = "none";
   }
 
-  registrationForm.addEventListener('submit', function (e) {
+  registrationForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    // Guardar nombre de usuario
-    const usernameInput = document.getElementById('username').value.trim();
-    localStorage.setItem('username', usernameInput);
-    localStorage.setItem('userRegistered', true);
-    registrationScreen.style.display = 'none';
-    mainApp.style.display = 'block';
+    const usernameInput = document.getElementById("username").value.trim();
+    localStorage.setItem("username", usernameInput);
+    localStorage.setItem("userRegistered", true);
+    registrationScreen.style.display = "none";
+    mainApp.style.display = "block";
     updateProfileDisplay();
   });
 
   // Función para mostrar la sección seleccionada
   function showSection(sectionId) {
-    contentSections.forEach(section => {
-      section.style.display = (section.id === sectionId) ? 'block' : 'none';
+    contentSections.forEach(function (section) {
+      section.style.display = section.id === sectionId ? "block" : "none";
     });
   }
 
   // Eventos del menú inferior
-  menuButtons.forEach(btn => {
-    btn.addEventListener('click', function () {
-      const target = this.getAttribute('data-target');
+  menuButtons.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const target = this.getAttribute("data-target");
       showSection(target);
     });
   });
 
-  // Mostrar perfil al hacer clic
-  profileBtn.addEventListener('click', function () {
-    showSection('perfil');
+  // Mostrar perfil al hacer clic en el botón de perfil
+  profileBtn.addEventListener("click", function () {
+    showSection("perfil");
     updateProfileDisplay();
   });
 
-  // --- CREACIÓN DE PUNTOS EN EL MAPA ---
-
-  // Punto de Ayuda: usar ícono original
-  document.getElementById('crear-punto-ayuda').addEventListener('click', function () {
-    document.getElementById('punto-ayuda-info').style.display = 'block';
-    document.getElementById('chat-ayuda').style.display = 'block';
-
+  // --- CREACIÓN DE PUNTOS (Ayuda y Voluntario) CON FIREBASE ---
+  document.getElementById("crear-punto-ayuda").addEventListener("click", function () {
+    document.getElementById("punto-ayuda-info").style.display = "block";
+    document.getElementById("chat-ayuda").style.display = "block";
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        position => {
+        function (position) {
           const pos = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           };
-          new google.maps.Marker({
-            position: pos,
-            map: map,
-            title: "Punto de Ayuda",
-            icon: helpIcon
+          database.ref("puntos").push({
+            tipo: "ayuda",
+            lat: pos.lat,
+            lng: pos.lng,
+            info: "Punto de Ayuda",
+            timestamp: Date.now(),
           });
         },
-        error => {
-          console.error("Error obteniendo la posición para el punto de ayuda:", error);
-          new google.maps.Marker({
-            position: map.getCenter(),
-            map: map,
-            title: "Punto de Ayuda",
-            icon: helpIcon
+        function (error) {
+          const center = map.getCenter();
+          database.ref("puntos").push({
+            tipo: "ayuda",
+            lat: center.lat(),
+            lng: center.lng(),
+            info: "Punto de Ayuda",
+            timestamp: Date.now(),
           });
         }
       );
     } else {
-      new google.maps.Marker({
-        position: map.getCenter(),
-        map: map,
-        title: "Punto de Ayuda",
-        icon: helpIcon
+      const center = map.getCenter();
+      database.ref("puntos").push({
+        tipo: "ayuda",
+        lat: center.lat(),
+        lng: center.lng(),
+        info: "Punto de Ayuda",
+        timestamp: Date.now(),
       });
     }
   });
 
-  // Punto de Voluntario: usar ícono original
-  document.getElementById('crear-punto-voluntario').addEventListener('click', function () {
-    document.getElementById('punto-voluntario-info').style.display = 'block';
-
+  document.getElementById("crear-punto-voluntario").addEventListener("click", function () {
+    document.getElementById("punto-voluntario-info").style.display = "block";
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        position => {
+        function (position) {
           const pos = {
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           };
-          new google.maps.Marker({
-            position: pos,
-            map: map,
-            title: "Punto de Voluntariado",
-            icon: volunteerIcon
+          database.ref("puntos").push({
+            tipo: "voluntario",
+            lat: pos.lat,
+            lng: pos.lng,
+            info: "Punto de Voluntario",
+            timestamp: Date.now(),
           });
         },
-        error => {
-          console.error("Error obteniendo la posición para el punto de voluntariado:", error);
-          new google.maps.Marker({
-            position: map.getCenter(),
-            map: map,
-            title: "Punto de Voluntariado",
-            icon: volunteerIcon
+        function (error) {
+          const center = map.getCenter();
+          database.ref("puntos").push({
+            tipo: "voluntario",
+            lat: center.lat(),
+            lng: center.lng(),
+            info: "Punto de Voluntario",
+            timestamp: Date.now(),
           });
         }
       );
     } else {
-      new google.maps.Marker({
-        position: map.getCenter(),
-        map: map,
-        title: "Punto de Voluntariado",
-        icon: volunteerIcon
+      const center = map.getCenter();
+      database.ref("puntos").push({
+        tipo: "voluntario",
+        lat: center.lat(),
+        lng: center.lng(),
+        info: "Punto de Voluntario",
+        timestamp: Date.now(),
       });
     }
   });
 
-  // --- INTERFAZ DE CHATS ---
-
-  // Chat en "Pedir Ayuda"
-  document.getElementById('chat-ayuda-form').addEventListener('submit', function (e) {
+  // --- CHAT LOCAL PARA "Pedir Ayuda" ---
+  document.getElementById("chat-ayuda-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    const username = localStorage.getItem('username') || "Tú";
-    const input = document.getElementById('chat-ayuda-input');
+    const username = localStorage.getItem("username") || "Tú";
+    const input = document.getElementById("chat-ayuda-input");
     const message = input.value.trim();
     if (message !== "") {
-      const msgContainer = document.createElement('div');
-      const usernameSpan = document.createElement('span');
-      usernameSpan.classList.add('chat-username');
+      const msgContainer = document.createElement("div");
+      const usernameSpan = document.createElement("span");
+      usernameSpan.classList.add("chat-username");
       usernameSpan.style.color = getUserColor(username);
       usernameSpan.innerText = username + ": ";
-      const messageSpan = document.createElement('span');
-      messageSpan.classList.add('chat-text');
+      const messageSpan = document.createElement("span");
+      messageSpan.classList.add("chat-text");
       messageSpan.innerText = message;
       msgContainer.appendChild(usernameSpan);
       msgContainer.appendChild(messageSpan);
-      document.getElementById('chat-ayuda-messages').appendChild(msgContainer);
-      // Auto scroll del chat
-      let chatContainer = document.getElementById('chat-ayuda-messages');
+      document.getElementById("chat-ayuda-messages").appendChild(msgContainer);
+      const chatContainer = document.getElementById("chat-ayuda-messages");
       chatContainer.scrollTop = chatContainer.scrollHeight;
       input.value = "";
     }
   });
 
-  // Chat en "Organización"
-  document.getElementById('org-chat-form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const username = localStorage.getItem('username') || "Tú";
-    const input = document.getElementById('org-chat-input');
-    const message = input.value.trim();
-    if (message !== "" && currentOrg) {
-      currentOrg.chatMessages.push({ user: username, text: message });
-      actualizarChatOrg();
-      let orgChatContainer = document.getElementById('org-chat-messages');
-      orgChatContainer.scrollTop = orgChatContainer.scrollHeight;
-      input.value = "";
-    }
-  });
-
   // --- PESTAÑAS DE PERFIL ---
-
-  const profileTabButtons = document.querySelectorAll('.profile-tab-btn');
-  const profileTabContents = document.querySelectorAll('.profile-tab-content');
+  const profileTabButtons = document.querySelectorAll(".profile-tab-btn");
+  const profileTabContents = document.querySelectorAll(".profile-tab-content");
 
   profileTabButtons.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const tab = this.getAttribute('data-tab');
+    btn.addEventListener("click", function () {
+      const tab = this.getAttribute("data-tab");
       profileTabContents.forEach(function (content) {
-        content.style.display = (content.id === tab) ? 'block' : 'none';
+        content.style.display = content.id === tab ? "block" : "none";
       });
     });
   });
 
-  // Actualizar foto de perfil y guardarla en localStorage
-  document.getElementById('cambiar-foto-form').addEventListener('submit', function (e) {
+  document.getElementById("cambiar-foto-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    const fileInput = document.getElementById('nuevo-perfil-img');
+    const fileInput = document.getElementById("nuevo-perfil-img");
     if (fileInput.files && fileInput.files[0]) {
       const reader = new FileReader();
       reader.onload = function (e) {
-        document.querySelector('.profile-img').src = e.target.result;
-        localStorage.setItem('profilePhoto', e.target.result);
+        document.querySelector(".profile-img").src = e.target.result;
+        localStorage.setItem("profilePhoto", e.target.result);
       };
       reader.readAsDataURL(fileInput.files[0]);
     }
   });
 
-  // Actualizar datos personales y mostrarlos en el perfil
-  document.getElementById('datos-personales-form').addEventListener('submit', function (e) {
+  document.getElementById("datos-personales-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    const nombre = document.getElementById('nombre').value.trim();
-    const apellido = document.getElementById('apellido').value.trim();
-    const fecha = document.getElementById('fecha-nacimiento').value;
-    localStorage.setItem('nombre', nombre);
-    localStorage.setItem('apellido', apellido);
-    localStorage.setItem('fecha', fecha);
+    const nombre = document.getElementById("nombre").value.trim();
+    const apellido = document.getElementById("apellido").value.trim();
+    const fecha = document.getElementById("fecha-nacimiento").value;
+    localStorage.setItem("nombre", nombre);
+    localStorage.setItem("apellido", apellido);
+    localStorage.setItem("fecha", fecha);
     updateProfileDisplay();
   });
 
-  // Actualizar formación profesional (simulación)
-  document.getElementById('formacion-profesional-form').addEventListener('submit', function (e) {
+  document.getElementById("formacion-profesional-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    localStorage.setItem('formacion', "Formación guardada");
+    localStorage.setItem("formacion", "Formación guardada");
     updateProfileDisplay();
   });
 
-  // Función para actualizar la visualización del perfil
   function updateProfileDisplay() {
-    document.getElementById('display-username').innerText = "Nombre de Usuario: " + (localStorage.getItem('username') || "");
-    document.getElementById('display-nombre').innerText = "Nombre: " + (localStorage.getItem('nombre') || "");
-    document.getElementById('display-apellido').innerText = "Apellido: " + (localStorage.getItem('apellido') || "");
-    document.getElementById('display-fecha').innerText = "Fecha de Nacimiento: " + (localStorage.getItem('fecha') || "");
-    document.getElementById('display-formacion').innerText = "Formación Profesional: " + (localStorage.getItem('formacion') || "");
+    document.getElementById("display-username").innerText = "Nombre de Usuario: " + (localStorage.getItem("username") || "");
+    document.getElementById("display-nombre").innerText = "Nombre: " + (localStorage.getItem("nombre") || "");
+    document.getElementById("display-apellido").innerText = "Apellido: " + (localStorage.getItem("apellido") || "");
+    document.getElementById("display-fecha").innerText = "Fecha de Nacimiento: " + (localStorage.getItem("fecha") || "");
+    document.getElementById("display-formacion").innerText = "Formación Profesional: " + (localStorage.getItem("formacion") || "");
   }
 
   // --- ADJUNTAR ARCHIVOS EN FORMACIÓN PROFESIONAL ---
-  document.getElementById('adjuntar-formacion').addEventListener('submit', function (e) {
+  document.getElementById("adjuntar-formacion").addEventListener("submit", function (e) {
     e.preventDefault();
-    const tituloArchivo = document.getElementById('archivo-titulo').value.trim();
-    const archivoInput = document.getElementById('archivo-input');
+    const tituloArchivo = document.getElementById("archivo-titulo").value.trim();
+    const archivoInput = document.getElementById("archivo-input");
     if (tituloArchivo !== "" && archivoInput.files && archivoInput.files[0]) {
       const file = archivoInput.files[0];
-      const li = document.createElement('div');
-      li.classList.add('archivo-item');
-      if (file.type.startsWith('image')) {
+      const li = document.createElement("div");
+      li.classList.add("archivo-item");
+      if (file.type.startsWith("image")) {
         const reader = new FileReader();
         reader.onload = function (e) {
           li.innerHTML = "";
-          const img = document.createElement('img');
+          const img = document.createElement("img");
           img.src = e.target.result;
           li.appendChild(img);
-          const span = document.createElement('span');
+          const span = document.createElement("span");
           span.innerText = tituloArchivo + " - " + file.name;
           li.appendChild(span);
-          const viewButton = document.createElement('button');
+          const viewButton = document.createElement("button");
           viewButton.innerText = "Visualizar";
-          viewButton.classList.add('view-btn');
-          viewButton.addEventListener('click', function () {
+          viewButton.classList.add("view-btn");
+          viewButton.addEventListener("click", function () {
             openModal(e.target.result);
           });
           li.appendChild(viewButton);
@@ -329,99 +324,92 @@ document.addEventListener('DOMContentLoaded', function () {
         const reader = new FileReader();
         reader.onload = function (e) {
           li.innerHTML = "";
-          const span = document.createElement('span');
+          const span = document.createElement("span");
           span.innerText = tituloArchivo + " - " + file.name;
           li.appendChild(span);
-          const viewButton = document.createElement('button');
+          const viewButton = document.createElement("button");
           viewButton.innerText = "Visualizar";
-          viewButton.classList.add('view-btn');
-          viewButton.addEventListener('click', function () {
+          viewButton.classList.add("view-btn");
+          viewButton.addEventListener("click", function () {
             openModal(e.target.result);
           });
           li.appendChild(viewButton);
         };
         reader.readAsDataURL(file);
       }
-      document.getElementById('archivos-list').appendChild(li);
+      document.getElementById("archivos-list").appendChild(li);
       this.reset();
     }
   });
 
-  // --- MÓDULO DE ORGANIZACIONES ---
+  // --- MÓDULO DE ORGANIZACIONES CON FIREBASE ---
+  const orgListView = document.getElementById("org-list-view");
+  const orgCreateFormDiv = document.getElementById("org-create-form");
+  const orgDetailView = document.getElementById("org-detail-view");
+  const orgListContainer = document.getElementById("org-list");
 
-  const orgListView = document.getElementById('org-list-view');
-  const orgCreateFormDiv = document.getElementById('org-create-form');
-  const orgDetailView = document.getElementById('org-detail-view');
-  const orgListContainer = document.getElementById('org-list');
-
-  // Mostrar formulario para crear organización
-  document.getElementById('mostrar-org-create').addEventListener('click', function () {
-    orgListView.style.display = 'none';
-    orgCreateFormDiv.style.display = 'block';
+  document.getElementById("mostrar-org-create").addEventListener("click", function () {
+    orgListView.style.display = "none";
+    orgCreateFormDiv.style.display = "block";
   });
 
-  // Cancelar creación de organización
-  document.getElementById('cancelar-org').addEventListener('click', function () {
-    orgCreateFormDiv.style.display = 'none';
-    orgListView.style.display = 'block';
+  document.getElementById("cancelar-org").addEventListener("click", function () {
+    orgCreateFormDiv.style.display = "none";
+    orgListView.style.display = "block";
   });
 
-  // Crear organización (se agrega el admin)
-  document.getElementById('crear-org-form').addEventListener('submit', function (e) {
+  document.getElementById("crear-org-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    const title = document.getElementById('org-title').value.trim();
-    const infoText = document.getElementById('org-info-text').value.trim();
-    const imageInput = document.getElementById('org-image');
-    const orgId = new Date().getTime();
-    let newOrg = { 
-      id: orgId, 
-      title: title, 
-      info: infoText, 
-      image: null, 
-      admin: localStorage.getItem('username') || "Admin", 
-      members: [], 
-      chatMessages: [] 
+    const title = document.getElementById("org-title").value.trim();
+    const infoText = document.getElementById("org-info-text").value.trim();
+    const imageInput = document.getElementById("org-image");
+    let newOrg = {
+      title: title,
+      info: infoText,
+      image: null,
+      admin: localStorage.getItem("username") || "Admin",
+      members: []
     };
 
-    function agregarOrg() {
-      organizations.push(newOrg);
-      updateOrgList();
+    function pushOrg() {
+      database.ref("organizaciones").push(newOrg, function (error) {
+        if (error) {
+          console.error("Error al crear la organización:", error);
+        }
+      });
     }
-
     if (imageInput.files && imageInput.files[0]) {
       const reader = new FileReader();
       reader.onload = function (e) {
         newOrg.image = e.target.result;
-        agregarOrg();
+        pushOrg();
       };
       reader.readAsDataURL(imageInput.files[0]);
     } else {
-      agregarOrg();
+      pushOrg();
     }
     this.reset();
-    orgCreateFormDiv.style.display = 'none';
-    orgListView.style.display = 'block';
+    orgCreateFormDiv.style.display = "none";
+    orgListView.style.display = "block";
   });
 
-  // Función para actualizar el listado de organizaciones (incluye info del Admin)
   function updateOrgList() {
     orgListContainer.innerHTML = "";
-    organizations.forEach(org => {
-      const orgDiv = document.createElement('div');
-      orgDiv.classList.add('org-item');
-      orgDiv.setAttribute('data-id', org.id);
+    organizations.forEach(function (org) {
+      const orgDiv = document.createElement("div");
+      orgDiv.classList.add("org-item");
+      orgDiv.setAttribute("data-id", org.firebaseKey);
       if (org.image) {
-        const img = document.createElement('img');
+        const img = document.createElement("img");
         img.src = org.image;
         orgDiv.appendChild(img);
       }
-      const infoDiv = document.createElement('div');
-      const titleSpan = document.createElement('span');
+      const infoDiv = document.createElement("div");
+      const titleSpan = document.createElement("span");
       titleSpan.innerText = org.title;
       infoDiv.appendChild(titleSpan);
-      const adminSpan = document.createElement('span');
-      adminSpan.classList.add('org-admin');
-      // Muestra el nombre de usuario del admin y se alinea a la derecha
+      const adminSpan = document.createElement("span");
+      adminSpan.classList.add("org-admin");
       adminSpan.innerText = "Admin: " + org.admin;
       infoDiv.appendChild(adminSpan);
       orgDiv.appendChild(infoDiv);
@@ -429,12 +417,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Manejar clic en un elemento de organización (delegación)
-  orgListContainer.addEventListener('click', function (e) {
-    const orgItem = e.target.closest('.org-item');
+  orgListContainer.addEventListener("click", function (e) {
+    const orgItem = e.target.closest(".org-item");
     if (orgItem) {
-      const orgId = orgItem.getAttribute('data-id');
-      const org = organizations.find(o => o.id == orgId);
+      const orgId = orgItem.getAttribute("data-id");
+      const org = organizations.find(function (o) {
+        return o.firebaseKey === orgId;
+      });
       if (org) {
         currentOrg = org;
         mostrarOrgDetalle(org);
@@ -443,23 +432,22 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   function mostrarOrgDetalle(org) {
-    orgListView.style.display = 'none';
-    orgDetailView.style.display = 'block';
-    const orgDetailDiv = document.getElementById('org-detail');
+    orgListView.style.display = "none";
+    orgDetailView.style.display = "block";
+    const orgDetailDiv = document.getElementById("org-detail");
     orgDetailDiv.innerHTML = "";
-    const titulo = document.createElement('h3');
+    const titulo = document.createElement("h3");
     titulo.innerText = org.title;
     orgDetailDiv.appendChild(titulo);
-    // Se crea un párrafo para el admin y se le asigna la clase org-admin para alinearse a la derecha.
-    const adminP = document.createElement('p');
-    adminP.classList.add('org-admin');
+    const adminP = document.createElement("p");
+    adminP.classList.add("org-admin");
     adminP.innerText = "Admin: " + org.admin;
     orgDetailDiv.appendChild(adminP);
-    const infoP = document.createElement('p');
+    const infoP = document.createElement("p");
     infoP.innerText = org.info;
     orgDetailDiv.appendChild(infoP);
     if (org.image) {
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.src = org.image;
       img.style.maxWidth = "100px";
       img.style.display = "block";
@@ -467,9 +455,32 @@ document.addEventListener('DOMContentLoaded', function () {
       orgDetailDiv.appendChild(img);
     }
     actualizarMiembros();
-    actualizarChatOrg();
-    const unirseBtn = document.getElementById('unirse-org');
-    if (org.members.includes("Tú")) {
+
+    // Configurar chat de organización en tiempo real
+    const orgChatContainer = document.getElementById("org-chat-messages");
+    orgChatContainer.innerHTML = "";
+    var chatRef = database.ref("org_chat/" + org.firebaseKey);
+    chatRef.off();
+    chatRef.on("child_added", function (snapshot) {
+      const msg = snapshot.val();
+      const msgDiv = document.createElement("div");
+      const usernameSpan = document.createElement("span");
+      usernameSpan.classList.add("chat-username");
+      usernameSpan.style.color = getUserColor(msg.user);
+      usernameSpan.innerText = msg.user + ": ";
+      const messageSpan = document.createElement("span");
+      messageSpan.classList.add("chat-text");
+      messageSpan.innerText = msg.text;
+      msgDiv.appendChild(usernameSpan);
+      msgDiv.appendChild(messageSpan);
+      orgChatContainer.appendChild(msgDiv);
+      orgChatContainer.scrollTop = orgChatContainer.scrollHeight;
+    });
+
+    currentOrg = org;
+    const unirseBtn = document.getElementById("unirse-org");
+    const currentUsername = localStorage.getItem("username") || "Tú";
+    if (org.members && org.members.indexOf(currentUsername) !== -1) {
       unirseBtn.disabled = true;
       unirseBtn.innerText = "Ya te has unido";
     } else {
@@ -478,29 +489,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Volver a la lista de organizaciones
-  document.getElementById('volver-org-list').addEventListener('click', function () {
-    orgDetailView.style.display = 'none';
-    orgListView.style.display = 'block';
+  document.getElementById("volver-org-list").addEventListener("click", function () {
+    orgDetailView.style.display = "none";
+    orgListView.style.display = "block";
   });
 
-  // Unirse a la organización
-  document.getElementById('unirse-org').addEventListener('click', function () {
-    if (currentOrg && !currentOrg.members.includes("Tú")) {
-      currentOrg.members.push("Tú");
-      actualizarMiembros();
-      this.disabled = true;
-      this.innerText = "Ya te has unido";
+  document.getElementById("unirse-org").addEventListener("click", function () {
+    if (currentOrg) {
+      const username = localStorage.getItem("username") || "Tú";
+      let updatedMembers = currentOrg.members ? currentOrg.members.slice() : [];
+      if (updatedMembers.indexOf(username) === -1) {
+        updatedMembers.push(username);
+        database.ref("organizaciones/" + currentOrg.firebaseKey).update({
+          members: updatedMembers
+        });
+      }
     }
   });
 
-  // Actualizar listado de miembros de la organización actual
   function actualizarMiembros() {
-    const miembrosDiv = document.getElementById('org-members-list');
+    const miembrosDiv = document.getElementById("org-members-list");
     miembrosDiv.innerHTML = "";
-    if (currentOrg && currentOrg.members.length > 0) {
-      currentOrg.members.forEach(member => {
-        const memDiv = document.createElement('div');
+    if (currentOrg && currentOrg.members && currentOrg.members.length > 0) {
+      currentOrg.members.forEach(function (member) {
+        const memDiv = document.createElement("div");
         memDiv.innerText = member;
         miembrosDiv.appendChild(memDiv);
       });
@@ -509,40 +521,70 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Actualizar vista del chat de organización
-  function actualizarChatOrg() {
-    const chatContainer = document.getElementById('org-chat-messages');
-    chatContainer.innerHTML = "";
-    if (currentOrg && currentOrg.chatMessages.length > 0) {
-      currentOrg.chatMessages.forEach(msg => {
-        const msgDiv = document.createElement('div');
-        const usernameSpan = document.createElement('span');
-        usernameSpan.classList.add('chat-username');
-        usernameSpan.style.color = getUserColor(msg.user);
-        usernameSpan.innerText = msg.user + ": ";
-        const messageSpan = document.createElement('span');
-        messageSpan.classList.add('chat-text');
-        messageSpan.innerText = msg.text;
-        msgDiv.appendChild(usernameSpan);
-        msgDiv.appendChild(messageSpan);
-        chatContainer.appendChild(msgDiv);
-      });
-      // Auto-scroll del chat de organización
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+  document.getElementById("org-chat-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const username = localStorage.getItem("username") || "Tú";
+    const input = document.getElementById("org-chat-input");
+    const message = input.value.trim();
+    if (message !== "" && currentOrg) {
+      var chatRef = database.ref("org_chat/" + currentOrg.firebaseKey);
+      chatRef.push({ user: username, text: message, timestamp: Date.now() });
+      input.value = "";
     }
-  }
+  });
 
-  // Función para abrir el modal y visualizar archivos en pantalla completa
+  // LISTENERS DE FIREBASE EN TIEMPO REAL
+  database.ref("puntos").on("child_added", function (snapshot) {
+    const punto = snapshot.val();
+    if (punto.tipo === "ayuda" || punto.tipo === "voluntario") {
+      var markerIcon = punto.tipo === "ayuda" ? helpIcon : volunteerIcon;
+      new google.maps.Marker({
+        position: { lat: punto.lat, lng: punto.lng },
+        map: map,
+        title: punto.info,
+        icon: markerIcon
+      });
+    }
+  });
+
+  database.ref("organizaciones").on("child_added", function (snapshot) {
+    var org = snapshot.val();
+    org.firebaseKey = snapshot.key;
+    organizations.push(org);
+    updateOrgList();
+  });
+
+  database.ref("organizaciones").on("child_changed", function (snapshot) {
+    var updatedOrg = snapshot.val();
+    updatedOrg.firebaseKey = snapshot.key;
+    for (let i = 0; i < organizations.length; i++) {
+      if (organizations[i].firebaseKey === updatedOrg.firebaseKey) {
+        organizations[i] = updatedOrg;
+        break;
+      }
+    }
+    if (currentOrg && currentOrg.firebaseKey === updatedOrg.firebaseKey) {
+      currentOrg = updatedOrg;
+      actualizarMiembros();
+      const unirseBtn = document.getElementById("unirse-org");
+      const currentUsername = localStorage.getItem("username") || "Tú";
+      if (currentOrg.members && currentOrg.members.indexOf(currentUsername) !== -1) {
+        unirseBtn.disabled = true;
+        unirseBtn.innerText = "Ya te has unido";
+      }
+    }
+    updateOrgList();
+  });
+
+  // --- MODAL PARA VISUALIZAR ARCHIVOS ---
   function openModal(url) {
-    const modal = document.getElementById('modal-viewer');
-    const iframe = document.getElementById('modal-iframe');
+    const modal = document.getElementById("modal-viewer");
+    const iframe = document.getElementById("modal-iframe");
     iframe.src = url;
     modal.style.display = "block";
   }
-
-  // Cerrar el modal
-  document.getElementById('close-modal').addEventListener('click', function () {
-    document.getElementById('modal-viewer').style.display = 'none';
-    document.getElementById('modal-iframe').src = "";
+  document.getElementById("close-modal").addEventListener("click", function () {
+    document.getElementById("modal-viewer").style.display = "none";
+    document.getElementById("modal-iframe").src = "";
   });
 });
