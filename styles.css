@@ -1,0 +1,373 @@
+/* Reinicio básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #e0f7ea, #f3e5f5);
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Pantallas completas */
+.screen {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Contenedor del formulario de registro */
+.form-container {
+  background-color: #fff;
+  padding: 2em;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos de formulario */
+form input,
+form button,
+form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+/* Botones mejorados */
+form button,
+.menu-btn,
+.enhanced-btn {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+form button:hover,
+.menu-btn:hover,
+.enhanced-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+/* Encabezado */
+.app-header {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  padding: 1em;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.app-title {
+  font-size: 1.8em;
+}
+
+/* Botón de perfil en el header */
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profile-label {
+  font-size: 0.7em;
+  margin-top: 3px;
+}
+
+/* Área de contenido */
+.app-content {
+  flex: 1;
+  padding: 120px 1em 80px;
+  overflow-y: auto;
+}
+
+/* Contenedores de secciones */
+.content-section {
+  background: #fff;
+  margin: 1em auto;
+  padding: 1.2em;
+  border-radius: 10px;
+  max-width: 800px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Mapa */
+#map {
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+}
+
+/* Menú inferior */
+.app-menu {
+  display: flex;
+  justify-content: space-around;
+  background-color: #fff;
+  padding: 0.5em 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+  border-top: 2px solid #32cd32;
+  z-index: 1000;
+}
+
+/* Estilos de Chat */
+.chat-container {
+  margin-top: 1em;
+  padding: 0.8em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #f7f7f7;
+}
+
+.chat-messages {
+  height: 150px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  padding: 5px;
+  margin-bottom: 0.5em;
+  background-color: #fff;
+}
+
+.chat-container form input {
+  width: 70%;
+  padding: 5px;
+  margin-right: 5px;
+}
+
+.chat-container form button {
+  padding: 5px 10px;
+  border-radius: 25px;
+}
+
+/* Chat message styling */
+.chat-messages div {
+  margin-bottom: 8px;
+}
+
+.chat-username {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.chat-text {
+  font-size: 0.95em;
+}
+
+/* Pestañas de Perfil */
+.profile-tabs {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 1em;
+  border-bottom: 2px solid #32cd32;
+}
+
+.profile-tab-btn {
+  background: none;
+  border: none;
+  padding: 0.6em 1em;
+  cursor: pointer;
+  font-weight: 600;
+  color: #8a2be2;
+  transition: color 0.3s ease;
+}
+
+.profile-tab-btn:hover {
+  color: #32cd32;
+}
+
+.profile-tab-content form input,
+.profile-tab-content form button,
+.profile-tab-content form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Sección de adjuntar archivos en Formación Profesional */
+.file-attachment {
+  margin-top: 1.5em;
+  padding: 1em;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.file-attachment h3 {
+  margin-bottom: 0.8em;
+  color: #8a2be2;
+}
+
+#archivos-list {
+  margin-top: 1em;
+}
+
+.archivo-item {
+  background: #32cd32;
+  color: #fff;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  border-radius: 5px;
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.archivo-item img {
+  max-width: 50px;
+  max-height: 50px;
+  margin-right: 10px;
+  border-radius: 5px;
+}
+
+/* Botón para visualizar archivos adjuntados */
+.view-btn {
+  background: #fff;
+  color: #8a2be2;
+  border: 1px solid #8a2be2;
+  border-radius: 15px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 0.8em;
+  transition: background 0.3s ease;
+}
+
+.view-btn:hover {
+  background: #8a2be2;
+  color: #fff;
+}
+
+/* Estilo para textarea en formulario de organización */
+#org-create-form textarea {
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+/* Organización - Listado y Detalle */
+#org-list {
+  margin-top: 1em;
+}
+
+.org-item {
+  background: #8a2be2;
+  color: #fff;
+  padding: 0.8em;
+  margin-bottom: 0.5em;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.org-item img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.org-admin {
+  font-size: 0.8em;
+  background: rgba(255, 255, 255, 0.3);
+  padding: 2px 5px;
+  border-radius: 5px;
+  float: right;
+  text-align: right;
+}
+
+/* Vista de detalle de Organización */
+#org-detail-view {
+  margin-top: 1em;
+}
+
+#org-detail {
+  margin: 1em 0;
+  word-wrap: break-word;
+}
+
+/* Modal Viewer */
+.modal {
+  position: fixed;
+  z-index: 2000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.9);
+  display: none;
+}
+.modal-content {
+  margin: 5% auto;
+  width: 90%;
+  height: 80%;
+}
+.modal-content iframe {
+  width: 100%;
+  height: 100%;
+}
+.close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: #f1f1f1;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Media queries para dispositivos pequeños */
+@media (max-width: 600px) {
+  .form-container,
+  .content-section {
+    width: 95%;
+    padding: 1em;
+  }
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  #map {
+    height: 200px;
+  }
+}
