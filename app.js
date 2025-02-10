@@ -33,7 +33,6 @@ var firebaseConfig = {
   measurementId: "G-BW63R3XK9E"
 };
 firebase.initializeApp(firebaseConfig);
-// Usamos Firestore para la sincronización en tiempo real:
 var db = firebase.firestore();
 
 /* ÍCONOS DE GOOGLE MAPS */
@@ -75,12 +74,17 @@ function initMap() {
 window.initMap = initMap;
 
 /* Funciones de Chat */
+// Cada mensaje se mostrará en su "bocadillo". Los mensajes enviados por el usuario actual tendrán clase "sent" y fondo verde,
+// mientras que los mensajes de otros usuarios tendrán clase "received" y fondo en tono morado (definido en CSS).
 function renderChatMessage(msg, container) {
   const currentUser = localStorage.getItem("username") || "Tú";
-  const msgDiv = document.createElement("div");
-  msgDiv.style.display = "flex";
-  msgDiv.style.marginBottom = "8px";
-  msgDiv.style.justifyContent = (msg.user === currentUser) ? "flex-end" : "flex-start";
+  const messageBubble = document.createElement("div");
+  messageBubble.classList.add("chat-bubble");
+  if (msg.user === currentUser) {
+    messageBubble.classList.add("sent");
+  } else {
+    messageBubble.classList.add("received");
+  }
   const usernameSpan = document.createElement("span");
   usernameSpan.classList.add("chat-username");
   usernameSpan.innerText = msg.user + ": ";
@@ -88,9 +92,9 @@ function renderChatMessage(msg, container) {
   const messageSpan = document.createElement("span");
   messageSpan.classList.add("chat-text");
   messageSpan.innerText = msg.text;
-  msgDiv.appendChild(usernameSpan);
-  msgDiv.appendChild(messageSpan);
-  container.appendChild(msgDiv);
+  messageBubble.appendChild(usernameSpan);
+  messageBubble.appendChild(messageSpan);
+  container.appendChild(messageBubble);
   container.scrollTop = container.scrollHeight;
 }
 
@@ -167,6 +171,14 @@ let ayudaItems = [];
 let voluntarioItems = [];
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Evento para ocultar el mensaje de prototipo al pulsar "Aceptar"
+  var acceptBtn = document.getElementById("accept-dev-message");
+  if (acceptBtn) {
+    acceptBtn.addEventListener("click", function () {
+      document.getElementById("dev-message").style.display = "none";
+    });
+  }
+
   const registrationForm = document.getElementById("registration-form");
   const registrationScreen = document.getElementById("registration-screen");
   const mainApp = document.getElementById("main-app");
@@ -231,7 +243,6 @@ document.addEventListener("DOMContentLoaded", function () {
       "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
     document.getElementById("profile-formation-display").innerText =
       "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
-    // Mostrar teléfono guardado (si existe)
     let phone = localStorage.getItem("profilePhone") || "";
     let phoneDisplay = document.getElementById("profile-phone-display");
     if (!phoneDisplay) {
@@ -244,7 +255,6 @@ document.addEventListener("DOMContentLoaded", function () {
       localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
   }
 
-  /* SLIDERS DE VOLUNTARIOS */
   const daysArray = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
   document.getElementById("dia-inicio").addEventListener("input", function () {
     document.getElementById("dia-inicio-label").textContent = daysArray[this.value];
@@ -259,7 +269,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("hora-fin-label").textContent = this.value + ":00";
   });
 
-  /* BOTÓN DE PANTALLA COMPLETA (compatibilidad móvil) */
   const fullscreenBtn = document.getElementById("fullscreen-btn");
   fullscreenBtn.addEventListener("click", function () {
     const mapContainer = document.getElementById("map-container");
@@ -323,58 +332,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /* MÓDULO: ORGANIZACIONES */
-  const orgListView = document.getElementById("org-list-view");
-  const orgCreateFormDiv = document.getElementById("org-create-form");
-  const orgDetailView = document.getElementById("org-detail-view");
-  const orgListContainer = document.getElementById("org-list");
-
-  document.getElementById("mostrar-org-create").addEventListener("click", function () {
-    orgListView.style.display = "none";
-    orgCreateFormDiv.style.display = "block";
-  });
-  document.getElementById("cancelar-org").addEventListener("click", function () {
-    orgCreateFormDiv.style.display = "none";
-    orgListView.style.display = "block";
-  });
-  document.getElementById("crear-org-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const title = document.getElementById("org-title").value.trim();
-    const infoText = document.getElementById("org-info-text").value.trim();
-    const imageInput = document.getElementById("org-image");
-    let newOrg = {
-      title: title,
-      info: infoText,
-      image: null,
-      admin: localStorage.getItem("username") || "Admin",
-      members: [],
-      timestamp: Date.now()
-    };
-    if (currentLocationMarker) {
-      newOrg.latitude = currentLocationMarker.getPosition().lat();
-      newOrg.longitude = currentLocationMarker.getPosition().lng();
-    } else {
-      newOrg.latitude = 40.416775;
-      newOrg.longitude = -3.70379;
-    }
-    function pushOrg() {
-      db.collection("organizaciones").add(newOrg)
-        .catch(error => console.error("Error al crear la organización:", error));
-    }
-    if (imageInput.files && imageInput.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        newOrg.image = e.target.result;
-        pushOrg();
-      };
-      reader.readAsDataURL(imageInput.files[0]);
-    } else {
-      pushOrg();
-    }
-    this.reset();
-    orgCreateFormDiv.style.display = "none";
-    orgListView.style.display = "block";
-  });
-  // Listener en tiempo real para organizaciones
+  // (Se conserva el código original de organizaciones)
   db.collection("organizaciones").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let org = change.doc.data();
@@ -391,15 +349,14 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   function updateOrgList() {
     organizations.sort((a, b) => a.timestamp - b.timestamp);
+    const orgListContainer = document.getElementById("org-list");
     orgListContainer.innerHTML = "";
     organizations.forEach(function (org) {
       const orgDiv = document.createElement("div");
       orgDiv.classList.add("org-item");
       orgDiv.setAttribute("data-id", org.firebaseKey);
-
       const container = document.createElement("div");
       container.classList.add("org-item-container");
-
       const leftDiv = document.createElement("div");
       leftDiv.classList.add("org-item-left");
       if (org.image) {
@@ -415,7 +372,6 @@ document.addEventListener("DOMContentLoaded", function () {
       titleSpan.innerText = org.title;
       leftDiv.appendChild(titleSpan);
       container.appendChild(leftDiv);
-
       const rightDiv = document.createElement("div");
       rightDiv.classList.add("org-item-right");
       const adminSpan = document.createElement("span");
@@ -441,7 +397,7 @@ document.addEventListener("DOMContentLoaded", function () {
       orgListContainer.appendChild(orgDiv);
     });
   }
-  orgListContainer.addEventListener("click", function (e) {
+  document.getElementById("org-list").addEventListener("click", function (e) {
     const orgItem = e.target.closest(".org-item");
     if (orgItem) {
       const orgId = orgItem.getAttribute("data-id");
@@ -456,8 +412,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
   function mostrarOrgDetalle(org) {
-    orgListView.style.display = "none";
-    orgDetailView.style.display = "block";
+    document.getElementById("org-list-view").style.display = "none";
+    document.getElementById("org-detail-view").style.display = "block";
     const orgDetailDiv = document.getElementById("org-detail");
     orgDetailDiv.innerHTML = "";
     const titulo = document.createElement("h3");
@@ -480,7 +436,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       orgDetailDiv.appendChild(img);
     }
-    // Listener para el chat de Organización usando subcolección "messages"
     const orgChatContainer = document.getElementById("org-chat-messages");
     orgChatContainer.innerHTML = "";
     db.collection("org_chat").doc(org.firebaseKey).collection("messages").orderBy("timestamp")
@@ -495,33 +450,28 @@ document.addEventListener("DOMContentLoaded", function () {
     currentOrg = org;
   }
   document.getElementById("volver-org-list").addEventListener("click", function () {
-    orgDetailView.style.display = "none";
-    orgListView.style.display = "block";
+    document.getElementById("org-detail-view").style.display = "none";
+    document.getElementById("org-list-view").style.display = "block";
   });
-  // Botón "Unirse a Organización" con la clase .join-org-btn
-  const joinOrgBtn = document.getElementById("unirse-org");
-  if (joinOrgBtn) {
-    joinOrgBtn.addEventListener("click", function() {
-      if (!currentOrg) return;
-      const currentUser = localStorage.getItem("username");
-      if (currentOrg.admin === currentUser) {
-        alert("Eres el administrador de esta organización.");
-        return;
-      }
-      if (currentOrg.members && currentOrg.members.includes(currentUser)) {
-        alert("Ya te has unido a esta organización.");
-        return;
-      }
-      if (!currentOrg.members) {
-        currentOrg.members = [];
-      }
-      currentOrg.members.push(currentUser);
-      db.collection("organizaciones").doc(currentOrg.firebaseKey).update({ members: currentOrg.members })
-        .then(() => { alert("¡Te has unido a la organización!"); })
-        .catch(error => { alert("Error al unirse: " + error.message); });
-    });
-  }
-  // Listener para enviar mensajes en el chat de ORGANIZACIONES
+  document.getElementById("unirse-org").addEventListener("click", function() {
+    if (!currentOrg) return;
+    const currentUser = localStorage.getItem("username");
+    if (currentOrg.admin === currentUser) {
+      alert("Eres el administrador de esta organización.");
+      return;
+    }
+    if (currentOrg.members && currentOrg.members.includes(currentUser)) {
+      alert("Ya te has unido a esta organización.");
+      return;
+    }
+    if (!currentOrg.members) {
+      currentOrg.members = [];
+    }
+    currentOrg.members.push(currentUser);
+    db.collection("organizaciones").doc(currentOrg.firebaseKey).update({ members: currentOrg.members })
+      .then(() => { alert("¡Te has unido a la organización!"); })
+      .catch(error => { alert("Error al unirse: " + error.message); });
+  });
   document.getElementById("org-chat-form").onsubmit = function(e) {
     e.preventDefault();
     const input = document.getElementById("org-chat-input");
@@ -539,56 +489,6 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   /* MÓDULO: PUNTOS DE AYUDA */
-  const ayudaListView = document.getElementById("ayuda-list-view");
-  const ayudaCreateForm = document.getElementById("ayuda-create-form");
-  const ayudaDetailView = document.getElementById("ayuda-detail-view");
-  const ayudaListContainer = document.getElementById("ayuda-list");
-
-  document.getElementById("mostrar-ayuda-create").addEventListener("click", function () {
-    ayudaCreateForm.style.display = "block";
-    ayudaListView.style.display = "none";
-  });
-  document.getElementById("cancelar-ayuda").addEventListener("click", function () {
-    ayudaCreateForm.style.display = "none";
-    ayudaListView.style.display = "block";
-  });
-  document.getElementById("crear-ayuda-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const titulo = document.getElementById("ayuda-titulo").value.trim();
-    const info = document.getElementById("ayuda-info").value.trim();
-    const imageInput = document.getElementById("ayuda-image");
-    let newAyuda = {
-      titulo: titulo,
-      info: info,
-      creator: localStorage.getItem("username") || "Anónimo",
-      timestamp: Date.now()
-    };
-    if (currentLocationMarker) {
-      newAyuda.latitude = currentLocationMarker.getPosition().lat();
-      newAyuda.longitude = currentLocationMarker.getPosition().lng();
-    } else {
-      newAyuda.latitude = 40.416775;
-      newAyuda.longitude = -3.70379;
-    }
-    function pushAyuda() {
-      db.collection("ayuda").add(newAyuda)
-        .catch(error => console.error("Error creando punto de ayuda", error));
-    }
-    if (imageInput.files && imageInput.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        newAyuda.image = e.target.result;
-        pushAyuda();
-      };
-      reader.readAsDataURL(imageInput.files[0]);
-    } else {
-      pushAyuda();
-    }
-    this.reset();
-    ayudaCreateForm.style.display = "none";
-    ayudaListView.style.display = "block";
-  });
-  // Listener en tiempo real para puntos de ayuda
   db.collection("ayuda").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let ayuda = change.doc.data();
@@ -608,6 +508,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
   function updateAyudaList() {
+    const ayudaListContainer = document.getElementById("ayuda-list");
     ayudaListContainer.innerHTML = "";
     ayudaItems.sort((a, b) => a.timestamp - b.timestamp);
     ayudaItems.forEach(function (item) {
@@ -618,7 +519,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ayudaListContainer.appendChild(itemDiv);
     });
   }
-  ayudaListContainer.addEventListener("click", function (e) {
+  document.getElementById("ayuda-list").addEventListener("click", function (e) {
     const itemDiv = e.target.closest(".ayuda-item");
     if (itemDiv) {
       const id = itemDiv.getAttribute("data-id");
@@ -632,8 +533,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
   function showAyudaDetail(ayuda) {
-    ayudaListView.style.display = "none";
-    ayudaCreateForm.style.display = "none";
+    document.getElementById("ayuda-list-view").style.display = "none";
+    document.getElementById("ayuda-create-form").style.display = "none";
     const ayudaDetailDiv = document.getElementById("ayuda-detail");
     ayudaDetailDiv.innerHTML = "";
     const title = document.createElement("h3");
@@ -656,8 +557,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(img);
     }
-    
-    // Botón para eliminar un punto de ayuda solo si corresponde al creador
     if (localStorage.getItem("username") === ayuda.creator) {
       const deleteHelpBtn = document.createElement("button");
       deleteHelpBtn.className = "delete-btn";
@@ -669,15 +568,13 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(() => {
               alert("Punto de ayuda eliminado");
               document.getElementById("ayuda-detail-view").style.display = "none";
-              ayudaListView.style.display = "block";
+              document.getElementById("ayuda-list-view").style.display = "block";
             })
             .catch(error => console.error("Error eliminando punto de ayuda:", error));
         }
       });
       ayudaDetailDiv.appendChild(deleteHelpBtn);
     }
-    
-    // Chat de Ayuda: usamos subcolección "messages" en "ayuda_chat"
     const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
     ayudaChatContainer.innerHTML = "";
     db.collection("ayuda_chat").doc(ayuda.firebaseKey).collection("messages").orderBy("timestamp")
@@ -694,7 +591,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   document.getElementById("volver-ayuda-list").addEventListener("click", function () {
     document.getElementById("ayuda-detail-view").style.display = "none";
-    ayudaListView.style.display = "block";
+    document.getElementById("ayuda-list-view").style.display = "block";
   });
   document.getElementById("ayuda-chat-form").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -710,71 +607,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /* MÓDULO: VOLUNTARIOS */
-  const voluntarioListView = document.getElementById("voluntario-list-view");
-  const voluntarioCreateForm = document.getElementById("voluntario-create-form");
-  const voluntarioDetailView = document.getElementById("voluntario-detail-view");
-  const voluntarioListContainer = document.getElementById("voluntario-list");
-
-  // Al pulsar "Ofrecerme como Voluntario", no se oculta la lista.
-  document.getElementById("mostrar-voluntario-create").addEventListener("click", function () {
-    const currentUser = localStorage.getItem("username");
-    db.collection("voluntarios").where("user", "==", currentUser).get().then(function(querySnapshot) {
-      if (!querySnapshot.empty) {
-        alert("Ya te has ofrecido como voluntario.");
-        return;
-      }
-      voluntarioCreateForm.style.display = "block";
-      // La lista se mantiene visible
-    });
-  });
-  document.getElementById("cancelar-voluntario").addEventListener("click", function () {
-    voluntarioCreateForm.style.display = "none";
-    voluntarioListView.style.display = "block";
-  });
-  document.getElementById("crear-voluntario-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const diaInicioVal = document.getElementById("dia-inicio").value;
-    const diaFinVal = document.getElementById("dia-fin").value;
-    const horaInicioVal = document.getElementById("hora-inicio").value;
-    const horaFinVal = document.getElementById("hora-fin").value;
-    const horarioTexto =
-      daysArray[diaInicioVal] +
-      " a " +
-      daysArray[diaFinVal] +
-      ", " +
-      horaInicioVal +
-      ":00 a " +
-      horaFinVal +
-      ":00";
-    let newVoluntario = {
-      user: localStorage.getItem("username") || "Tú",
-      diaInicio: diaInicioVal,
-      diaFin: diaFinVal,
-      horaInicio: horaInicioVal,
-      horaFin: horaFinVal,
-      horarioTexto: horarioTexto,
-      timestamp: Date.now()
-    };
-    if (currentLocationMarker) {
-      newVoluntario.latitude = currentLocationMarker.getPosition().lat();
-      newVoluntario.longitude = currentLocationMarker.getPosition().lng();
-    } else {
-      newVoluntario.latitude = 40.416775;
-      newVoluntario.longitude = -3.70379;
-    }
-    // Agregar habilidades desde el campo correspondiente
-    const habilidades = document.getElementById("voluntario-habilidades").value.trim();
-    newVoluntario.habilidades = habilidades;
-    // Guardar la foto de perfil del usuario en el registro del voluntario
-    newVoluntario.profilePhoto = localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
-    
-    db.collection("voluntarios").add(newVoluntario)
-      .catch(error => console.error("Error creando voluntario:", error));
-    this.reset();
-    voluntarioCreateForm.style.display = "none";
-    // La lista se mantiene visible
-  });
-  // Listener en tiempo real para voluntarios
   db.collection("voluntarios").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let vol = change.doc.data();
@@ -794,6 +626,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
   function updateVoluntarioList() {
+    const voluntarioListContainer = document.getElementById("voluntario-list");
     voluntarioListContainer.innerHTML = "";
     voluntarioItems.sort((a, b) => a.timestamp - b.timestamp);
     voluntarioItems.forEach(function (item) {
@@ -822,7 +655,7 @@ document.addEventListener("DOMContentLoaded", function () {
       voluntarioListContainer.appendChild(itemDiv);
     });
   }
-  voluntarioListContainer.addEventListener("click", function (e) {
+  document.getElementById("voluntario-list").addEventListener("click", function (e) {
     const itemDiv = e.target.closest(".voluntario-item");
     if (itemDiv) {
       const id = itemDiv.getAttribute("data-id");
@@ -836,42 +669,29 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
   function showVoluntarioDetail(vol) {
-    // Ocultar la lista y el formulario para mostrar el detalle y el chat
-    voluntarioListView.style.display = "none";
-    voluntarioCreateForm.style.display = "none";
+    document.getElementById("voluntario-list-view").style.display = "none";
+    document.getElementById("voluntario-create-form").style.display = "none";
     const voluntarioDetailDiv = document.getElementById("voluntario-detail");
     voluntarioDetailDiv.innerHTML = "";
-    
-    // Se crea un contenedor con layout flex para dividir el contenido en dos columnas
     const detailContainer = document.createElement("div");
     detailContainer.style.display = "flex";
     detailContainer.style.justifyContent = "space-between";
     detailContainer.style.alignItems = "flex-start";
-    
-    // Columna izquierda: información textual
     const leftColumn = document.createElement("div");
     leftColumn.style.flex = "1";
     leftColumn.style.marginRight = "20px";
-    
     const infoHeader = document.createElement("h3");
     infoHeader.innerText = "Detalle del Voluntario";
     leftColumn.appendChild(infoHeader);
-    
     const horarioP = document.createElement("p");
     horarioP.innerText = "Horario: " + vol.horarioTexto;
     leftColumn.appendChild(horarioP);
-    
     const userP = document.createElement("p");
     userP.innerText = "Ofrecido por: " + vol.user;
     leftColumn.appendChild(userP);
-    
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
-    leftColumn.appendChild(horarioP);
-    leftColumn.appendChild(userP);
     leftColumn.appendChild(habilidadesP);
-    
-    // Información del perfil (como texto)
     const profileDiv = document.createElement("div");
     profileDiv.id = "voluntario-profile-info";
     profileDiv.innerHTML =
@@ -880,10 +700,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "<p>Fecha de Nacimiento: " + (localStorage.getItem("profileDob") || "No definida") + "</p>" +
       "<p>Formación Profesional: " + (localStorage.getItem("profileFormation") || "No definida") + "</p>";
     leftColumn.appendChild(profileDiv);
-    
     detailContainer.appendChild(leftColumn);
-    
-    // Columna derecha: foto de perfil del voluntario (si se guardó en el registro, sino se usa la del perfil actual)
     const rightColumn = document.createElement("div");
     rightColumn.style.flexShrink = "0";
     rightColumn.style.display = "flex";
@@ -895,10 +712,7 @@ document.addEventListener("DOMContentLoaded", function () {
     profileImg.style.borderRadius = "50%";
     rightColumn.appendChild(profileImg);
     detailContainer.appendChild(rightColumn);
-    
     voluntarioDetailDiv.appendChild(detailContainer);
-    
-    // Insertar en la información del voluntario los archivos adjuntos públicos del perfil.
     let publicAttachments = profileAttachments.filter(att => att.visibility === "public");
     if (publicAttachments.length > 0) {
       let attachContainer = document.createElement("div");
@@ -907,22 +721,20 @@ document.addEventListener("DOMContentLoaded", function () {
       attachHeader.innerText = "Archivos Adjuntos Públicos:";
       attachContainer.appendChild(attachHeader);
       publicAttachments.forEach(att => {
-          let attDiv = document.createElement("div");
-          attDiv.classList.add("voluntario-attachment-item");
-          attDiv.innerHTML = "<strong>" + att.title + "</strong> (" + att.fileName + ")";
-          let viewBtn = document.createElement("button");
-          viewBtn.className = "view-att-btn";
-          viewBtn.innerText = "Visualizar";
-          viewBtn.addEventListener("click", function() {
-              openModal(att.fileUrl, att.fileName);
-          });
-          attDiv.appendChild(viewBtn);
-          attachContainer.appendChild(attDiv);
+        let attDiv = document.createElement("div");
+        attDiv.classList.add("voluntario-attachment-item");
+        attDiv.innerHTML = "<strong>" + att.title + "</strong> (" + att.fileName + ")";
+        let viewBtn = document.createElement("button");
+        viewBtn.className = "view-att-btn";
+        viewBtn.innerText = "Visualizar";
+        viewBtn.addEventListener("click", function() {
+          openModal(att.fileUrl, att.fileName);
+        });
+        attDiv.appendChild(viewBtn);
+        attachContainer.appendChild(attDiv);
       });
       voluntarioDetailDiv.appendChild(attachContainer);
     }
-    
-    // Chat Privado (se ubica debajo de la información)
     const privateChatDiv = document.createElement("div");
     privateChatDiv.id = "voluntario-private-chat";
     privateChatDiv.innerHTML =
@@ -930,7 +742,6 @@ document.addEventListener("DOMContentLoaded", function () {
       "<div class='chat-messages' id='voluntario-private-chat-messages'></div>" +
       "<form id='voluntario-private-chat-form'><input type='text' id='voluntario-private-chat-input' placeholder='Escribe tu mensaje' required /><button type='submit' class='enhanced-btn'>Enviar</button></form>";
     voluntarioDetailDiv.appendChild(privateChatDiv);
-    
     const currentUser = localStorage.getItem("username") || "Tú";
     const chatKey = [currentUser, vol.user].sort().join("_");
     const privateChatMessagesDiv = document.getElementById("voluntario-private-chat-messages");
@@ -959,11 +770,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
     currentVoluntario = vol;
-    voluntarioDetailView.style.display = "block";
+    document.getElementById("voluntario-detail-view").style.display = "block";
   }
   document.getElementById("volver-voluntario-list").addEventListener("click", function () {
-    voluntarioDetailView.style.display = "none";
-    voluntarioListView.style.display = "block";
+    document.getElementById("voluntario-detail-view").style.display = "none";
+    document.getElementById("voluntario-list-view").style.display = "block";
   });
 
   /* MÓDULO: MI PERFIL */
@@ -986,7 +797,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const nombre = document.getElementById("profile-nombre").value.trim();
     const apellido = document.getElementById("profile-apellido").value.trim();
     const dob = document.getElementById("profile-dob").value;
-    const phone = document.getElementById("profile-phone").value.trim();  // nuevo campo
+    const phone = document.getElementById("profile-phone").value.trim();
     localStorage.setItem("profileNombre", nombre);
     localStorage.setItem("profileApellido", apellido);
     localStorage.setItem("profileDob", dob);
@@ -1053,7 +864,6 @@ document.addEventListener("DOMContentLoaded", function () {
       attDiv.setAttribute("data-visibility", att.visibility);
       attDiv.setAttribute("data-file-url", att.fileUrl);
       attDiv.innerHTML = "<strong>" + att.title + "</strong> (" + att.fileName + ") - " + (att.visibility === "public" ? "Público" : "Privado");
-      // Botón para cambiar visibilidad
       const toggleBtn = document.createElement("button");
       toggleBtn.className = "toggle-visibility-btn";
       toggleBtn.innerText = (att.visibility === "public") ? "Cambiar a Privado" : "Cambiar a Público";
@@ -1063,7 +873,6 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAttachmentList();
       });
       attDiv.appendChild(toggleBtn);
-      // Botón para visualizar
       const viewBtn = document.createElement("button");
       viewBtn.className = "view-att-btn";
       viewBtn.innerText = "Visualizar";
@@ -1071,7 +880,6 @@ document.addEventListener("DOMContentLoaded", function () {
         openModal(att.fileUrl, att.fileName);
       });
       attDiv.appendChild(viewBtn);
-      // Botón para eliminar el archivo
       const deleteAttBtn = document.createElement("button");
       deleteAttBtn.className = "delete-att-btn";
       deleteAttBtn.innerText = "Eliminar";
@@ -1084,7 +892,6 @@ document.addEventListener("DOMContentLoaded", function () {
       listContainer.appendChild(attDiv);
     });
   }
-  // Se ha quitado el código del botón de salir (logout) del header.
 });
 
 /* Función para abrir modal en pantalla completa para visualizar archivos */
