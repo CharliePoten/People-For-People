@@ -156,7 +156,7 @@ form button:hover {
   border-radius: 0;
 }
 
-/* Botón Pantalla Completa (modernizado y centrado) */
+/* Botón Pantalla Completa */
 #fullscreen-btn {
   position: absolute;
   bottom: 20px;
@@ -237,7 +237,7 @@ form button:hover {
   cursor: pointer;
 }
 
-/* Cada item en las listas se muestra en su propio recuadro */
+/* Items de las listas */
 .voluntario-item,
 .org-item,
 .ayuda-item {
@@ -249,7 +249,7 @@ form button:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Voluntarios: layout flex con sección para info y botón de eliminar a la derecha */
+/* Voluntarios: layout flex */
 .voluntario-item {
   display: flex;
   justify-content: space-between;
@@ -259,7 +259,7 @@ form button:hover {
   flex: 1;
 }
 
-/* Organizaciones: contenedor con dos secciones (izquierda para imagen y título, derecha para "Admin: …") */
+/* Organizaciones: contenedor */
 .org-item-container {
   display: flex;
   justify-content: space-between;
@@ -269,8 +269,7 @@ form button:hover {
   display: flex;
   align-items: center;
 }
-
-/* Estilo para la imagen pequeña (thumbnail) en Organizaciones */
+/* Imagen pequeña */
 .org-thumbnail {
   width: 40px;
   height: 40px;
@@ -280,7 +279,7 @@ form button:hover {
   cursor: pointer;
 }
 
-/* Botones especiales para Crear Punto de Ayuda, Voluntario y Organización */
+/* Botones especiales */
 .special-btn {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   border: none;
@@ -297,7 +296,6 @@ form button:hover {
 }
 
 /* Módulo: Mi Perfil */
-/* Se usa flex para alinear la foto a la izquierda y la info a la derecha */
 .profile-container-new {
   display: flex;
   flex-direction: column;
@@ -397,7 +395,6 @@ form button:hover {
   height: 100%;
   object-fit: contain;
 }
-/* Botón de Cierre (Close) para el modal */
 .close {
   position: absolute;
   top: 20px;
@@ -405,6 +402,22 @@ form button:hover {
   color: #f1f1f1;
   font-size: 40px;
   cursor: pointer;
+}
+
+/* Nuevo estilo para el grupo de habilidades en el formulario de voluntarios */
+.form-group-voluntario {
+  margin: 10px 0;
+}
+.form-group-voluntario label {
+  display: block;
+  margin-bottom: 6px;
+}
+.form-group-voluntario textarea {
+  width: 100%;
+  height: 60px;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 /* Responsive */
