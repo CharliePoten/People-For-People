@@ -52,10 +52,11 @@ form button {
 }
 
 form button {
+  /* Se usa el estilo base para botones, pero los botones de acción tendrán clase .action-btn */
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
   border: none;
-  border-radius: 25px;
+  border-radius: 10px;
   font-size: 1em;
   cursor: pointer;
   transition: transform 0.2s ease, opacity 0.2s ease;
@@ -86,6 +87,13 @@ form button:hover {
   font-size: 1.8em;
 }
 
+/* Acciones del encabezado (perfil y salir) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 /* Perfil en header */
 .profile-container {
   display: flex;
@@ -109,6 +117,22 @@ form button:hover {
 .profile-label {
   font-size: 0.7em;
   margin-top: 3px;
+}
+
+/* Botón de Salir */
+.logout-btn {
+  background: linear-gradient(45deg, #8a2be2, #6a0dad);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.logout-btn:hover {
+  background: linear-gradient(45deg, #6a0dad, #8a2be2);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Área de contenido */
@@ -165,7 +189,7 @@ form button:hover {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   border: none;
   color: #fff;
-  border-radius: 50px;
+  border-radius: 10px;
   padding: 10px 20px;
   font-size: 1em;
   cursor: pointer;
@@ -193,7 +217,7 @@ form button:hover {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
   border: none;
-  border-radius: 25px;
+  border-radius: 10px;
   padding: 12px 20px;
   font-size: 1em;
   cursor: pointer;
@@ -227,14 +251,85 @@ form button:hover {
   font-size: 0.95em;
 }
 
-/* Botón Eliminar */
-.delete-btn {
-  background: #ff5c5c;
-  border: none;
+/* Botones de Acción para crear registros */
+.action-btn {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
-  border-radius: 8px;
-  padding: 6px 12px;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 1em;
   cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.action-btn:hover {
+  background: linear-gradient(45deg, #8a2be2, #32cd32);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Botón para "Unirse a Organización" */
+.join-org-btn {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.join-org-btn:hover {
+  background: linear-gradient(45deg, #8a2be2, #32cd32);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Botón para "Volver" */
+.return-btn {
+  background: linear-gradient(45deg, #6a0dad, #8a2be2);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.return-btn:hover {
+  background: linear-gradient(45deg, #8a2be2, #6a0dad);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Botón Eliminar para organizaciones en la lista */
+.delete-org-btn {
+  background: linear-gradient(45deg, #ff4d4d, #ff1a1a);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  margin-left: auto;
+}
+.delete-org-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Botón Eliminar utilizado en otros módulos (voluntarios, ayudas) */
+.delete-btn {
+  background: linear-gradient(45deg, #ff4d4d, #ff1a1a);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.delete-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Items de las listas */
@@ -259,17 +354,16 @@ form button:hover {
   flex: 1;
 }
 
-/* Organizaciones: contenedor */
+/* Organizaciones: contenedor con dos secciones */
 .org-item-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 10px;
 }
 .org-item-left {
   display: flex;
   align-items: center;
 }
-/* Imagen pequeña */
 .org-thumbnail {
   width: 40px;
   height: 40px;
@@ -278,21 +372,11 @@ form button:hover {
   margin-right: 10px;
   cursor: pointer;
 }
-
-/* Botones especiales */
-.special-btn {
-  background: linear-gradient(45deg, #32cd32, #8a2be2);
-  border: none;
-  border-radius: 30px;
-  padding: 12px 24px;
-  color: #fff;
-  font-size: 1.1em;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
-}
-.special-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
+.org-item-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* Módulo: Mi Perfil */
@@ -404,7 +488,7 @@ form button:hover {
   cursor: pointer;
 }
 
-/* Nuevo estilo para el grupo de habilidades en el formulario de voluntarios */
+/* Estilo para el grupo de habilidades en el formulario de voluntarios */
 .form-group-voluntario {
   margin: 10px 0;
 }
