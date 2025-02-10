@@ -6,9 +6,9 @@
     <title>People For People</title>
     <link rel="stylesheet" href="styles.css" />
 
-    <!-- Firebase (compatibilidad con Realtime Database) -->
+    <!-- Firebase (compatibilidad con Firestore) -->
     <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
   </head>
   <body>
     <!-- Pantalla de Registro (centrada) -->
@@ -28,10 +28,13 @@
     <div id="main-app" class="screen" style="display: none;">
       <header class="app-header">
         <h1 class="app-title">People For People</h1>
-        <!-- Botón de perfil en el header -->
-        <div class="profile-container" id="profile-btn">
-          <img src="https://via.placeholder.com/40/FFFFFF/FFFFFF?text=" alt="Perfil" class="profile-img" />
-          <span class="profile-label">Mi perfil</span>
+        <!-- Se ha quitado el botón de salir -->
+        <div class="header-actions">
+          <!-- Botón de perfil en el header -->
+          <div class="profile-container" id="profile-btn">
+            <img src="https://via.placeholder.com/40/FFFFFF/FFFFFF?text=" alt="Perfil" class="profile-img" />
+            <span class="profile-label">Mi perfil</span>
+          </div>
         </div>
       </header>
 
@@ -50,7 +53,7 @@
           <h2>Pedir Ayuda</h2>
           <div id="ayuda-view">
             <div id="ayuda-list-view">
-              <button id="mostrar-ayuda-create" class="enhanced-btn special-btn">
+              <button id="mostrar-ayuda-create" class="action-btn">
                 Crear Punto de Ayuda
               </button>
               <div id="ayuda-list" class="list-box"></div>
@@ -61,12 +64,12 @@
                 <input type="text" id="ayuda-titulo" placeholder="Título del Punto de Ayuda" required />
                 <textarea id="ayuda-info" placeholder="Información del Punto de Ayuda" required></textarea>
                 <input type="file" id="ayuda-image" accept="image/*" />
-                <button type="submit" class="enhanced-btn">Crear Punto de Ayuda</button>
-                <button type="button" id="cancelar-ayuda" class="enhanced-btn">Cancelar</button>
+                <button type="submit" class="action-btn">Crear Punto de Ayuda</button>
+                <button type="button" id="cancelar-ayuda" class="return-btn">Volver</button>
               </form>
             </div>
             <div id="ayuda-detail-view" style="display:none;">
-              <button id="volver-ayuda-list" class="enhanced-btn">Volver</button>
+              <button id="volver-ayuda-list" class="return-btn">Volver</button>
               <div id="ayuda-detail"></div>
               <div id="ayuda-chat" class="chat-container">
                 <h3>Chat de Ayuda</h3>
@@ -85,7 +88,7 @@
           <h2>Voluntarios</h2>
           <div id="voluntario-view">
             <div id="voluntario-list-view">
-              <button id="mostrar-voluntario-create" class="enhanced-btn special-btn">
+              <button id="mostrar-voluntario-create" class="action-btn">
                 Ofrecerme como Voluntario
               </button>
               <div id="voluntario-list" class="list-box"></div>
@@ -105,17 +108,16 @@
                   <label for="hora-fin">Hora fin: <span id="hora-fin-label">17:00</span></label>
                   <input type="range" id="hora-fin" name="hora-fin" min="0" max="23" value="17" />
                 </div>
-                <!-- Nuevo campo para habilidades -->
                 <div class="form-group-voluntario">
                   <label for="voluntario-habilidades">Habilidades</label>
                   <textarea id="voluntario-habilidades" placeholder="Ejemplo: primeros auxilios, carpintería, etc." required></textarea>
                 </div>
-                <button type="submit" class="enhanced-btn">Enviar Horario</button>
-                <button type="button" id="cancelar-voluntario" class="enhanced-btn">Cancelar</button>
+                <button type="submit" class="action-btn">Ofrecerme voluntario</button>
+                <button type="button" id="cancelar-voluntario" class="return-btn">Volver</button>
               </form>
             </div>
             <div id="voluntario-detail-view" style="display:none;">
-              <button id="volver-voluntario-list" class="enhanced-btn">Volver</button>
+              <button id="volver-voluntario-list" class="return-btn">Volver</button>
               <div id="voluntario-detail"></div>
             </div>
           </div>
@@ -126,7 +128,7 @@
           <h2>Organizaciones de Voluntarios</h2>
           <div id="org-view">
             <div id="org-list-view">
-              <button id="mostrar-org-create" class="enhanced-btn special-btn">
+              <button id="mostrar-org-create" class="action-btn">
                 Crear Organización
               </button>
               <div id="org-list" class="list-box"></div>
@@ -137,18 +139,14 @@
                 <input type="text" id="org-title" placeholder="Título de la Organización" required />
                 <textarea id="org-info-text" placeholder="Más información" required></textarea>
                 <input type="file" id="org-image" accept="image/*" />
-                <button type="submit" class="enhanced-btn">Crear Organización</button>
-                <button type="button" id="cancelar-org" class="enhanced-btn">Cancelar</button>
+                <button type="submit" class="action-btn">Crear Organización</button>
+                <button type="button" id="cancelar-org" class="return-btn">Volver</button>
               </form>
             </div>
             <div id="org-detail-view" style="display:none;">
-              <button id="volver-org-list" class="enhanced-btn">Volver</button>
+              <button id="volver-org-list" class="return-btn">Volver</button>
               <div id="org-detail"></div>
-              <button id="unirse-org" class="enhanced-btn">Unirse a Organización</button>
-              <div id="org-members">
-                <h4>Miembros</h4>
-                <div id="org-members-list"></div>
-              </div>
+              <button id="unirse-org" class="join-org-btn">Unirse a Organización</button>
               <div id="org-chat" class="chat-container">
                 <h3>Chat de Organización</h3>
                 <div class="chat-messages" id="org-chat-messages"></div>
