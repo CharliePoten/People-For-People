@@ -231,6 +231,15 @@ document.addEventListener("DOMContentLoaded", function () {
       "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
     document.getElementById("profile-formation-display").innerText =
       "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
+    // Mostrar teléfono guardado (si existe)
+    let phone = localStorage.getItem("profilePhone") || "";
+    let phoneDisplay = document.getElementById("profile-phone-display");
+    if (!phoneDisplay) {
+      phoneDisplay = document.createElement("p");
+      phoneDisplay.id = "profile-phone-display";
+      document.querySelector(".profile-info").appendChild(phoneDisplay);
+    }
+    phoneDisplay.innerText = "Teléfono: " + (phone ? phone : "No definido");
     document.getElementById("profile-large-photo").src =
       localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
   }
@@ -756,6 +765,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Agregar habilidades desde el campo correspondiente
     const habilidades = document.getElementById("voluntario-habilidades").value.trim();
     newVoluntario.habilidades = habilidades;
+    // Guardar la foto de perfil del usuario en el registro del voluntario
+    newVoluntario.profilePhoto = localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
     
     db.collection("voluntarios").add(newVoluntario)
       .catch(error => console.error("Error creando voluntario:", error));
@@ -856,6 +867,8 @@ document.addEventListener("DOMContentLoaded", function () {
     
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
+    leftColumn.appendChild(horarioP);
+    leftColumn.appendChild(userP);
     leftColumn.appendChild(habilidadesP);
     
     // Información del perfil (como texto)
@@ -870,13 +883,13 @@ document.addEventListener("DOMContentLoaded", function () {
     
     detailContainer.appendChild(leftColumn);
     
-    // Columna derecha: foto de perfil
+    // Columna derecha: foto de perfil del voluntario (si se guardó en el registro, sino se usa la del perfil actual)
     const rightColumn = document.createElement("div");
     rightColumn.style.flexShrink = "0";
     rightColumn.style.display = "flex";
     rightColumn.style.alignItems = "center";
     const profileImg = document.createElement("img");
-    profileImg.src = localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
+    profileImg.src = vol.profilePhoto || (localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil");
     profileImg.style.width = "100px";
     profileImg.style.height = "100px";
     profileImg.style.borderRadius = "50%";
@@ -885,7 +898,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
     voluntarioDetailDiv.appendChild(detailContainer);
     
-    // Insertar en la información de voluntario los archivos adjuntos públicos del perfil.
+    // Insertar en la información del voluntario los archivos adjuntos públicos del perfil.
     let publicAttachments = profileAttachments.filter(att => att.visibility === "public");
     if (publicAttachments.length > 0) {
       let attachContainer = document.createElement("div");
@@ -973,9 +986,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const nombre = document.getElementById("profile-nombre").value.trim();
     const apellido = document.getElementById("profile-apellido").value.trim();
     const dob = document.getElementById("profile-dob").value;
+    const phone = document.getElementById("profile-phone").value.trim();  // nuevo campo
     localStorage.setItem("profileNombre", nombre);
     localStorage.setItem("profileApellido", apellido);
     localStorage.setItem("profileDob", dob);
+    localStorage.setItem("profilePhone", phone);
     updateProfileView();
     alert("Datos personales actualizados");
   });
