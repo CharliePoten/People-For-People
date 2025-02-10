@@ -33,7 +33,8 @@ var firebaseConfig = {
   measurementId: "G-BW63R3XK9E"
 };
 firebase.initializeApp(firebaseConfig);
-var database = firebase.database();
+// Usamos Firestore para la sincronización en tiempo real:
+var db = firebase.firestore();
 
 /* ÍCONOS DE GOOGLE MAPS */
 const helpIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
@@ -151,7 +152,7 @@ function removeVolunteerMarker(key) {
   });
 }
 
-/* Fullscreen del mapa */
+/* FULLSCREEN DEL MAPA */
 document.addEventListener("fullscreenchange", function () {
   const mapContainer = document.getElementById("map-container");
   if (document.fullscreenElement) {
@@ -160,6 +161,10 @@ document.addEventListener("fullscreenchange", function () {
     mapContainer.classList.remove("fullscreen");
   }
 });
+
+/* Variables locales para voluntarios y puntos de ayuda */
+let ayudaItems = [];
+let voluntarioItems = [];
 
 document.addEventListener("DOMContentLoaded", function () {
   const registrationForm = document.getElementById("registration-form");
@@ -230,7 +235,7 @@ document.addEventListener("DOMContentLoaded", function () {
       localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
   }
 
-  /* Sliders de Voluntarios */
+  /* SLIDERS DE VOLUNTARIOS */
   const daysArray = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
   document.getElementById("dia-inicio").addEventListener("input", function () {
     document.getElementById("dia-inicio-label").textContent = daysArray[this.value];
@@ -245,7 +250,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("hora-fin-label").textContent = this.value + ":00";
   });
 
-  /* Botón de Pantalla Completa para el mapa (con compatibilidad móvil) */
+  /* BOTÓN DE PANTALLA COMPLETA (compatibilidad móvil) */
   const fullscreenBtn = document.getElementById("fullscreen-btn");
   fullscreenBtn.addEventListener("click", function () {
     const mapContainer = document.getElementById("map-container");
@@ -308,7 +313,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  /* MÓDULO: Organizaciones */
+  /* MÓDULO: ORGANIZACIONES */
   const orgListView = document.getElementById("org-list-view");
   const orgCreateFormDiv = document.getElementById("org-create-form");
   const orgDetailView = document.getElementById("org-detail-view");
@@ -343,11 +348,8 @@ document.addEventListener("DOMContentLoaded", function () {
       newOrg.longitude = -3.70379;
     }
     function pushOrg() {
-      database.ref("organizaciones").push(newOrg, function (error) {
-        if (error) {
-          console.error("Error al crear la organización:", error);
-        }
-      });
+      db.collection("organizaciones").add(newOrg)
+        .catch(error => console.error("Error al crear la organización:", error));
     }
     if (imageInput.files && imageInput.files[0]) {
       const reader = new FileReader();
@@ -362,6 +364,21 @@ document.addEventListener("DOMContentLoaded", function () {
     this.reset();
     orgCreateFormDiv.style.display = "none";
     orgListView.style.display = "block";
+  });
+  // Listener en tiempo real para organizaciones
+  db.collection("organizaciones").orderBy("timestamp").onSnapshot(function (snapshot) {
+    snapshot.docChanges().forEach(function (change) {
+      let org = change.doc.data();
+      org.firebaseKey = change.doc.id;
+      if (change.type === "added") {
+        organizations.push(org);
+      } else if (change.type === "modified") {
+        organizations = organizations.map(o => (o.firebaseKey === org.firebaseKey ? org : o));
+      } else if (change.type === "removed") {
+        organizations = organizations.filter(o => o.firebaseKey !== org.firebaseKey);
+      }
+      updateOrgList();
+    });
   });
   function updateOrgList() {
     organizations.sort((a, b) => a.timestamp - b.timestamp);
@@ -390,11 +407,27 @@ document.addEventListener("DOMContentLoaded", function () {
       leftDiv.appendChild(titleSpan);
       container.appendChild(leftDiv);
 
+      const rightDiv = document.createElement("div");
+      rightDiv.classList.add("org-item-right");
       const adminSpan = document.createElement("span");
       adminSpan.classList.add("org-admin");
       adminSpan.innerText = "Admin: " + org.admin;
-      container.appendChild(adminSpan);
-
+      rightDiv.appendChild(adminSpan);
+      if (org.admin === localStorage.getItem("username")) {
+        const deleteOrgBtn = document.createElement("button");
+        deleteOrgBtn.className = "delete-org-btn";
+        deleteOrgBtn.innerText = "Eliminar";
+        deleteOrgBtn.addEventListener("click", function(e){
+          e.stopPropagation();
+          if(confirm("¿Estás seguro de que deseas eliminar esta organización?")){
+            db.collection("organizaciones").doc(org.firebaseKey).delete()
+              .then(() => alert("Organización eliminada"))
+              .catch(error => console.error("Error eliminando organización:", error));
+          }
+        });
+        rightDiv.appendChild(deleteOrgBtn);
+      }
+      container.appendChild(rightDiv);
       orgDiv.appendChild(container);
       orgListContainer.appendChild(orgDiv);
     });
@@ -403,29 +436,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const orgItem = e.target.closest(".org-item");
     if (orgItem) {
       const orgId = orgItem.getAttribute("data-id");
-      const org = organizations.find(o => o.firebaseKey === orgId);
-      if (org) {
-        currentOrg = org;
-        mostrarOrgDetalle(org);
-      }
+      db.collection("organizaciones").doc(orgId).get().then(function(doc) {
+        if (doc.exists) {
+          let org = doc.data();
+          org.firebaseKey = doc.id;
+          currentOrg = org;
+          mostrarOrgDetalle(org);
+        }
+      });
     }
-  });
-  database.ref("organizaciones").on("child_added", function (snapshot) {
-    let org = snapshot.val();
-    org.firebaseKey = snapshot.key;
-    organizations.push(org);
-    updateOrgList();
-  });
-  database.ref("organizaciones").on("child_changed", function (snapshot) {
-    let updatedOrg = snapshot.val();
-    updatedOrg.firebaseKey = snapshot.key;
-    organizations = organizations.map(o => (o.firebaseKey === updatedOrg.firebaseKey ? updatedOrg : o));
-    updateOrgList();
-  });
-  database.ref("organizaciones").on("child_removed", function (snapshot) {
-    const removedKey = snapshot.key;
-    organizations = organizations.filter(org => org.firebaseKey !== removedKey);
-    updateOrgList();
   });
   function mostrarOrgDetalle(org) {
     orgListView.style.display = "none";
@@ -452,22 +471,25 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       orgDetailDiv.appendChild(img);
     }
+    // Listener para el chat de Organización usando subcolección "messages"
     const orgChatContainer = document.getElementById("org-chat-messages");
     orgChatContainer.innerHTML = "";
-    var chatRef = database.ref("org_chat/" + org.firebaseKey);
-    chatRef.off();
-    chatRef.on("child_added", function (snapshot) {
-      const msg = snapshot.val();
-      renderChatMessage(msg, orgChatContainer);
-    });
+    db.collection("org_chat").doc(org.firebaseKey).collection("messages").orderBy("timestamp")
+      .onSnapshot(function(snapshot) {
+        snapshot.docChanges().forEach(function(change) {
+          if (change.type === "added") {
+            const msg = change.doc.data();
+            renderChatMessage(msg, orgChatContainer);
+          }
+        });
+      });
     currentOrg = org;
   }
   document.getElementById("volver-org-list").addEventListener("click", function () {
     orgDetailView.style.display = "none";
     orgListView.style.display = "block";
   });
-
-  // Botón "Unirse a Organización"
+  // Botón "Unirse a Organización" con la clase .join-org-btn
   const joinOrgBtn = document.getElementById("unirse-org");
   if (joinOrgBtn) {
     joinOrgBtn.addEventListener("click", function() {
@@ -485,18 +507,29 @@ document.addEventListener("DOMContentLoaded", function () {
         currentOrg.members = [];
       }
       currentOrg.members.push(currentUser);
-      database.ref("organizaciones/" + currentOrg.firebaseKey).update({ members: currentOrg.members }, function(error) {
-        if (error) {
-          alert("Error al unirse: " + error.message);
-        } else {
-          alert("¡Te has unido a la organización!");
-        }
-      });
+      db.collection("organizaciones").doc(currentOrg.firebaseKey).update({ members: currentOrg.members })
+        .then(() => { alert("¡Te has unido a la organización!"); })
+        .catch(error => { alert("Error al unirse: " + error.message); });
     });
   }
+  // Listener para enviar mensajes en el chat de ORGANIZACIONES
+  document.getElementById("org-chat-form").onsubmit = function(e) {
+    e.preventDefault();
+    const input = document.getElementById("org-chat-input");
+    const message = input.value.trim();
+    if (message !== "" && currentOrg) {
+      db.collection("org_chat").doc(currentOrg.firebaseKey).collection("messages").add({
+        user: localStorage.getItem("username") || "Tú",
+        text: message,
+        timestamp: Date.now()
+      }).catch(function(error) {
+        console.error("Error enviando mensaje en chat de organización:", error);
+      });
+      input.value = "";
+    }
+  };
 
-  /* MÓDULO: Puntos de Ayuda */
-  let ayudaItems = [];
+  /* MÓDULO: PUNTOS DE AYUDA */
   const ayudaListView = document.getElementById("ayuda-list-view");
   const ayudaCreateForm = document.getElementById("ayuda-create-form");
   const ayudaDetailView = document.getElementById("ayuda-detail-view");
@@ -529,11 +562,8 @@ document.addEventListener("DOMContentLoaded", function () {
       newAyuda.longitude = -3.70379;
     }
     function pushAyuda() {
-      database.ref("ayuda").push(newAyuda, function (error) {
-        if (error) {
-          console.error("Error creando punto de ayuda", error);
-        }
-      });
+      db.collection("ayuda").add(newAyuda)
+        .catch(error => console.error("Error creando punto de ayuda", error));
     }
     if (imageInput.files && imageInput.files[0]) {
       const reader = new FileReader();
@@ -549,24 +579,24 @@ document.addEventListener("DOMContentLoaded", function () {
     ayudaCreateForm.style.display = "none";
     ayudaListView.style.display = "block";
   });
-  database.ref("ayuda").on("child_added", function (snapshot) {
-    let ayuda = snapshot.val();
-    ayuda.firebaseKey = snapshot.key;
-    ayudaItems.push(ayuda);
-    updateAyudaList();
-    addHelpMarker(ayuda);
-  });
-  database.ref("ayuda").on("child_changed", function (snapshot) {
-    let updatedAyuda = snapshot.val();
-    updatedAyuda.firebaseKey = snapshot.key;
-    ayudaItems = ayudaItems.map(a => (a.firebaseKey === updatedAyuda.firebaseKey ? updatedAyuda : a));
-    updateAyudaList();
-  });
-  database.ref("ayuda").on("child_removed", function (snapshot) {
-    const removedKey = snapshot.key;
-    ayudaItems = ayudaItems.filter(item => item.firebaseKey !== removedKey);
-    updateAyudaList();
-    removeHelpMarker(removedKey);
+  // Listener en tiempo real para puntos de ayuda
+  db.collection("ayuda").orderBy("timestamp").onSnapshot(function (snapshot) {
+    snapshot.docChanges().forEach(function (change) {
+      let ayuda = change.doc.data();
+      ayuda.firebaseKey = change.doc.id;
+      if (change.type === "added") {
+        ayudaItems.push(ayuda);
+        updateAyudaList();
+        addHelpMarker(ayuda);
+      } else if (change.type === "modified") {
+        ayudaItems = ayudaItems.map(a => a.firebaseKey === ayuda.firebaseKey ? ayuda : a);
+        updateAyudaList();
+      } else if (change.type === "removed") {
+        ayudaItems = ayudaItems.filter(a => a.firebaseKey !== ayuda.firebaseKey);
+        updateAyudaList();
+        removeHelpMarker(ayuda.firebaseKey);
+      }
+    });
   });
   function updateAyudaList() {
     ayudaListContainer.innerHTML = "";
@@ -583,10 +613,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const itemDiv = e.target.closest(".ayuda-item");
     if (itemDiv) {
       const id = itemDiv.getAttribute("data-id");
-      const ayuda = ayudaItems.find(a => a.firebaseKey === id);
-      if (ayuda) {
-        showAyudaDetail(ayuda);
-      }
+      db.collection("ayuda").doc(id).get().then(function(doc) {
+        if (doc.exists) {
+          let ayuda = doc.data();
+          ayuda.firebaseKey = doc.id;
+          showAyudaDetail(ayuda);
+        }
+      });
     }
   });
   function showAyudaDetail(ayuda) {
@@ -614,14 +647,39 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(img);
     }
+    
+    // Botón para eliminar un punto de ayuda solo si corresponde al creador
+    if (localStorage.getItem("username") === ayuda.creator) {
+      const deleteHelpBtn = document.createElement("button");
+      deleteHelpBtn.className = "delete-btn";
+      deleteHelpBtn.innerText = "Eliminar Punto de Ayuda";
+      deleteHelpBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        if (confirm("¿Estás seguro de eliminar este punto de ayuda?")) {
+          db.collection("ayuda").doc(ayuda.firebaseKey).delete()
+            .then(() => {
+              alert("Punto de ayuda eliminado");
+              document.getElementById("ayuda-detail-view").style.display = "none";
+              ayudaListView.style.display = "block";
+            })
+            .catch(error => console.error("Error eliminando punto de ayuda:", error));
+        }
+      });
+      ayudaDetailDiv.appendChild(deleteHelpBtn);
+    }
+    
+    // Chat de Ayuda: usamos subcolección "messages" en "ayuda_chat"
     const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
     ayudaChatContainer.innerHTML = "";
-    var chatRef = database.ref("ayuda_chat/" + ayuda.firebaseKey);
-    chatRef.off();
-    chatRef.on("child_added", function (snapshot) {
-      const msg = snapshot.val();
-      renderChatMessage(msg, ayudaChatContainer);
-    });
+    db.collection("ayuda_chat").doc(ayuda.firebaseKey).collection("messages").orderBy("timestamp")
+      .onSnapshot(function(snapshot) {
+        snapshot.docChanges().forEach(function(change) {
+          if (change.type === "added") {
+            const msg = change.doc.data();
+            renderChatMessage(msg, ayudaChatContainer);
+          }
+        });
+      });
     currentAyuda = ayuda;
     document.getElementById("ayuda-detail-view").style.display = "block";
   }
@@ -635,27 +693,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const input = document.getElementById("ayuda-chat-input");
     const message = input.value.trim();
     if (message !== "" && currentAyuda) {
-      var chatRef = database.ref("ayuda_chat/" + currentAyuda.firebaseKey);
-      chatRef.push({ user: username, text: message, timestamp: Date.now() });
+      db.collection("ayuda_chat").doc(currentAyuda.firebaseKey).collection("messages")
+        .add({ user: username, text: message, timestamp: Date.now() })
+        .catch(error => console.error("Error enviando mensaje:", error));
       input.value = "";
     }
   });
 
-  /* MÓDULO: Voluntarios */
-  let voluntarioItems = [];
+  /* MÓDULO: VOLUNTARIOS */
   const voluntarioListView = document.getElementById("voluntario-list-view");
   const voluntarioCreateForm = document.getElementById("voluntario-create-form");
   const voluntarioDetailView = document.getElementById("voluntario-detail-view");
   const voluntarioListContainer = document.getElementById("voluntario-list");
 
+  // Al pulsar "Ofrecerme como Voluntario", no se oculta la lista.
   document.getElementById("mostrar-voluntario-create").addEventListener("click", function () {
     const currentUser = localStorage.getItem("username");
-    if (voluntarioItems.some(v => v.user === currentUser)) {
-      alert("Ya te has ofrecido como voluntario.");
-      return;
-    }
-    voluntarioCreateForm.style.display = "block";
-    voluntarioListView.style.display = "none";
+    db.collection("voluntarios").where("user", "==", currentUser).get().then(function(querySnapshot) {
+      if (!querySnapshot.empty) {
+        alert("Ya te has ofrecido como voluntario.");
+        return;
+      }
+      voluntarioCreateForm.style.display = "block";
+      // La lista se mantiene visible
+    });
   });
   document.getElementById("cancelar-voluntario").addEventListener("click", function () {
     voluntarioCreateForm.style.display = "none";
@@ -692,39 +753,34 @@ document.addEventListener("DOMContentLoaded", function () {
       newVoluntario.latitude = 40.416775;
       newVoluntario.longitude = -3.70379;
     }
-    // Agregar habilidades desde el nuevo campo
+    // Agregar habilidades desde el campo correspondiente
     const habilidades = document.getElementById("voluntario-habilidades").value.trim();
     newVoluntario.habilidades = habilidades;
     
-    database.ref("voluntarios").push(newVoluntario, function (error) {
-      if (error) {
-        console.error("Error creando voluntario:", error);
-      }
-    });
+    db.collection("voluntarios").add(newVoluntario)
+      .catch(error => console.error("Error creando voluntario:", error));
     this.reset();
     voluntarioCreateForm.style.display = "none";
-    voluntarioListView.style.display = "block";
+    // La lista se mantiene visible
   });
-  database.ref("voluntarios").on("child_added", function (snapshot) {
-    let vol = snapshot.val();
-    vol.firebaseKey = snapshot.key;
-    voluntarioItems.push(vol);
-    updateVoluntarioList();
-    addVolunteerMarker(vol);
-  });
-  database.ref("voluntarios").on("child_changed", function (snapshot) {
-    let updatedVol = snapshot.val();
-    updatedVol.firebaseKey = snapshot.key;
-    voluntarioItems = voluntarioItems.map(v =>
-      v.firebaseKey === updatedVol.firebaseKey ? updatedVol : v
-    );
-    updateVoluntarioList();
-  });
-  database.ref("voluntarios").on("child_removed", function (snapshot) {
-    const removedKey = snapshot.key;
-    voluntarioItems = voluntarioItems.filter(item => item.firebaseKey !== removedKey);
-    updateVoluntarioList();
-    removeVolunteerMarker(removedKey);
+  // Listener en tiempo real para voluntarios
+  db.collection("voluntarios").orderBy("timestamp").onSnapshot(function (snapshot) {
+    snapshot.docChanges().forEach(function (change) {
+      let vol = change.doc.data();
+      vol.firebaseKey = change.doc.id;
+      if (change.type === "added") {
+        voluntarioItems.push(vol);
+        updateVoluntarioList();
+        addVolunteerMarker(vol);
+      } else if (change.type === "modified") {
+        voluntarioItems = voluntarioItems.map(v => (v.firebaseKey === vol.firebaseKey ? vol : v));
+        updateVoluntarioList();
+      } else if (change.type === "removed") {
+        voluntarioItems = voluntarioItems.filter(v => v.firebaseKey !== vol.firebaseKey);
+        updateVoluntarioList();
+        removeVolunteerMarker(vol.firebaseKey);
+      }
+    });
   });
   function updateVoluntarioList() {
     voluntarioListContainer.innerHTML = "";
@@ -746,7 +802,7 @@ document.addEventListener("DOMContentLoaded", function () {
         deleteBtn.addEventListener("click", function (e) {
           e.stopPropagation();
           if (confirm("¿Deseas eliminar tu oferta de voluntariado?")) {
-            database.ref("voluntarios/" + item.firebaseKey).remove();
+            db.collection("voluntarios").doc(item.firebaseKey).delete();
           }
         });
         actionsDiv.appendChild(deleteBtn);
@@ -759,31 +815,50 @@ document.addEventListener("DOMContentLoaded", function () {
     const itemDiv = e.target.closest(".voluntario-item");
     if (itemDiv) {
       const id = itemDiv.getAttribute("data-id");
-      const vol = voluntarioItems.find(v => v.firebaseKey === id);
-      if (vol) {
-        showVoluntarioDetail(vol);
-      }
+      db.collection("voluntarios").doc(id).get().then(function(doc) {
+        if (doc.exists) {
+          let vol = doc.data();
+          vol.firebaseKey = doc.id;
+          showVoluntarioDetail(vol);
+        }
+      });
     }
   });
   function showVoluntarioDetail(vol) {
+    // Ocultar la lista y el formulario para mostrar el detalle y el chat
     voluntarioListView.style.display = "none";
     voluntarioCreateForm.style.display = "none";
     const voluntarioDetailDiv = document.getElementById("voluntario-detail");
     voluntarioDetailDiv.innerHTML = "";
+    
+    // Se crea un contenedor con layout flex para dividir el contenido en dos columnas
+    const detailContainer = document.createElement("div");
+    detailContainer.style.display = "flex";
+    detailContainer.style.justifyContent = "space-between";
+    detailContainer.style.alignItems = "flex-start";
+    
+    // Columna izquierda: información textual
+    const leftColumn = document.createElement("div");
+    leftColumn.style.flex = "1";
+    leftColumn.style.marginRight = "20px";
+    
     const infoHeader = document.createElement("h3");
     infoHeader.innerText = "Detalle del Voluntario";
-    voluntarioDetailDiv.appendChild(infoHeader);
+    leftColumn.appendChild(infoHeader);
+    
     const horarioP = document.createElement("p");
     horarioP.innerText = "Horario: " + vol.horarioTexto;
-    voluntarioDetailDiv.appendChild(horarioP);
+    leftColumn.appendChild(horarioP);
+    
     const userP = document.createElement("p");
     userP.innerText = "Ofrecido por: " + vol.user;
-    voluntarioDetailDiv.appendChild(userP);
-    // Mostrar habilidades en el detalle del voluntario
+    leftColumn.appendChild(userP);
+    
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
-    voluntarioDetailDiv.appendChild(habilidadesP);
+    leftColumn.appendChild(habilidadesP);
     
+    // Información del perfil (como texto)
     const profileDiv = document.createElement("div");
     profileDiv.id = "voluntario-profile-info";
     profileDiv.innerHTML =
@@ -791,28 +866,50 @@ document.addEventListener("DOMContentLoaded", function () {
       "<p>Apellido: " + (localStorage.getItem("profileApellido") || "No definido") + "</p>" +
       "<p>Fecha de Nacimiento: " + (localStorage.getItem("profileDob") || "No definida") + "</p>" +
       "<p>Formación Profesional: " + (localStorage.getItem("profileFormation") || "No definida") + "</p>";
+    leftColumn.appendChild(profileDiv);
     
-    const attachmentsSection = document.createElement("div");
-    attachmentsSection.innerHTML = "<h4>Archivos Adjuntos Públicos:</h4>";
-    profileAttachments.forEach(function (att) {
-      if (att.visibility === "public") {
-        const attDiv = document.createElement("div");
-        attDiv.className = "attachment-item";
-        attDiv.innerHTML = "<strong>" + att.title + "</strong> (" + att.fileName + ")";
-        const viewBtn = document.createElement("button");
-        viewBtn.className = "view-att-btn";
-        viewBtn.innerText = "Visualizar";
-        viewBtn.addEventListener("click", function () {
-          openModal(att.fileUrl, att.fileName);
-        });
-        attDiv.appendChild(viewBtn);
-        attachmentsSection.appendChild(attDiv);
-      }
-    });
-    profileDiv.appendChild(attachmentsSection);
-    voluntarioDetailDiv.appendChild(profileDiv);
+    detailContainer.appendChild(leftColumn);
     
-    // Chat privado
+    // Columna derecha: foto de perfil
+    const rightColumn = document.createElement("div");
+    rightColumn.style.flexShrink = "0";
+    rightColumn.style.display = "flex";
+    rightColumn.style.alignItems = "center";
+    const profileImg = document.createElement("img");
+    profileImg.src = localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
+    profileImg.style.width = "100px";
+    profileImg.style.height = "100px";
+    profileImg.style.borderRadius = "50%";
+    rightColumn.appendChild(profileImg);
+    detailContainer.appendChild(rightColumn);
+    
+    voluntarioDetailDiv.appendChild(detailContainer);
+    
+    // Insertar en la información de voluntario los archivos adjuntos públicos del perfil.
+    let publicAttachments = profileAttachments.filter(att => att.visibility === "public");
+    if (publicAttachments.length > 0) {
+      let attachContainer = document.createElement("div");
+      attachContainer.classList.add("voluntario-attachments");
+      let attachHeader = document.createElement("h4");
+      attachHeader.innerText = "Archivos Adjuntos Públicos:";
+      attachContainer.appendChild(attachHeader);
+      publicAttachments.forEach(att => {
+          let attDiv = document.createElement("div");
+          attDiv.classList.add("voluntario-attachment-item");
+          attDiv.innerHTML = "<strong>" + att.title + "</strong> (" + att.fileName + ")";
+          let viewBtn = document.createElement("button");
+          viewBtn.className = "view-att-btn";
+          viewBtn.innerText = "Visualizar";
+          viewBtn.addEventListener("click", function() {
+              openModal(att.fileUrl, att.fileName);
+          });
+          attDiv.appendChild(viewBtn);
+          attachContainer.appendChild(attDiv);
+      });
+      voluntarioDetailDiv.appendChild(attachContainer);
+    }
+    
+    // Chat Privado (se ubica debajo de la información)
     const privateChatDiv = document.createElement("div");
     privateChatDiv.id = "voluntario-private-chat";
     privateChatDiv.innerHTML =
@@ -825,22 +922,29 @@ document.addEventListener("DOMContentLoaded", function () {
     const chatKey = [currentUser, vol.user].sort().join("_");
     const privateChatMessagesDiv = document.getElementById("voluntario-private-chat-messages");
     privateChatMessagesDiv.innerHTML = "";
-    const privateChatRef = database.ref("private_chat/" + chatKey);
-    privateChatRef.off();
-    privateChatRef.on("child_added", function (snapshot) {
-      const msg = snapshot.val();
-      renderChatMessage(msg, privateChatMessagesDiv);
-    });
+    db.collection("voluntario_chat").doc(chatKey).collection("messages").orderBy("timestamp")
+      .onSnapshot(function(snapshot) {
+        snapshot.docChanges().forEach(function(change) {
+          if (change.type === "added") {
+            const msg = change.doc.data();
+            renderChatMessage(msg, privateChatMessagesDiv);
+          }
+        });
+      });
     const privateChatForm = document.getElementById("voluntario-private-chat-form");
-    privateChatForm.addEventListener("submit", function (e) {
+    privateChatForm.onsubmit = function (e) {
       e.preventDefault();
       const chatInput = document.getElementById("voluntario-private-chat-input");
       const message = chatInput.value.trim();
       if (message !== "") {
-        privateChatRef.push({ user: currentUser, text: message, timestamp: Date.now() });
+        db.collection("voluntario_chat").doc(chatKey).collection("messages").add({
+          user: currentUser,
+          text: message,
+          timestamp: Date.now()
+        }).catch(error => console.error("Error en chat privado:", error));
         chatInput.value = "";
       }
-    });
+    };
     currentVoluntario = vol;
     voluntarioDetailView.style.display = "block";
   }
@@ -849,7 +953,7 @@ document.addEventListener("DOMContentLoaded", function () {
     voluntarioListView.style.display = "block";
   });
 
-  /* MÓDULO: Mi Perfil */
+  /* MÓDULO: MI PERFIL */
   const profileTabButtons = document.querySelectorAll(".profile-tab-btn");
   profileTabButtons.forEach(function (btn) {
     btn.addEventListener("click", function (e) {
@@ -934,6 +1038,7 @@ document.addEventListener("DOMContentLoaded", function () {
       attDiv.setAttribute("data-visibility", att.visibility);
       attDiv.setAttribute("data-file-url", att.fileUrl);
       attDiv.innerHTML = "<strong>" + att.title + "</strong> (" + att.fileName + ") - " + (att.visibility === "public" ? "Público" : "Privado");
+      // Botón para cambiar visibilidad
       const toggleBtn = document.createElement("button");
       toggleBtn.className = "toggle-visibility-btn";
       toggleBtn.innerText = (att.visibility === "public") ? "Cambiar a Privado" : "Cambiar a Público";
@@ -943,6 +1048,7 @@ document.addEventListener("DOMContentLoaded", function () {
         updateAttachmentList();
       });
       attDiv.appendChild(toggleBtn);
+      // Botón para visualizar
       const viewBtn = document.createElement("button");
       viewBtn.className = "view-att-btn";
       viewBtn.innerText = "Visualizar";
@@ -950,9 +1056,20 @@ document.addEventListener("DOMContentLoaded", function () {
         openModal(att.fileUrl, att.fileName);
       });
       attDiv.appendChild(viewBtn);
+      // Botón para eliminar el archivo
+      const deleteAttBtn = document.createElement("button");
+      deleteAttBtn.className = "delete-att-btn";
+      deleteAttBtn.innerText = "Eliminar";
+      deleteAttBtn.addEventListener("click", function () {
+        profileAttachments.splice(index, 1);
+        localStorage.setItem("profileAttachments", JSON.stringify(profileAttachments));
+        updateAttachmentList();
+      });
+      attDiv.appendChild(deleteAttBtn);
       listContainer.appendChild(attDiv);
     });
   }
+  // Se ha quitado el código del botón de salir (logout) del header.
 });
 
 /* Función para abrir modal en pantalla completa para visualizar archivos */
@@ -1000,8 +1117,3 @@ function openModal(url, fileName) {
   });
   modal.style.display = "block";
 }
-  });
-  modal.style.display = "block";
-}
-
-/* Nota: Los registros de Ayuda y Voluntariado ya incluyen coordenadas usando currentLocationMarker */
