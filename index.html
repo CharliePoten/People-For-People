@@ -40,7 +40,7 @@
         <div id="map-view" class="content-section">
           <h2>Mapa</h2>
           <div id="map-container">
-            <div id="map"><!-- Google Maps se inicializará aquí --></div>
+            <div id="map"></div>
             <button id="fullscreen-btn">Pantalla Completa</button>
           </div>
         </div>
@@ -53,9 +53,7 @@
               <button id="mostrar-ayuda-create" class="enhanced-btn special-btn">
                 Crear Punto de Ayuda
               </button>
-              <div id="ayuda-list" class="list-box">
-                <!-- Lista de puntos de ayuda se cargará dinámicamente -->
-              </div>
+              <div id="ayuda-list" class="list-box"></div>
             </div>
             <div id="ayuda-create-form" class="form-container" style="display:none;">
               <h3>Nuevo Punto de Ayuda</h3>
@@ -69,9 +67,7 @@
             </div>
             <div id="ayuda-detail-view" style="display:none;">
               <button id="volver-ayuda-list" class="enhanced-btn">Volver</button>
-              <div id="ayuda-detail">
-                <!-- Detalle del punto de ayuda -->
-              </div>
+              <div id="ayuda-detail"></div>
               <div id="ayuda-chat" class="chat-container">
                 <h3>Chat de Ayuda</h3>
                 <div class="chat-messages" id="ayuda-chat-messages"></div>
@@ -92,9 +88,7 @@
               <button id="mostrar-voluntario-create" class="enhanced-btn special-btn">
                 Ofrecerme como Voluntario
               </button>
-              <div id="voluntario-list" class="list-box">
-                <!-- Lista de voluntarios se cargará dinámicamente -->
-              </div>
+              <div id="voluntario-list" class="list-box"></div>
             </div>
             <div id="voluntario-create-form" class="form-container" style="display:none;">
               <h3>Horarios Disponibles</h3>
@@ -111,15 +105,18 @@
                   <label for="hora-fin">Hora fin: <span id="hora-fin-label">17:00</span></label>
                   <input type="range" id="hora-fin" name="hora-fin" min="0" max="23" value="17" />
                 </div>
+                <!-- Nuevo campo para habilidades -->
+                <div class="form-group-voluntario">
+                  <label for="voluntario-habilidades">Habilidades</label>
+                  <textarea id="voluntario-habilidades" placeholder="Ejemplo: primeros auxilios, carpintería, etc." required></textarea>
+                </div>
                 <button type="submit" class="enhanced-btn">Enviar Horario</button>
                 <button type="button" id="cancelar-voluntario" class="enhanced-btn">Cancelar</button>
               </form>
             </div>
             <div id="voluntario-detail-view" style="display:none;">
               <button id="volver-voluntario-list" class="enhanced-btn">Volver</button>
-              <div id="voluntario-detail">
-                <!-- Detalle del voluntario y chat privado se cargarán aquí -->
-              </div>
+              <div id="voluntario-detail"></div>
             </div>
           </div>
         </div>
@@ -132,9 +129,7 @@
               <button id="mostrar-org-create" class="enhanced-btn special-btn">
                 Crear Organización
               </button>
-              <div id="org-list" class="list-box">
-                <!-- Lista de organizaciones se cargará dinámicamente -->
-              </div>
+              <div id="org-list" class="list-box"></div>
             </div>
             <div id="org-create-form" class="form-container" style="display:none;">
               <h3>Nueva Organización</h3>
@@ -148,9 +143,7 @@
             </div>
             <div id="org-detail-view" style="display:none;">
               <button id="volver-org-list" class="enhanced-btn">Volver</button>
-              <div id="org-detail">
-                <!-- Detalle de la organización -->
-              </div>
+              <div id="org-detail"></div>
               <button id="unirse-org" class="enhanced-btn">Unirse a Organización</button>
               <div id="org-members">
                 <h4>Miembros</h4>
@@ -172,7 +165,6 @@
         <div id="perfil" class="content-section" style="display:none;">
           <h2>Mi Perfil</h2>
           <div class="profile-container-new">
-            <!-- Información de Perfil con foto en la esquina superior izquierda -->
             <div class="profile-display">
               <div class="profile-photo-container">
                 <img id="profile-large-photo" src="https://via.placeholder.com/100/FFFFFF/000000?text=Perfil" alt="Foto de Perfil">
@@ -184,12 +176,9 @@
                 <p id="profile-surname-display">Apellido: </p>
                 <p id="profile-dob-display">Fecha de nacimiento: </p>
                 <p id="profile-formation-display">Formación Profesional: </p>
-                <div id="profile-attachments">
-                  <!-- Archivos adjuntos se cargarán mediante JS -->
-                </div>
+                <div id="profile-attachments"></div>
               </div>
             </div>
-            <!-- Ajustes de Perfil -->
             <div class="profile-settings">
               <h3>Ajustes de Perfil</h3>
               <div class="profile-tabs">
@@ -230,9 +219,7 @@
                     </select>
                     <button type="submit" class="enhanced-btn">Adjuntar Archivo</button>
                   </form>
-                  <div id="profile-attachment-list">
-                    <!-- Se renderizarán los archivos adjuntos -->
-                  </div>
+                  <div id="profile-attachment-list"></div>
                 </div>
               </div>
               <div class="profile-tab-content" id="profile-foto">
@@ -258,9 +245,7 @@
 
     <!-- Modal para vista previa de archivos -->
     <div id="modal-viewer" class="modal">
-      <div class="modal-content">
-        <!-- El contenido se inyecta dinámicamente -->
-      </div>
+      <div class="modal-content"></div>
     </div>
 
     <script src="app.js"></script>
