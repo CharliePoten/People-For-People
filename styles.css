@@ -6,22 +6,16 @@
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   background: linear-gradient(135deg, #e0f7ea, #f3e5f5);
   color: #333;
   line-height: 1.6;
 }
 
-/* Animaciones y Transiciones */
+/* Animaciones */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Pantallas completas */
@@ -33,21 +27,22 @@ body {
   transition: all 0.4s ease;
 }
 
-/* Contenedor del formulario de registro */
+/* Contenedores de formularios */
 .form-container {
-  background-color: #fff;
-  padding: 2em;
+  background: #fff;
+  padding: 1.5em;
   border-radius: 10px;
   width: 90%;
   max-width: 400px;
+  margin: 1em auto;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease;
 }
 
-/* Estilos de formulario */
 form input,
-form button,
-form textarea {
+form textarea,
+form select,
+form button {
   width: 100%;
   padding: 10px;
   margin: 10px 0;
@@ -56,23 +51,17 @@ form textarea {
   transition: all 0.3s ease;
 }
 
-/* Botones mejorados */
-form button,
-.menu-btn,
-.enhanced-btn {
+form button {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
   border: none;
   border-radius: 25px;
-  padding: 12px 20px;
   font-size: 1em;
   cursor: pointer;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
 
-form button:hover,
-.menu-btn:hover,
-.enhanced-btn:hover {
+form button:hover {
   opacity: 0.9;
   transform: scale(1.02);
 }
@@ -85,20 +74,19 @@ form button:hover,
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
   position: fixed;
   top: 0;
   left: 0;
+  width: 100%;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  transition: all 0.3s ease;
 }
 
 .app-title {
   font-size: 1.8em;
 }
 
-/* Botón de perfil en el header */
+/* Perfil en header */
 .profile-container {
   display: flex;
   flex-direction: column;
@@ -128,10 +116,9 @@ form button:hover,
   flex: 1;
   padding: 120px 1em 80px;
   overflow-y: auto;
-  transition: all 0.4s ease;
 }
 
-/* Contenedores de secciones */
+/* Secciones de contenido */
 .content-section {
   background: #fff;
   margin: 1em auto;
@@ -140,7 +127,6 @@ form button:hover,
   max-width: 800px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   animation: fadeIn 0.5s ease;
-  transition: all 0.4s ease;
 }
 
 /* Mapa */
@@ -150,12 +136,51 @@ form button:hover,
   border-radius: 10px;
   transition: height 0.4s ease;
 }
+#map-container {
+  position: relative;
+}
+/* Modo fullscreen: centrar el mapa */
+.fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.fullscreen #map {
+  height: 100%;
+  border-radius: 0;
+}
+
+/* Botón Pantalla Completa (modernizado y centrado) */
+#fullscreen-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1500;
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  border: none;
+  color: #fff;
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#fullscreen-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
 
 /* Menú inferior */
 .app-menu {
   display: flex;
   justify-content: space-around;
-  background-color: #fff;
+  background: #fff;
   padding: 0.5em 0;
   position: fixed;
   bottom: 0;
@@ -163,203 +188,189 @@ form button:hover,
   box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
   border-top: 2px solid #32cd32;
   z-index: 1000;
-  transition: all 0.3s ease;
+}
+.menu-btn {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  color: #fff;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.menu-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 
-/* Estilos de Chat */
+/* Chat */
 .chat-container {
   margin-top: 1em;
   padding: 0.8em;
   border: 1px solid #ccc;
   border-radius: 5px;
   background: #f7f7f7;
-  transition: all 0.3s ease;
 }
-
 .chat-messages {
   height: 150px;
   overflow-y: auto;
   border: 1px solid #ddd;
   padding: 5px;
-  margin-bottom: 0.5em;
-  background-color: #fff;
-  transition: all 0.3s ease;
+  background: #fff;
 }
-
-.chat-container form input {
-  width: 70%;
-  padding: 5px;
-  margin-right: 5px;
-  transition: all 0.3s ease;
-}
-
-.chat-container form button {
-  padding: 5px 10px;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-}
-
-/* Chat message styling */
-.chat-messages div {
-  margin-bottom: 8px;
-}
-
 .chat-username {
   font-weight: bold;
   margin-right: 5px;
 }
-
 .chat-text {
   font-size: 0.95em;
 }
 
-/* Pestañas de Perfil */
-.profile-tabs {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 1em;
-  border-bottom: 2px solid #32cd32;
-  transition: all 0.3s ease;
-}
-
-.profile-tab-btn {
-  background: none;
+/* Botón Eliminar */
+.delete-btn {
+  background: #ff5c5c;
   border: none;
-  padding: 0.6em 1em;
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
   cursor: pointer;
-  font-weight: 600;
-  color: #8a2be2;
-  transition: color 0.3s ease;
 }
 
-.profile-tab-btn:hover {
-  color: #32cd32;
-}
-
-.profile-tab-content form input,
-.profile-tab-content form button,
-.profile-tab-content form textarea {
-  width: 100%;
+/* Cada item en las listas se muestra en su propio recuadro */
+.voluntario-item,
+.org-item,
+.ayuda-item {
+  border: 1px solid #ccc;
+  border-radius: 8px;
   padding: 10px;
   margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  transition: all 0.3s ease;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Sección de adjuntar archivos */
-.file-attachment {
-  margin-top: 1.5em;
-  padding: 1em;
-  background: #f9f9f9;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  transition: all 0.3s ease;
+/* Voluntarios: layout flex con sección para info y botón de eliminar a la derecha */
+.voluntario-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.voluntario-info {
+  flex: 1;
 }
 
-.file-attachment h3 {
-  margin-bottom: 0.8em;
-  color: #8a2be2;
+/* Organizaciones: contenedor con dos secciones (izquierda para imagen y título, derecha para "Admin: …") */
+.org-item-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
-#archivos-list {
-  margin-top: 1em;
-}
-
-.archivo-item {
-  background: #32cd32;
-  color: #fff;
-  padding: 0.5em;
-  margin-bottom: 0.5em;
-  border-radius: 5px;
-  font-size: 0.9em;
+.org-item-left {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  transition: all 0.3s ease;
 }
 
-.archivo-item img {
-  max-width: 50px;
-  max-height: 50px;
-  margin-right: 10px;
-  border-radius: 5px;
-}
-
-/* Botón para visualizar archivos */
-.view-btn {
-  background: #fff;
-  color: #8a2be2;
-  border: 1px solid #8a2be2;
-  border-radius: 15px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 0.8em;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-.view-btn:hover {
-  background: #8a2be2;
-  color: #fff;
-}
-
-/* Estilo para textarea en formulario de organización */
-#org-create-form textarea {
-  resize: vertical;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
-}
-
-/* Organización - listado y detalle */
-#org-list {
-  margin-top: 1em;
-}
-
-.org-item {
-  background: #8a2be2;
-  color: #fff;
-  padding: 0.8em;
-  margin-bottom: 0.5em;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  transition: all 0.3s ease;
-}
-
-.org-item:hover {
-  opacity: 0.9;
-}
-
-.org-item img {
+/* Estilo para la imagen pequeña (thumbnail) en Organizaciones */
+.org-thumbnail {
   width: 40px;
   height: 40px;
+  object-fit: cover;
   border-radius: 50%;
   margin-right: 10px;
+  cursor: pointer;
+}
+
+/* Botones especiales para Crear Punto de Ayuda, Voluntario y Organización */
+.special-btn {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  border: none;
+  border-radius: 30px;
+  padding: 12px 24px;
+  color: #fff;
+  font-size: 1.1em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+.special-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Módulo: Mi Perfil */
+/* Se usa flex para alinear la foto a la izquierda y la info a la derecha */
+.profile-container-new {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px;
+}
+.profile-display {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.profile-photo-container {
+  flex-shrink: 0;
+  margin-right: 20px;
+}
+.profile-photo-container img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
   object-fit: cover;
 }
-
-.org-admin {
-  font-size: 0.8em;
-  background: rgba(255, 255, 255, 0.3);
-  padding: 2px 5px;
+.profile-info {
+  flex: 1;
+}
+.profile-settings {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.profile-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.profile-tab-btn {
+  background: #8a2be2;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
   border-radius: 5px;
-  float: right;
-  text-align: right;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.profile-tab-btn.active {
+  background: #32cd32;
+}
+.profile-tab-content {
+  display: none;
+}
+.profile-tab-content.active {
+  display: block;
 }
 
-/* Vista de detalle de Organización */
-#org-detail-view {
-  margin-top: 1em;
-  transition: all 0.3s ease;
+/* Botones para archivos adjuntos */
+.toggle-visibility-btn,
+.view-att-btn {
+  background: #555;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 8px;
+  margin: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: background 0.3s ease;
 }
-
-#org-detail {
-  margin: 1em 0;
-  word-wrap: break-word;
-  transition: all 0.3s ease;
+.toggle-visibility-btn:hover,
+.view-att-btn:hover {
+  background: #333;
 }
 
 /* Modal Viewer */
@@ -371,33 +382,33 @@ form button:hover,
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.9);
+  background: rgba(0, 0, 0, 0.9);
   display: none;
-  transition: all 0.3s ease;
 }
 .modal-content {
   margin: 5% auto;
   width: 90%;
   height: 80%;
-  transition: all 0.3s ease;
+  position: relative;
 }
+.modal-content img,
 .modal-content iframe {
   width: 100%;
   height: 100%;
+  object-fit: contain;
 }
+/* Botón de Cierre (Close) para el modal */
 .close {
   position: absolute;
   top: 20px;
   right: 35px;
   color: #f1f1f1;
   font-size: 40px;
-  font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
-/* Media queries para dispositivos pequeños */
-@media (max-width: 600px) {
+/* Responsive */
+@media (max-width:600px) {
   .form-container,
   .content-section {
     width: 95%;
@@ -414,17 +425,5 @@ form button:hover,
   }
   #map {
     height: 200px;
-  }
-}
-
-/* Media queries para iPad */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .form-container,
-  .content-section {
-    width: 80%;
-    padding: 1.5em;
-  }
-  #map {
-    height: 300px;
   }
 }
