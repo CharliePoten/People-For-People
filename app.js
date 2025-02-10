@@ -226,7 +226,6 @@ document.addEventListener("DOMContentLoaded", function () {
       "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
     document.getElementById("profile-formation-display").innerText =
       "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
-    // Actualizar foto de perfil grande en "Mi Perfil"
     document.getElementById("profile-large-photo").src =
       localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
   }
@@ -246,30 +245,66 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("hora-fin-label").textContent = this.value + ":00";
   });
 
-  /* Botón de Pantalla Completa para el mapa */
+  /* Botón de Pantalla Completa para el mapa (con compatibilidad móvil) */
   const fullscreenBtn = document.getElementById("fullscreen-btn");
   fullscreenBtn.addEventListener("click", function () {
     const mapContainer = document.getElementById("map-container");
-    if (!document.fullscreenElement) {
-      mapContainer.requestFullscreen().then(() => {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+      if (mapContainer.requestFullscreen) {
+        mapContainer.requestFullscreen().then(() => {
+          setTimeout(() => {
+            google.maps.event.trigger(map, "resize");
+            if (currentLocationMarker) {
+              map.setCenter(currentLocationMarker.getPosition());
+            }
+          }, 1000);
+        }).catch(err => {
+          console.error(`Error entering fullscreen: ${err.message}`);
+        });
+      } else if (mapContainer.webkitRequestFullscreen) {
+        mapContainer.webkitRequestFullscreen();
         setTimeout(() => {
           google.maps.event.trigger(map, "resize");
           if (currentLocationMarker) {
             map.setCenter(currentLocationMarker.getPosition());
           }
         }, 1000);
-      }).catch(err => {
-        console.error(`No se pudo activar Pantalla Completa: ${err.message}`);
-      });
+      } else if (mapContainer.msRequestFullscreen) {
+        mapContainer.msRequestFullscreen();
+        setTimeout(() => {
+          google.maps.event.trigger(map, "resize");
+          if (currentLocationMarker) {
+            map.setCenter(currentLocationMarker.getPosition());
+          }
+        }, 1000);
+      }
     } else {
-      document.exitFullscreen().then(() => {
+      if (document.exitFullscreen) {
+        document.exitFullscreen().then(() => {
+          setTimeout(() => {
+            google.maps.event.trigger(map, "resize");
+            if (currentLocationMarker) {
+              map.setCenter(currentLocationMarker.getPosition());
+            }
+          }, 600);
+        });
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
         setTimeout(() => {
           google.maps.event.trigger(map, "resize");
           if (currentLocationMarker) {
             map.setCenter(currentLocationMarker.getPosition());
           }
         }, 600);
-      });
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+        setTimeout(() => {
+          google.maps.event.trigger(map, "resize");
+          if (currentLocationMarker) {
+            map.setCenter(currentLocationMarker.getPosition());
+          }
+        }, 600);
+      }
     }
   });
 
@@ -432,7 +467,7 @@ document.addEventListener("DOMContentLoaded", function () {
     orgListView.style.display = "block";
   });
 
-  // Event listener para el botón "Unirse a Organización"
+  // Botón "Unirse a Organización"
   const joinOrgBtn = document.getElementById("unirse-org");
   if (joinOrgBtn) {
     joinOrgBtn.addEventListener("click", function() {
@@ -657,6 +692,10 @@ document.addEventListener("DOMContentLoaded", function () {
       newVoluntario.latitude = 40.416775;
       newVoluntario.longitude = -3.70379;
     }
+    // Agregar habilidades desde el nuevo campo
+    const habilidades = document.getElementById("voluntario-habilidades").value.trim();
+    newVoluntario.habilidades = habilidades;
+    
     database.ref("voluntarios").push(newVoluntario, function (error) {
       if (error) {
         console.error("Error creando voluntario:", error);
@@ -694,14 +733,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const itemDiv = document.createElement("div");
       itemDiv.classList.add("voluntario-item");
       itemDiv.setAttribute("data-id", item.firebaseKey);
-
-      // Sección izquierda para la información
       const infoDiv = document.createElement("div");
       infoDiv.classList.add("voluntario-info");
       infoDiv.innerText = item.user + " - " + item.horarioTexto;
       itemDiv.appendChild(infoDiv);
-
-      // Sección derecha para las acciones (botón Eliminar)
       if (item.user === localStorage.getItem("username")) {
         const actionsDiv = document.createElement("div");
         actionsDiv.classList.add("voluntario-actions");
@@ -744,6 +779,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const userP = document.createElement("p");
     userP.innerText = "Ofrecido por: " + vol.user;
     voluntarioDetailDiv.appendChild(userP);
+    // Mostrar habilidades en el detalle del voluntario
+    const habilidadesP = document.createElement("p");
+    habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
+    voluntarioDetailDiv.appendChild(habilidadesP);
+    
     const profileDiv = document.createElement("div");
     profileDiv.id = "voluntario-profile-info";
     profileDiv.innerHTML =
@@ -771,7 +811,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     profileDiv.appendChild(attachmentsSection);
     voluntarioDetailDiv.appendChild(profileDiv);
-
+    
     // Chat privado
     const privateChatDiv = document.createElement("div");
     privateChatDiv.id = "voluntario-private-chat";
@@ -780,7 +820,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "<div class='chat-messages' id='voluntario-private-chat-messages'></div>" +
       "<form id='voluntario-private-chat-form'><input type='text' id='voluntario-private-chat-input' placeholder='Escribe tu mensaje' required /><button type='submit' class='enhanced-btn'>Enviar</button></form>";
     voluntarioDetailDiv.appendChild(privateChatDiv);
-
+    
     const currentUser = localStorage.getItem("username") || "Tú";
     const chatKey = [currentUser, vol.user].sort().join("_");
     const privateChatMessagesDiv = document.getElementById("voluntario-private-chat-messages");
@@ -930,8 +970,6 @@ function openModal(url, fileName) {
   const modal = document.getElementById("modal-viewer");
   const modalContent = document.querySelector(".modal-content");
   modalContent.innerHTML = "";
-
-  // Botón visible de cierre
   const closeBtn = document.createElement("span");
   closeBtn.className = "close";
   closeBtn.innerHTML = "&times;";
@@ -939,13 +977,10 @@ function openModal(url, fileName) {
     modal.style.display = "none";
   });
   modalContent.appendChild(closeBtn);
-
-  // Agregar contenido de vista previa
   if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "image") {
     const img = document.createElement("img");
     img.src = url;
     modalContent.appendChild(img);
-    // Cerrar modal al hacer clic en la imagen
     img.addEventListener("click", function () {
       modal.style.display = "none";
     });
@@ -958,11 +993,13 @@ function openModal(url, fileName) {
     msg.textContent = "Vista previa no disponible para este tipo de archivo.";
     modalContent.appendChild(msg);
   }
-  // Cerrar modal al hacer clic fuera del contenido
   modal.addEventListener("click", function (e) {
     if (e.target === modal) {
       modal.style.display = "none";
     }
+  });
+  modal.style.display = "block";
+}
   });
   modal.style.display = "block";
 }
