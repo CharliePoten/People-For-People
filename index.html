@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>People For People</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Firebase (compatibilidad con Realtime Database) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-database-compat.js"></script>
+  </head>
+  <body>
+    <!-- Pantalla de Registro (centrada) -->
+    <div id="registration-screen" class="screen">
+      <div class="form-container">
+        <h2>Registro</h2>
+        <form id="registration-form">
+          <input type="text" id="username" placeholder="Nombre de Usuario" required />
+          <input type="email" id="email" placeholder="Correo electrónico" required />
+          <input type="password" id="password" placeholder="Contraseña" required />
+          <button type="submit" class="enhanced-btn">Registrarse</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Aplicación Principal -->
+    <div id="main-app" class="screen" style="display: none;">
+      <header class="app-header">
+        <h1 class="app-title">People For People</h1>
+        <!-- Botón de perfil en el header -->
+        <div class="profile-container" id="profile-btn">
+          <img src="https://via.placeholder.com/40/FFFFFF/FFFFFF?text=" alt="Perfil" class="profile-img" />
+          <span class="profile-label">Mi perfil</span>
+        </div>
+      </header>
+
+      <main class="app-content" id="content">
+        <!-- Sección del Mapa -->
+        <div id="map-view" class="content-section">
+          <h2>Mapa</h2>
+          <div id="map-container">
+            <div id="map"><!-- Google Maps se inicializará aquí --></div>
+            <button id="fullscreen-btn">Pantalla Completa</button>
+          </div>
+        </div>
+
+        <!-- Sección Pedir Ayuda -->
+        <div id="pedir-ayuda" class="content-section" style="display:none;">
+          <h2>Pedir Ayuda</h2>
+          <div id="ayuda-view">
+            <div id="ayuda-list-view">
+              <button id="mostrar-ayuda-create" class="enhanced-btn special-btn">
+                Crear Punto de Ayuda
+              </button>
+              <div id="ayuda-list" class="list-box">
+                <!-- Lista de puntos de ayuda se cargará dinámicamente -->
+              </div>
+            </div>
+            <div id="ayuda-create-form" class="form-container" style="display:none;">
+              <h3>Nuevo Punto de Ayuda</h3>
+              <form id="crear-ayuda-form">
+                <input type="text" id="ayuda-titulo" placeholder="Título del Punto de Ayuda" required />
+                <textarea id="ayuda-info" placeholder="Información del Punto de Ayuda" required></textarea>
+                <input type="file" id="ayuda-image" accept="image/*" />
+                <button type="submit" class="enhanced-btn">Crear Punto de Ayuda</button>
+                <button type="button" id="cancelar-ayuda" class="enhanced-btn">Cancelar</button>
+              </form>
+            </div>
+            <div id="ayuda-detail-view" style="display:none;">
+              <button id="volver-ayuda-list" class="enhanced-btn">Volver</button>
+              <div id="ayuda-detail">
+                <!-- Detalle del punto de ayuda -->
+              </div>
+              <div id="ayuda-chat" class="chat-container">
+                <h3>Chat de Ayuda</h3>
+                <div class="chat-messages" id="ayuda-chat-messages"></div>
+                <form id="ayuda-chat-form">
+                  <input type="text" id="ayuda-chat-input" placeholder="Escribe tu mensaje" required />
+                  <button type="submit" class="enhanced-btn">Enviar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección Voluntarios -->
+        <div id="ofrecer-voluntario" class="content-section" style="display:none;">
+          <h2>Voluntarios</h2>
+          <div id="voluntario-view">
+            <div id="voluntario-list-view">
+              <button id="mostrar-voluntario-create" class="enhanced-btn special-btn">
+                Ofrecerme como Voluntario
+              </button>
+              <div id="voluntario-list" class="list-box">
+                <!-- Lista de voluntarios se cargará dinámicamente -->
+              </div>
+            </div>
+            <div id="voluntario-create-form" class="form-container" style="display:none;">
+              <h3>Horarios Disponibles</h3>
+              <form id="crear-voluntario-form">
+                <div class="slider-group">
+                  <label for="dia-inicio">Día inicio: <span id="dia-inicio-label">Lunes</span></label>
+                  <input type="range" id="dia-inicio" name="dia-inicio" min="0" max="6" value="0" />
+                  <label for="dia-fin">Día fin: <span id="dia-fin-label">Viernes</span></label>
+                  <input type="range" id="dia-fin" name="dia-fin" min="0" max="6" value="4" />
+                </div>
+                <div class="slider-group">
+                  <label for="hora-inicio">Hora inicio: <span id="hora-inicio-label">9:00</span></label>
+                  <input type="range" id="hora-inicio" name="hora-inicio" min="0" max="23" value="9" />
+                  <label for="hora-fin">Hora fin: <span id="hora-fin-label">17:00</span></label>
+                  <input type="range" id="hora-fin" name="hora-fin" min="0" max="23" value="17" />
+                </div>
+                <button type="submit" class="enhanced-btn">Enviar Horario</button>
+                <button type="button" id="cancelar-voluntario" class="enhanced-btn">Cancelar</button>
+              </form>
+            </div>
+            <div id="voluntario-detail-view" style="display:none;">
+              <button id="volver-voluntario-list" class="enhanced-btn">Volver</button>
+              <div id="voluntario-detail">
+                <!-- Detalle del voluntario y chat privado se cargarán aquí -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección Organizaciones -->
+        <div id="organizaciones" class="content-section" style="display:none;">
+          <h2>Organizaciones de Voluntarios</h2>
+          <div id="org-view">
+            <div id="org-list-view">
+              <button id="mostrar-org-create" class="enhanced-btn special-btn">
+                Crear Organización
+              </button>
+              <div id="org-list" class="list-box">
+                <!-- Lista de organizaciones se cargará dinámicamente -->
+              </div>
+            </div>
+            <div id="org-create-form" class="form-container" style="display:none;">
+              <h3>Nueva Organización</h3>
+              <form id="crear-org-form">
+                <input type="text" id="org-title" placeholder="Título de la Organización" required />
+                <textarea id="org-info-text" placeholder="Más información" required></textarea>
+                <input type="file" id="org-image" accept="image/*" />
+                <button type="submit" class="enhanced-btn">Crear Organización</button>
+                <button type="button" id="cancelar-org" class="enhanced-btn">Cancelar</button>
+              </form>
+            </div>
+            <div id="org-detail-view" style="display:none;">
+              <button id="volver-org-list" class="enhanced-btn">Volver</button>
+              <div id="org-detail">
+                <!-- Detalle de la organización -->
+              </div>
+              <button id="unirse-org" class="enhanced-btn">Unirse a Organización</button>
+              <div id="org-members">
+                <h4>Miembros</h4>
+                <div id="org-members-list"></div>
+              </div>
+              <div id="org-chat" class="chat-container">
+                <h3>Chat de Organización</h3>
+                <div class="chat-messages" id="org-chat-messages"></div>
+                <form id="org-chat-form">
+                  <input type="text" id="org-chat-input" placeholder="Escribe tu mensaje" required />
+                  <button type="submit" class="enhanced-btn">Enviar</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Módulo: Mi Perfil -->
+        <div id="perfil" class="content-section" style="display:none;">
+          <h2>Mi Perfil</h2>
+          <div class="profile-container-new">
+            <!-- Información de Perfil con foto en la esquina superior izquierda -->
+            <div class="profile-display">
+              <div class="profile-photo-container">
+                <img id="profile-large-photo" src="https://via.placeholder.com/100/FFFFFF/000000?text=Perfil" alt="Foto de Perfil">
+              </div>
+              <div class="profile-info">
+                <h3>Información de Perfil</h3>
+                <p id="profile-username-display">Usuario: </p>
+                <p id="profile-name-display">Nombre: </p>
+                <p id="profile-surname-display">Apellido: </p>
+                <p id="profile-dob-display">Fecha de nacimiento: </p>
+                <p id="profile-formation-display">Formación Profesional: </p>
+                <div id="profile-attachments">
+                  <!-- Archivos adjuntos se cargarán mediante JS -->
+                </div>
+              </div>
+            </div>
+            <!-- Ajustes de Perfil -->
+            <div class="profile-settings">
+              <h3>Ajustes de Perfil</h3>
+              <div class="profile-tabs">
+                <button type="button" class="profile-tab-btn active" data-target="profile-datos">
+                  Datos Personales
+                </button>
+                <button type="button" class="profile-tab-btn" data-target="profile-formacion">
+                  Formación Profesional
+                </button>
+                <button type="button" class="profile-tab-btn" data-target="profile-foto">
+                  Cambiar Foto
+                </button>
+              </div>
+              <div class="profile-tab-content" id="profile-datos" style="display:block;">
+                <form id="profile-datos-form">
+                  <input type="text" id="profile-nombre" placeholder="Nombre" required />
+                  <input type="text" id="profile-apellido" placeholder="Apellido" required />
+                  <input type="date" id="profile-dob" required />
+                  <button type="submit" class="enhanced-btn">Guardar Datos</button>
+                </form>
+              </div>
+              <div class="profile-tab-content" id="profile-formacion">
+                <form id="profile-formacion-form">
+                  <input type="text" id="profile-titulo" placeholder="Título" required />
+                  <input type="text" id="profile-institucion" placeholder="Institución" required />
+                  <input type="number" id="profile-anio" placeholder="Año" required />
+                  <button type="submit" class="enhanced-btn">Guardar Formación</button>
+                </form>
+                <div class="file-attachment">
+                  <h4>Adjuntar Archivo</h4>
+                  <form id="profile-attachment-form">
+                    <input type="text" id="attachment-title" placeholder="Título del Archivo" required />
+                    <input type="file" id="attachment-file" accept="application/pdf, image/*, .docx" required />
+                    <label for="attachment-visibility">Visibilidad:</label>
+                    <select id="attachment-visibility">
+                      <option value="public">Público</option>
+                      <option value="private" selected>Privado</option>
+                    </select>
+                    <button type="submit" class="enhanced-btn">Adjuntar Archivo</button>
+                  </form>
+                  <div id="profile-attachment-list">
+                    <!-- Se renderizarán los archivos adjuntos -->
+                  </div>
+                </div>
+              </div>
+              <div class="profile-tab-content" id="profile-foto">
+                <form id="profile-foto-form">
+                  <input type="file" id="profile-new-photo" accept="image/*" required />
+                  <button type="submit" class="enhanced-btn">Actualizar Foto</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- Menú de navegación inferior -->
+      <nav class="app-menu">
+        <button class="menu-btn" data-target="map-view">Mapa</button>
+        <button class="menu-btn" data-target="pedir-ayuda">Pedir Ayuda</button>
+        <button class="menu-btn" data-target="ofrecer-voluntario">Voluntarios</button>
+        <button class="menu-btn" data-target="organizaciones">Organizaciones</button>
+      </nav>
+    </div>
+
+    <!-- Modal para vista previa de archivos -->
+    <div id="modal-viewer" class="modal">
+      <div class="modal-content">
+        <!-- El contenido se inyecta dinámicamente -->
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+    <!-- Carga asíncrona de Google Maps -->
+    <script>
+      window.onload = function () {
+        const script = document.createElement("script");
+        script.src =
+          "https://maps.googleapis.com/maps/api/js?key=AIzaSyBWlVP6ZrRsXVmKj4czhWxg6Q4bGIP8zeE&callback=initMap&v=weekly";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      };
+    </script>
+  </body>
+</html>
