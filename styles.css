@@ -18,6 +18,60 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Overlay del mensaje de prototipo */
+#dev-message {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+#dev-message .message-box {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 90%;
+  text-align: center;
+  color: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+#dev-message .message-box p {
+  margin-bottom: 20px;
+  font-size: 1.2em;
+}
+
+/* Estilo para el texto 'Designed By' (más pequeño, en morado) */
+#dev-message .designer {
+  margin-bottom: 10px;
+  font-size: 0.7em;
+  font-weight: bold;
+  font-family: "Arial Black", sans-serif;
+  color: #8a2be2;
+}
+
+#dev-message .accept-btn {
+  background: #ffffff;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1em;
+  transition: background 0.3s ease;
+}
+
+#dev-message .accept-btn:hover {
+  background: #f0f0f0;
+}
+
 /* Pantallas completas */
 .screen {
   width: 100%;
@@ -52,7 +106,6 @@ form button {
 }
 
 form button {
-  /* Se usa el estilo base para botones, pero los botones de acción tendrán clase .action-btn */
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
   border: none;
@@ -87,14 +140,13 @@ form button:hover {
   font-size: 1.8em;
 }
 
-/* Acciones del encabezado (perfil y salir) */
+/* Acciones del encabezado */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* Perfil en header */
 .profile-container {
   display: flex;
   flex-direction: column;
@@ -163,7 +215,6 @@ form button:hover {
 #map-container {
   position: relative;
 }
-/* Modo fullscreen: centrar el mapa */
 .fullscreen {
   position: fixed !important;
   top: 0 !important;
@@ -242,16 +293,38 @@ form button:hover {
   border: 1px solid #ddd;
   padding: 5px;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
+
+/* Estilos para los bocadillos de mensajes */
+.chat-bubble {
+  margin: 5px;
+  padding: 10px 15px;
+  border-radius: 20px;
+  max-width: 80%;
+  word-wrap: break-word;
+  display: inline-block;
+}
+.chat-bubble.sent {
+  background-color: #dcf8c6;
+  align-self: flex-end;
+}
+.chat-bubble.received {
+  background-color: #e1bee7;
+  align-self: flex-start;
+}
+
 .chat-username {
   font-weight: bold;
   margin-right: 5px;
 }
+
 .chat-text {
   font-size: 0.95em;
 }
 
-/* Botones de Acción para crear registros */
+/* Botones de Acción */
 .action-btn {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
@@ -301,24 +374,8 @@ form button:hover {
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
-/* Botón Eliminar para organizaciones en la lista */
-.delete-org-btn {
-  background: linear-gradient(45deg, #ff4d4d, #ff1a1a);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 20px;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  margin-left: auto;
-}
-.delete-org-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-/* Botón Eliminar utilizado en otros módulos (voluntarios, ayudas) */
-.delete-btn {
+/* Botón Eliminar */
+.delete-org-btn, .delete-btn {
   background: linear-gradient(45deg, #ff4d4d, #ff1a1a);
   color: #fff;
   border: none;
@@ -327,15 +384,13 @@ form button:hover {
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
-.delete-btn:hover {
+.delete-org-btn:hover, .delete-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Items de las listas */
-.voluntario-item,
-.org-item,
-.ayuda-item {
+.voluntario-item, .org-item, .ayuda-item {
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 10px;
@@ -343,8 +398,6 @@ form button:hover {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
-/* Voluntarios: layout flex */
 .voluntario-item {
   display: flex;
   justify-content: space-between;
@@ -354,7 +407,7 @@ form button:hover {
   flex: 1;
 }
 
-/* Organizaciones: contenedor con dos secciones */
+/* Organizaciones */
 .org-item-container {
   display: flex;
   align-items: center;
@@ -438,8 +491,7 @@ form button:hover {
 }
 
 /* Botones para archivos adjuntos */
-.toggle-visibility-btn,
-.view-att-btn {
+.toggle-visibility-btn, .view-att-btn {
   background: #555;
   color: #fff;
   border: none;
@@ -450,8 +502,7 @@ form button:hover {
   font-size: 0.9em;
   transition: background 0.3s ease;
 }
-.toggle-visibility-btn:hover,
-.view-att-btn:hover {
+.toggle-visibility-btn:hover, .view-att-btn:hover {
   background: #333;
 }
 
@@ -488,7 +539,7 @@ form button:hover {
   cursor: pointer;
 }
 
-/* Estilo para el grupo de habilidades en el formulario de voluntarios */
+/* Grupo de habilidades en el formulario de voluntarios */
 .form-group-voluntario {
   margin: 10px 0;
 }
