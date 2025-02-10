@@ -11,6 +11,17 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
   </head>
   <body>
+    <!-- Mensaje de prototipo -->
+    <div id="dev-message">
+      <div class="message-box">
+        <p>
+          Bienvenido a PeopleFor People. Este es un prototipo de aplicación para la startup de PeopleFor People. Actualmente estamos integrando las últimas tecnologías y desarrollando nuevas funcionalidades para brindar una experiencia de usuario excepcional. Le agradecemos por participar en esta fase de pruebas.
+        </p>
+        <p class="designer">Designed By: Carlos Potenciano</p>
+        <button id="accept-dev-message" class="accept-btn">Aceptar</button>
+      </div>
+    </div>
+
     <!-- Pantalla de Registro (centrada) -->
     <div id="registration-screen" class="screen">
       <div class="form-container">
@@ -28,9 +39,8 @@
     <div id="main-app" class="screen" style="display: none;">
       <header class="app-header">
         <h1 class="app-title">People For People</h1>
-        <!-- Se ha quitado el botón de salir -->
+        <!-- Botón de perfil en el header -->
         <div class="header-actions">
-          <!-- Botón de perfil en el header -->
           <div class="profile-container" id="profile-btn">
             <img src="https://via.placeholder.com/40/FFFFFF/FFFFFF?text=" alt="Perfil" class="profile-img" />
             <span class="profile-label">Mi perfil</span>
@@ -165,7 +175,7 @@
           <div class="profile-container-new">
             <div class="profile-display">
               <div class="profile-photo-container">
-                <img id="profile-large-photo" src="https://via.placeholder.com/100/FFFFFF/000000?text=Perfil" alt="Foto de Perfil">
+                <img id="profile-large-photo" src="https://via.placeholder.com/100/FFFFFF/000000?text=Perfil" alt="Foto de Perfil" />
               </div>
               <div class="profile-info">
                 <h3>Información de Perfil</h3>
@@ -230,7 +240,6 @@
             </div>
           </div>
         </div>
-
       </main>
 
       <!-- Menú de navegación inferior -->
