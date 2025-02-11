@@ -42,25 +42,30 @@ body {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-#dev-message .message-box p {
-  margin-bottom: 20px;
-  font-size: 1.2em;
+/* Nueva regla para mostrar el creador */
+.message-box .creator {
+  font-family: 'Arial', sans-serif; /* Cambiar a una fuente diferente */
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+  margin-top: 10px;
 }
 
-#dev-message .accept-btn {
-  background: #ffffff;
-  color: #333;
+/* Estilo del botón de aceptar */
+#accept-dev-message {
+  background: linear-gradient(45deg, #32cd32, #8a2be2); /* Verde-morado */
+  color: #fff;
   border: none;
+  border-radius: 10px; /* Bordes redondeados */
   padding: 10px 20px;
-  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
   font-size: 1em;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-#dev-message .accept-btn:hover {
-  background: #f0f0f0;
+#accept-dev-message:hover {
+  background: linear-gradient(45deg, #8a2be2, #32cd32); /* Efecto hover */
 }
 
 /* Pantallas completas */
@@ -270,7 +275,7 @@ form button:hover {
   transform: scale(1.02);
 }
 
-/* Chat */
+/* Chat container y mensajes */
 .chat-container {
   margin-top: 1em;
   padding: 0.8em;
@@ -285,12 +290,71 @@ form button:hover {
   padding: 5px;
   background: #fff;
 }
-.chat-username {
-  font-weight: bold;
-  margin-right: 5px;
+
+/* Chat bocadillos */
+.chat-message {
+  display: flex;
+  margin-bottom: 10px;
 }
+
+.chat-message.mine {
+  justify-content: flex-end;
+}
+
+.chat-message.other {
+  justify-content: flex-start;
+}
+
+.chat-bubble {
+  padding: 10px;
+  border-radius: 10px;
+  position: relative;
+  margin: 5px;
+  max-width: 70%;
+  word-wrap: break-word;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para el bocadillo */
+}
+
+.chat-bubble.mine {
+  background-color: #32cd32;
+  color: #fff;
+}
+
+.chat-bubble.other {
+  background-color: #8a2be2;
+  color: #fff;
+}
+
+.chat-bubble.mine:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: -10px;
+  border-width: 10px 0 10px 10px;
+  border-style: solid;
+  border-color: transparent transparent transparent #32cd32;
+}
+
+.chat-bubble.other:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -10px;
+  border-width: 10px 10px 10px 0;
+  border-style: solid;
+  border-color: transparent #8a2be2 transparent transparent;
+}
+
+.chat-username {
+  font-size: 0.85em;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
 .chat-text {
-  font-size: 0.95em;
+  font-size: 1em;
+  line-height: 1.4;
 }
 
 /* Botones de Acción */
