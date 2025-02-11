@@ -493,6 +493,22 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       orgDetailDiv.appendChild(img);
     }
+
+    // Mostrar miembros de la organización
+    const memberList = document.getElementById("org-member-list");
+    memberList.innerHTML = ""; // Limpiar la lista antes de agregar
+    if (org.members && org.members.length > 0) {
+      org.members.forEach(function(member) {
+        const memberItem = document.createElement("li");
+        memberItem.innerText = member;
+        memberList.appendChild(memberItem);
+      });
+    } else {
+      const noMembersItem = document.createElement("li");
+      noMembersItem.innerText = "No hay miembros en esta organización.";
+      memberList.appendChild(noMembersItem);
+    }
+
     // Listener para el chat de Organización usando subcolección "messages"
     const orgChatContainer = document.getElementById("org-chat-messages");
     orgChatContainer.innerHTML = "";
