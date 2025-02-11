@@ -47,15 +47,6 @@ body {
   font-size: 1.2em;
 }
 
-/* Estilo para el texto 'Designed By' (más pequeño, en morado) */
-#dev-message .designer {
-  margin-bottom: 10px;
-  font-size: 0.7em;
-  font-weight: bold;
-  font-family: "Arial Black", sans-serif;
-  color: #8a2be2;
-}
-
 #dev-message .accept-btn {
   background: #ffffff;
   color: #333;
@@ -293,33 +284,11 @@ form button:hover {
   border: 1px solid #ddd;
   padding: 5px;
   background: #fff;
-  display: flex;
-  flex-direction: column;
 }
-
-/* Estilos para los bocadillos de mensajes */
-.chat-bubble {
-  margin: 5px;
-  padding: 10px 15px;
-  border-radius: 20px;
-  max-width: 80%;
-  word-wrap: break-word;
-  display: inline-block;
-}
-.chat-bubble.sent {
-  background-color: #dcf8c6;
-  align-self: flex-end;
-}
-.chat-bubble.received {
-  background-color: #e1bee7;
-  align-self: flex-start;
-}
-
 .chat-username {
   font-weight: bold;
   margin-right: 5px;
 }
-
 .chat-text {
   font-size: 0.95em;
 }
@@ -398,6 +367,7 @@ form button:hover {
   background-color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .voluntario-item {
   display: flex;
   justify-content: space-between;
