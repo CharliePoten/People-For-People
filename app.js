@@ -230,12 +230,14 @@ document.addEventListener("DOMContentLoaded", function () {
       section.style.display = (section.id === sectionId) ? "block" : "none";
     });
   }
+
   menuButtons.forEach(function (btn) {
     btn.addEventListener("click", function () {
       const target = this.getAttribute("data-target");
       showSection(target);
     });
   });
+
   profileBtn.addEventListener("click", function () {
     showSection("perfil");
     updateProfileView();
@@ -719,22 +721,41 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       });
     currentAyuda = ayuda;
+
+    // Mostrar el mapa pequeño
+    const smallMap = new google.maps.Map(document.getElementById("small-map"), {
+      center: { lat: ayuda.latitude, lng: ayuda.longitude },
+      zoom: 15,
+    });
+    new google.maps.Marker({
+      position: { lat: ayuda.latitude, lng: ayuda.longitude },
+      map: smallMap,
+      title: "Punto de Ayuda: " + ayuda.titulo,
+      icon: helpIcon
+    });
+
     document.getElementById("ayuda-detail-view").style.display = "block";
   }
+
   document.getElementById("volver-ayuda-list").addEventListener("click", function () {
     document.getElementById("ayuda-detail-view").style.display = "none";
     ayudaListView.style.display = "block";
   });
-  document.getElementById("ayuda-chat-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const username = localStorage.getItem("username") || "Tú";
-    const input = document.getElementById("ayuda-chat-input");
-    const message = input.value.trim();
-    if (message !== "" && currentAyuda) {
-      db.collection("ayuda_chat").doc(currentAyuda.firebaseKey).collection("messages")
-        .add({ user: username, text: message, timestamp: Date.now() })
-        .catch(error => console.error("Error enviando mensaje:", error));
-      input.value = "";
+
+  document.getElementById("view-on-map").addEventListener("click", function () {
+    showSection("map-view"); // Cambia a la sección del mapa
+    const pos = { lat: currentAyuda.latitude, lng: currentAyuda.longitude };
+    map.setCenter(pos);
+    map.setZoom(15); // Ajusta el zoom según sea necesario
+    if (currentLocationMarker) {
+      currentLocationMarker.setPosition(pos);
+    } else {
+      currentLocationMarker = new google.maps.Marker({
+        position: pos,
+        map: map,
+        title: "Punto de Ayuda: " + currentAyuda.titulo,
+        icon: helpIcon
+      });
     }
   });
 
