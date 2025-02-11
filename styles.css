@@ -577,6 +577,23 @@ form button:hover {
 .form-group-voluntario {
   margin: 10px 0;
 }
+/* Estilo del botón "Ver en el Mapa" */
+.map-btn {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  color: #fff;
+  border: none;
+  border-radius: 10px; /* Bordes redondeados */
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-block; /* Para que se comporte como un botón rectangular */
+  margin-top: 10px; /* Espacio superior */
+}
+
+.map-btn:hover {
+  background: linear-gradient(45deg, #8a2be2, #32cd32); /* Efecto hover */
+}
 .form-group-voluntario label {
   display: block;
   margin-bottom: 6px;
