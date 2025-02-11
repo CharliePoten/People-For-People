@@ -73,23 +73,37 @@ function initMap() {
 }
 window.initMap = initMap;
 
-/* Funciones de Chat */
+/* Función actualizada para renderizar mensajes de chat con bocadillos */
 function renderChatMessage(msg, container) {
   const currentUser = localStorage.getItem("username") || "Tú";
-  const msgDiv = document.createElement("div");
-  msgDiv.style.display = "flex";
-  msgDiv.style.marginBottom = "8px";
-  msgDiv.style.justifyContent = (msg.user === currentUser) ? "flex-end" : "flex-start";
-  const usernameSpan = document.createElement("span");
-  usernameSpan.classList.add("chat-username");
-  usernameSpan.innerText = msg.user + ": ";
-  usernameSpan.style.color = (msg.user === currentUser) ? "blue" : getUserColor(msg.user);
-  const messageSpan = document.createElement("span");
-  messageSpan.classList.add("chat-text");
-  messageSpan.innerText = msg.text;
-  msgDiv.appendChild(usernameSpan);
-  msgDiv.appendChild(messageSpan);
-  container.appendChild(msgDiv);
+  const messageContainer = document.createElement("div");
+  messageContainer.classList.add("chat-message");
+  if (msg.user === currentUser) {
+    messageContainer.classList.add("mine");
+  } else {
+    messageContainer.classList.add("other");
+  }
+
+  const bubble = document.createElement("div");
+  bubble.classList.add("chat-bubble");
+  if (msg.user === currentUser) {
+    bubble.classList.add("mine");
+  } else {
+    bubble.classList.add("other");
+    // Se añade el nombre del usuario solo para mensajes de los demás
+    const usernameElement = document.createElement("div");
+    usernameElement.classList.add("chat-username");
+    usernameElement.innerText = msg.user;
+    bubble.appendChild(usernameElement);
+  }
+
+  const messageTextElement = document.createElement("div");
+  messageTextElement.classList.add("chat-text");
+  messageTextElement.innerText = msg.text;
+  bubble.appendChild(messageTextElement);
+
+  messageContainer.appendChild(bubble);
+  container.appendChild(messageContainer);
   container.scrollTop = container.scrollHeight;
 }
 
@@ -655,7 +669,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(img);
     }
-  
+
     // Si el usuario es el creador, agregar botón para eliminar
     if (localStorage.getItem("username") === ayuda.creator) {
       const deleteHelpBtn = document.createElement("button");
@@ -675,7 +689,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(deleteHelpBtn);
     }
-  
+
     // Chat de Ayuda: subcolección "messages" en "ayuda_chat"
     const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
     ayudaChatContainer.innerHTML = "";
@@ -761,7 +775,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     const habilidades = document.getElementById("voluntario-habilidades").value.trim();
     newVoluntario.habilidades = habilidades;
-  
+
     db.collection("voluntarios").add(newVoluntario)
       .catch(error => console.error("Error creando voluntario:", error));
     this.reset();
@@ -833,32 +847,32 @@ document.addEventListener("DOMContentLoaded", function () {
     voluntarioCreateForm.style.display = "none";
     const voluntarioDetailDiv = document.getElementById("voluntario-detail");
     voluntarioDetailDiv.innerHTML = "";
-  
+
     const detailContainer = document.createElement("div");
     detailContainer.style.display = "flex";
     detailContainer.style.justifyContent = "space-between";
     detailContainer.style.alignItems = "flex-start";
-  
+
     const leftColumn = document.createElement("div");
     leftColumn.style.flex = "1";
     leftColumn.style.marginRight = "20px";
-  
+
     const infoHeader = document.createElement("h3");
     infoHeader.innerText = "Detalle del Voluntario";
     leftColumn.appendChild(infoHeader);
-  
+
     const horarioP = document.createElement("p");
     horarioP.innerText = "Horario: " + vol.horarioTexto;
     leftColumn.appendChild(horarioP);
-  
+
     const userP = document.createElement("p");
     userP.innerText = "Ofrecido por: " + vol.user;
     leftColumn.appendChild(userP);
-  
+
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
     leftColumn.appendChild(habilidadesP);
-  
+
     const profileDiv = document.createElement("div");
     profileDiv.id = "voluntario-profile-info";
     profileDiv.innerHTML =
@@ -867,9 +881,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "<p>Fecha de Nacimiento: " + (localStorage.getItem("profileDob") || "No definida") + "</p>" +
       "<p>Formación Profesional: " + (localStorage.getItem("profileFormation") || "No definida") + "</p>";
     leftColumn.appendChild(profileDiv);
-  
+
     detailContainer.appendChild(leftColumn);
-  
+
     const rightColumn = document.createElement("div");
     rightColumn.style.flexShrink = "0";
     rightColumn.style.display = "flex";
@@ -881,9 +895,9 @@ document.addEventListener("DOMContentLoaded", function () {
     profileImg.style.borderRadius = "50%";
     rightColumn.appendChild(profileImg);
     detailContainer.appendChild(rightColumn);
-  
+
     voluntarioDetailDiv.appendChild(detailContainer);
-  
+
     const privateChatDiv = document.createElement("div");
     privateChatDiv.id = "voluntario-private-chat";
     privateChatDiv.innerHTML =
@@ -891,7 +905,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "<div class='chat-messages' id='voluntario-private-chat-messages'></div>" +
       "<form id='voluntario-private-chat-form'><input type='text' id='voluntario-private-chat-input' placeholder='Escribe tu mensaje' required /><button type='submit' class='enhanced-btn'>Enviar</button></form>";
     voluntarioDetailDiv.appendChild(privateChatDiv);
-  
+
     const currentUser = localStorage.getItem("username") || "Tú";
     const chatKey = [currentUser, vol.user].sort().join("_");
     const privateChatMessagesDiv = document.getElementById("voluntario-private-chat-messages");
