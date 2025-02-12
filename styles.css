@@ -316,33 +316,13 @@ form button:hover {
 }
 
 .chat-bubble.mine {
-  background-color: #32cd32;
-  color: #fff;
+  background-color: #a8e6cf; /* Verde pastel para el usuario */
+  color: #333; /* Color del texto */
 }
 
 .chat-bubble.other {
-  background-color: #8a2be2;
-  color: #fff;
-}
-
-.chat-bubble.mine:after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: -10px;
-  border-width: 10px 0 10px 10px;
-  border-style: solid;
-  border-color: transparent transparent transparent #32cd32;
-}
-
-.chat-bubble.other:after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: -10px;
-  border-width: 10px 10px 10px 0;
-  border-style: solid;
-  border-color: transparent #8a2be2 transparent transparent;
+  background-color: #d7a6e0; /* Color pastel para otros usuarios */
+  color: #333; /* Color del texto */
 }
 
 .chat-username {
