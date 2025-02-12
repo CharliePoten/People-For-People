@@ -223,8 +223,39 @@ function initAdminChat(org) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+// Funciones para el chat de la organización
+function initOrgChat(org) {
+  const orgChatContainer = document.getElementById("org-chat-messages");
+  const orgChatForm = document.getElementById("org-chat-form");
+  const orgChatInput = document.getElementById("org-chat-input");
 
+  // Listener para enviar mensajes
+  orgChatForm.onsubmit = function (e) {
+    e.preventDefault();
+    const message = orgChatInput.value.trim();
+    if (message !== "") {
+      db.collection("organizaciones").doc(org.firebaseKey).collection("org_chat").add({
+        user: localStorage.getItem("username") || "Tú",
+        text: message,
+        timestamp: Date.now()
+      }).catch(error => console.error("Error enviando mensaje en chat de organización:", error));
+      orgChatInput.value = ""; // Limpiar el campo de entrada
+    }
+  };
+
+  // Listener en tiempo real para mensajes
+  db.collection("organizaciones").doc(org.firebaseKey).collection("org_chat").orderBy("timestamp")
+    .onSnapshot(function(snapshot) {
+      snapshot.docChanges().forEach(function(change) {
+        if (change.type === "added") {
+          const msg = change.doc.data();
+          renderChatMessage(msg, orgChatContainer);
+        }
+      });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
   // Mostrar mensaje de bienvenida (prototipo)
   var acceptBtn = document.getElementById("accept-dev-message");
   if (acceptBtn) {
@@ -442,7 +473,7 @@ document.addEventListener("DOMContentLoaded", function () {
     orgCreateFormDiv.style.display = "none";
     orgListView.style.display = "block";
   });
-  
+
   // Listener en tiempo real para organizaciones
   db.collection("organizaciones").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
@@ -458,7 +489,7 @@ document.addEventListener("DOMContentLoaded", function () {
       updateOrgList();
     });
   });
-  
+
   function updateOrgList() {
     organizations.sort((a, b) => a.timestamp - b.timestamp);
     orgListContainer.innerHTML = "";
@@ -511,7 +542,7 @@ document.addEventListener("DOMContentLoaded", function () {
       orgListContainer.appendChild(orgDiv);
     });
   }
-  
+
   orgListContainer.addEventListener("click", function (e) {
     const orgItem = e.target.closest(".org-item");
     if (orgItem) {
@@ -526,7 +557,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
-  
+
   function mostrarOrgDetalle(org) {
     orgListView.style.display = "none";
     orgDetailView.style.display = "block";
@@ -542,9 +573,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const infoP = document.createElement("p");
     infoP.innerText = org.info;
     orgDetailDiv.appendChild(infoP);
-    
+  
     // Inicializa el chat de administradores
     initAdminChat(org);
+    // Inicializa el chat de la organización
+    initOrgChat(org);
 
     if (org.image) {
       const img = document.createElement("img");
@@ -575,7 +608,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Listener para el chat de Organización usando subcolección "messages"
     const orgChatContainer = document.getElementById("org-chat-messages");
     orgChatContainer.innerHTML = "";
-    db.collection("org_chat").doc(org.firebaseKey).collection("messages").orderBy("timestamp")
+    db.collection("organizaciones").doc(org.firebaseKey).collection("org_chat").orderBy("timestamp")
       .onSnapshot(function(snapshot) {
         snapshot.docChanges().forEach(function(change) {
           if (change.type === "added") {
@@ -586,12 +619,12 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     currentOrg = org;
   }
-  
+
   document.getElementById("volver-org-list").addEventListener("click", function () {
     orgDetailView.style.display = "none";
     orgListView.style.display = "block";
   });
-  
+
   // Botón "Unirse a Organización"
   const joinOrgBtn = document.getElementById("unirse-org");
   if (joinOrgBtn) {
@@ -615,14 +648,14 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => { alert("Error al unirse: " + error.message); });
     });
   }
-  
+
   // Listener para enviar mensajes en el chat de ORGANIZACIONES
   document.getElementById("org-chat-form").onsubmit = function(e) {
     e.preventDefault();
     const input = document.getElementById("org-chat-input");
     const message = input.value.trim();
     if (message !== "" && currentOrg) {
-      db.collection("org_chat").doc(currentOrg.firebaseKey).collection("messages").add({
+      db.collection("organizaciones").doc(currentOrg.firebaseKey).collection("org_chat").add({
         user: localStorage.getItem("username") || "Tú",
         text: message,
         timestamp: Date.now()
@@ -683,7 +716,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ayudaCreateForm.style.display = "none";
     ayudaListView.style.display = "block";
   });
-  
+
   // Listener en tiempo real para puntos de ayuda
   db.collection("ayuda").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
@@ -703,7 +736,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
-  
+
   function updateAyudaList() {
     ayudaListContainer.innerHTML = "";
     ayudaItems.sort((a, b) => a.timestamp - b.timestamp);
@@ -715,7 +748,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ayudaListContainer.appendChild(itemDiv);
     });
   }
-  
+
   ayudaListContainer.addEventListener("click", function (e) {
     const itemDiv = e.target.closest(".ayuda-item");
     if (itemDiv) {
@@ -729,7 +762,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
-  
+
   function showAyudaDetail(ayuda) {
     ayudaListView.style.display = "none";
     ayudaCreateForm.style.display = "none";
@@ -869,7 +902,7 @@ document.addEventListener("DOMContentLoaded", function () {
     this.reset();
     voluntarioCreateForm.style.display = "none";
   });
-  
+
   // Listener en tiempo real para voluntarios
   db.collection("voluntarios").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
@@ -889,7 +922,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
-  
+
   function updateVoluntarioList() {
     voluntarioListContainer.innerHTML = "";
     voluntarioItems.sort((a, b) => a.timestamp - b.timestamp);
@@ -919,7 +952,7 @@ document.addEventListener("DOMContentLoaded", function () {
       voluntarioListContainer.appendChild(itemDiv);
     });
   }
-  
+
   voluntarioListContainer.addEventListener("click", function (e) {
     const itemDiv = e.target.closest(".voluntario-item");
     if (itemDiv) {
@@ -933,7 +966,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
-  
+
   function showVoluntarioDetail(vol) {
     voluntarioListView.style.display = "none";
     voluntarioCreateForm.style.display = "none";
@@ -1028,7 +1061,7 @@ document.addEventListener("DOMContentLoaded", function () {
     currentVoluntario = vol;
     voluntarioDetailView.style.display = "block";
   }
-  
+
   document.getElementById("volver-voluntario-list").addEventListener("click", function () {
     voluntarioDetailView.style.display = "none";
     voluntarioListView.style.display = "block";
@@ -1049,7 +1082,7 @@ document.addEventListener("DOMContentLoaded", function () {
       content.classList.add("active");
     });
   });
-  
+
   document.getElementById("profile-datos-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const nombre = document.getElementById("profile-nombre").value.trim();
@@ -1061,7 +1094,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateProfileView();
     alert("Datos personales actualizados");
   });
-  
+
   document.getElementById("profile-formacion-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const titulo = document.getElementById("profile-titulo").value.trim();
@@ -1072,7 +1105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateProfileView();
     alert("Formación profesional actualizada");
   });
-  
+
   document.getElementById("profile-attachment-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const attTitle = document.getElementById("attachment-title").value.trim();
@@ -1097,7 +1130,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     this.reset();
   });
-  
+
   document.getElementById("profile-foto-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const photoInput = document.getElementById("profile-new-photo");
