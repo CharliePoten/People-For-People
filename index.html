@@ -273,6 +273,17 @@
               <p>Comunidad Solidaria: Forma parte de una red comprometida con el bienestar común.</p>
               
               <p>🌐 <a href="https://peopleforpeople7.wordpress.com" target="_blank">Más información en nuestra página web</a></p>
+
+              <!-- Recuadro para subir archivos -->
+              <div id="file-upload-container" style="margin-top: 20px; display: none;">
+                <h3>Subir Archivo</h3>
+                <form id="file-upload-form">
+                  <input type="text" id="attachment-title" placeholder="Título del Archivo" required />
+                  <input type="file" id="attachment-file" accept="application/pdf, image/*" required />
+                  <button type="submit" class="enhanced-btn">Subir Archivo</button>
+                </form>
+                <div id="upload-message" style="margin-top: 10px;"></div>
+              </div>
             </div>
 
             <div class="profile-info-section" id="support" style="display:none;">
