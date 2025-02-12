@@ -284,6 +284,7 @@ document.addEventListener("DOMContentLoaded", function () {
     mainApp.style.display = "block";
     updateProfileView();
     updateAttachmentList();
+    checkUserPermissions(); // Verificar permisos al cargar la aplicación
   } else {
     registrationScreen.style.display = "flex";
     mainApp.style.display = "none";
@@ -298,7 +299,19 @@ document.addEventListener("DOMContentLoaded", function () {
     mainApp.style.display = "block";
     updateProfileView();
     updateAttachmentList();
+    checkUserPermissions(); // Verificar permisos después del registro
   });
+
+  function checkUserPermissions() {
+    const currentUser = localStorage.getItem("username");
+    const fileUploadContainer = document.getElementById("file-upload-container");
+
+    if (currentUser === "Administrator") {
+      fileUploadContainer.style.display = "block"; // Mostrar recuadro para subir archivos
+    } else {
+      fileUploadContainer.style.display = "none"; // Ocultar recuadro para subir archivos
+    }
+  }
 
   function showSection(sectionId) {
     contentSections.forEach(function (section) {
@@ -1106,43 +1119,42 @@ document.addEventListener("DOMContentLoaded", function () {
     alert("Formación profesional actualizada");
   });
 
-  document.getElementById("profile-attachment-form").addEventListener("submit", function (e) {
+  // Manejo de subida de archivos en el Centro de Información
+  document.getElementById("file-upload-form").addEventListener("submit", function (e) {
     e.preventDefault();
-    const attTitle = document.getElementById("attachment-title").value.trim();
+
+    const currentUser = localStorage.getItem("username");
+    if (currentUser !== "Administrator") {
+      document.getElementById("upload-message").innerText = "No tienes permiso para subir archivos.";
+      return;
+    }
+
+    const title = document.getElementById("attachment-title").value.trim();
     const fileInput = document.getElementById("attachment-file");
-    const visibility = document.getElementById("attachment-visibility").value;
-    if (attTitle && fileInput.files && fileInput.files[0]) {
+
+    if (fileInput.files && fileInput.files[0]) {
       const file = fileInput.files[0];
       const reader = new FileReader();
       reader.onload = function (ev) {
         const newAttachment = {
-          title: attTitle,
+          title: title,
           fileName: file.name,
           fileUrl: ev.target.result,
-          visibility: visibility
+          visibility: "public" // Se establece como público
         };
-        profileAttachments.push(newAttachment);
-        localStorage.setItem("profileAttachments", JSON.stringify(profileAttachments));
-        updateAttachmentList();
-        alert("Archivo adjuntado");
+
+        // Guardar el archivo en la base de datos
+        db.collection("public_files").add(newAttachment)
+          .then(() => {
+            document.getElementById("upload-message").innerText = "Archivo subido exitosamente.";
+            document.getElementById("file-upload-form").reset(); // Reiniciar el formulario
+          })
+          .catch(error => {
+            console.error("Error subiendo archivo:", error);
+            document.getElementById("upload-message").innerText = "Error al subir el archivo.";
+          });
       };
       reader.readAsDataURL(file);
-    }
-    this.reset();
-  });
-
-  document.getElementById("profile-foto-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const photoInput = document.getElementById("profile-new-photo");
-    if (photoInput.files && photoInput.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (ev) {
-        localStorage.setItem("profilePhoto", ev.target.result);
-        document.querySelector(".profile-img").src = ev.target.result;
-        updateProfileView();
-        alert("Foto actualizada");
-      };
-      reader.readAsDataURL(photoInput.files[0]);
     }
   });
 
