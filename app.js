@@ -194,7 +194,6 @@ function initAdminChat(org) {
     // Ocultar el formulario de chat y el botón de enviar
     adminChatForm.style.display = "none";
     sendButton.style.display = "none";
-    alert("No tienes permisos para enviar mensajes en este chat.");
     return; // Salir de la función si no es administrador
   }
 
