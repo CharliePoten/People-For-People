@@ -273,6 +273,15 @@ document.addEventListener("DOMContentLoaded", function () {
     contentSections.forEach(function (section) {
       section.style.display = (section.id === sectionId) ? "block" : "none";
     });
+
+    // Mostrar las secciones de Soporte y Centro de Información
+    if (sectionId === "perfil") {
+      document.getElementById("info-center").style.display = "block"; // Mostrar Centro de Información
+      document.getElementById("support").style.display = "block"; // Mostrar Soporte
+    } else {
+      document.getElementById("info-center").style.display = "none"; // Ocultar Centro de Información
+      document.getElementById("support").style.display = "none"; // Ocultar Soporte
+    }
   }
 
   menuButtons.forEach(function (btn) {
@@ -799,23 +808,6 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("volver-ayuda-list").addEventListener("click", function () {
     document.getElementById("ayuda-detail-view").style.display = "none";
     ayudaListView.style.display = "block";
-  });
-
-  document.getElementById("view-on-map").addEventListener("click", function () {
-    showSection("map-view"); // Cambia a la sección del mapa
-    const pos = { lat: currentAyuda.latitude, lng: currentAyuda.longitude };
-    map.setCenter(pos);
-    map.setZoom(15); // Ajusta el zoom según sea necesario
-    if (currentLocationMarker) {
-      currentLocationMarker.setPosition(pos);
-    } else {
-      currentLocationMarker = new google.maps.Marker({
-        position: pos,
-        map: map,
-        title: "Punto de Ayuda: " + currentAyuda.titulo,
-        icon: helpIcon
-      });
-    }
   });
 
   /* MÓDULO: VOLUNTARIOS */
