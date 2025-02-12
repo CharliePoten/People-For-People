@@ -577,6 +577,7 @@ form button:hover {
 .form-group-voluntario {
   margin: 10px 0;
 }
+
 /* Estilo del botón "Ver en el Mapa" */
 .map-btn {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
