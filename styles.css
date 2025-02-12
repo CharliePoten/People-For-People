@@ -180,7 +180,6 @@ form button:hover {
 .logout-btn:hover {
   background: linear-gradient(45deg, #6a0dad, #8a2be2);
   transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Área de contenido */
@@ -626,4 +625,27 @@ form button:hover {
   #map {
     height: 200px;
   }
+}
+
+/* Estilos para los recuadros de Centro de Información y Soporte */
+.info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Espacio entre los recuadros */
+  margin: 20px 0; /* Margen superior e inferior */
+}
+
+.profile-info-section {
+  border: 1px solid #ccc; /* Borde del recuadro */
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 20px; /* Espaciado interno */
+  background-color: #f9f9f9; /* Color de fondo */
+}
+
+.profile-info-section h2 {
+  margin-top: 0; /* Eliminar margen superior */
+}
+
+.profile-info-section h3 {
+  margin-bottom: 10px; /* Espaciado inferior */
 }
