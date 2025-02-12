@@ -1155,6 +1155,8 @@ document.addEventListener("DOMContentLoaded", function () {
           });
       };
       reader.readAsDataURL(file);
+    } else {
+      document.getElementById("upload-message").innerText = "Por favor, selecciona un archivo.";
     }
   });
 
