@@ -1132,32 +1132,40 @@ document.addEventListener("DOMContentLoaded", function () {
     const title = document.getElementById("attachment-title").value.trim();
     const fileInput = document.getElementById("attachment-file");
 
-    if (fileInput.files && fileInput.files[0]) {
-      const file = fileInput.files[0];
-      const reader = new FileReader();
-      reader.onload = function (ev) {
-        const newAttachment = {
-          title: title,
-          fileName: file.name,
-          fileUrl: ev.target.result,
-          visibility: "public" // Se establece como público
-        };
-
-        // Guardar el archivo en la base de datos
-        db.collection("public_files").add(newAttachment)
-          .then(() => {
-            document.getElementById("upload-message").innerText = "Archivo subido exitosamente.";
-            document.getElementById("file-upload-form").reset(); // Reiniciar el formulario
-          })
-          .catch(error => {
-            console.error("Error subiendo archivo:", error);
-            document.getElementById("upload-message").innerText = "Error al subir el archivo.";
-          });
-      };
-      reader.readAsDataURL(file);
-    } else {
+    if (fileInput.files.length === 0) {
       document.getElementById("upload-message").innerText = "Por favor, selecciona un archivo.";
+      return;
     }
+
+    const file = fileInput.files[0];
+
+    // Verificar que el archivo sea un PDF
+    if (file.type !== "application/pdf") {
+      document.getElementById("upload-message").innerText = "Por favor, selecciona un archivo PDF.";
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function (ev) {
+      const newAttachment = {
+        title: title,
+        fileName: file.name,
+        fileUrl: ev.target.result,
+        visibility: "public" // Se establece como público
+      };
+
+      // Guardar el archivo en la base de datos
+      db.collection("public_files").add(newAttachment)
+        .then(() => {
+          document.getElementById("upload-message").innerText = "Archivo subido exitosamente.";
+          document.getElementById("file-upload-form").reset(); // Reiniciar el formulario
+        })
+        .catch(error => {
+          console.error("Error subiendo archivo:", error);
+          document.getElementById("upload-message").innerText = "Error al subir el archivo.";
+        });
+    };
+    reader.readAsDataURL(file);
   });
 
   function updateAttachmentList() {
