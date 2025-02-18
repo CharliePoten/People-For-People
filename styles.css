@@ -167,6 +167,35 @@ form button:hover {
   margin-top: 3px;
 }
 
+/* Dropdown Menu para el Perfil */
+.profile-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  min-width: 180px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  z-index: 1001;
+}
+
+.profile-dropdown .dropdown-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9em;
+}
+
+.profile-dropdown .dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.profile-dropdown .dropdown-item:hover {
+  background-color: #f0f0f0;
+}
+
 /* Botón de Salir */
 .logout-btn {
   background: linear-gradient(45deg, #8a2be2, #6a0dad);
@@ -312,17 +341,17 @@ form button:hover {
   max-width: 70%;
   word-wrap: break-word;
   display: inline-block;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para el bocadillo */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .chat-bubble.mine {
-  background-color: #a8e6cf; /* Verde pastel para el usuario */
-  color: #333; /* Color del texto */
+  background-color: #a8e6cf;
+  color: #333;
 }
 
 .chat-bubble.other {
-  background-color: #d7a6e0; /* Color pastel para otros usuarios */
-  color: #333; /* Color del texto */
+  background-color: #d7a6e0;
+  color: #333;
 }
 
 .chat-username {
@@ -562,17 +591,17 @@ form button:hover {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
   border: none;
-  border-radius: 10px; /* Bordes redondeados */
+  border-radius: 10px;
   padding: 10px 20px;
   cursor: pointer;
   font-size: 1em;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-  display: inline-block; /* Para que se comporte como un botón rectangular */
-  margin-top: 10px; /* Espacio superior */
+  display: inline-block;
+  margin-top: 10px;
 }
 
 .map-btn:hover {
-  background: linear-gradient(45deg, #8a2be2, #32cd32); /* Efecto hover */
+  background: linear-gradient(45deg, #8a2be2, #32cd32);
 }
 .form-group-voluntario label {
   display: block;
@@ -611,21 +640,21 @@ form button:hover {
 .info-container {
   display: flex;
   flex-direction: column;
-  gap: 20px; /* Espacio entre los recuadros */
-  margin: 20px 0; /* Margen superior e inferior */
+  gap: 20px;
+  margin: 20px 0;
 }
 
 .profile-info-section {
-  border: 1px solid #ccc; /* Borde del recuadro */
-  border-radius: 8px; /* Bordes redondeados */
-  padding: 20px; /* Espaciado interno */
-  background-color: #f9f9f9; /* Color de fondo */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
 }
 
 .profile-info-section h2 {
-  margin-top: 0; /* Eliminar margen superior */
+  margin-top: 0;
 }
 
 .profile-info-section h3 {
-  margin-bottom: 10px; /* Espaciado inferior */
+  margin-bottom: 10px;
 }
