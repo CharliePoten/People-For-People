@@ -280,7 +280,7 @@
               
               <p>🌐 <a href="https://peopleforpeople7.wordpress.com" target="_blank">Más información en nuestra página web</a></p>
 
-              <!-- Recuadro para subir archivos -->
+              <!-- Recuadro para subir archivos (visible solo para el administrador correcto) -->
               <div id="file-upload-container" style="margin-top: 20px; display: none;">
                 <h3>Subir Archivo</h3>
                 <form id="file-upload-form">
@@ -290,6 +290,10 @@
                 </form>
                 <div id="upload-message" style="margin-top: 10px;"></div>
               </div>
+
+              <!-- Contenedor para mostrar los archivos publicados -->
+              <h3>Archivos Publicados</h3>
+              <div id="public-files-list"></div>
             </div>
 
             <div class="profile-info-section" id="support" style="display:none;">
