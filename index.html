@@ -39,11 +39,17 @@
     <div id="main-app" class="screen" style="display: none;">
       <header class="app-header">
         <h1 class="app-title">People For People</h1>
-        <!-- Botón de perfil en el header -->
+        <!-- Botón de perfil en el header con menú desplegable -->
         <div class="header-actions">
           <div class="profile-container" id="profile-btn">
             <img src="https://via.placeholder.com/40/FFFFFF/FFFFFF?text=" alt="Perfil" class="profile-img" />
             <span class="profile-label">Mi perfil</span>
+            <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
+              <div class="dropdown-item" data-section="perfil">Mi perfil</div>
+              <div class="dropdown-item" data-section="ajustes">Ajustes de perfil</div>
+              <div class="dropdown-item" data-section="soporte">Soporte</div>
+              <div class="dropdown-item" data-section="centro">Centro de información</div>
+            </div>
           </div>
         </div>
       </header>
