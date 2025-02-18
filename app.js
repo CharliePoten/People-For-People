@@ -279,12 +279,22 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".profile-img").src = defaultProfilePhoto;
   }
 
+  // Actualizamos la función de permisos para usar la bandera "isAdmin"
+  function checkUserPermissions() {
+    const fileUploadContainer = document.getElementById("file-upload-container");
+    if (localStorage.getItem("isAdmin") === "true") {
+      fileUploadContainer.style.display = "block";
+    } else {
+      fileUploadContainer.style.display = "none";
+    }
+  }
+
   if (localStorage.getItem("userRegistered")) {
     registrationScreen.style.display = "none";
     mainApp.style.display = "block";
     updateProfileView();
     updateAttachmentList();
-    checkUserPermissions(); // Verificar permisos al cargar la aplicación
+    checkUserPermissions();
   } else {
     registrationScreen.style.display = "flex";
     mainApp.style.display = "none";
@@ -299,19 +309,8 @@ document.addEventListener("DOMContentLoaded", function () {
     mainApp.style.display = "block";
     updateProfileView();
     updateAttachmentList();
-    checkUserPermissions(); // Verificar permisos después del registro
+    checkUserPermissions();
   });
-
-  function checkUserPermissions() {
-    const currentUser = localStorage.getItem("username");
-    const fileUploadContainer = document.getElementById("file-upload-container");
-
-    if (currentUser === "Administrator") {
-      fileUploadContainer.style.display = "block"; // Mostrar recuadro para subir archivos
-    } else {
-      fileUploadContainer.style.display = "none"; // Ocultar recuadro para subir archivos
-    }
-  }
 
   function showSection(sectionId) {
     contentSections.forEach(function (section) {
@@ -336,9 +335,8 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // --- MODIFICACIÓN: Menú desplegable en el perfil ---
-  // Remplazamos el antiguo listener del botón de perfil
   profileBtn.addEventListener("click", function (e) {
-    e.stopPropagation(); // Evita que haga bubbling y cierre el dropdown inmediatamente
+    e.stopPropagation(); // Evita bubbling
     var dropdown = document.getElementById("profile-dropdown");
     if (dropdown.style.display === "none" || dropdown.style.display === "") {
       dropdown.style.display = "block";
@@ -347,15 +345,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Listener para cada opción del dropdown
   var dropdownItems = document.querySelectorAll("#profile-dropdown .dropdown-item");
   dropdownItems.forEach(function(item) {
     item.addEventListener("click", function (e) {
       e.stopPropagation();
       var selection = this.getAttribute("data-section");
-      // Ocultar el dropdown
       document.getElementById("profile-dropdown").style.display = "none";
-      // Asegurarse de mostrar la sección de perfil y actualizar la vista
       showSection("perfil");
       updateProfileView();
       updateAttachmentList();
@@ -363,7 +358,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Listener global para cerrar el dropdown al hacer clic fuera
   document.addEventListener("click", function () {
     var dropdown = document.getElementById("profile-dropdown");
     if (dropdown) {
@@ -503,7 +497,6 @@ document.addEventListener("DOMContentLoaded", function () {
     orgListView.style.display = "block";
   });
 
-  // Listener en tiempo real para organizaciones
   db.collection("organizaciones").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let org = change.doc.data();
@@ -634,7 +627,6 @@ document.addEventListener("DOMContentLoaded", function () {
       memberList.appendChild(noMembersItem);
     }
 
-    // Listener para el chat de Organización usando subcolección "messages"
     const orgChatContainer = document.getElementById("org-chat-messages");
     orgChatContainer.innerHTML = "";
     db.collection("organizaciones").doc(org.firebaseKey).collection("org_chat").orderBy("timestamp")
@@ -654,7 +646,6 @@ document.addEventListener("DOMContentLoaded", function () {
     orgListView.style.display = "block";
   });
 
-  // Botón "Unirse a Organización"
   const joinOrgBtn = document.getElementById("unirse-org");
   if (joinOrgBtn) {
     joinOrgBtn.addEventListener("click", function() {
@@ -678,7 +669,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Listener para enviar mensajes en el chat de ORGANIZACIONES
   document.getElementById("org-chat-form").onsubmit = function(e) {
     e.preventDefault();
     const input = document.getElementById("org-chat-input");
@@ -746,7 +736,6 @@ document.addEventListener("DOMContentLoaded", function () {
     ayudaListView.style.display = "block";
   });
 
-  // Listener en tiempo real para puntos de ayuda
   db.collection("ayuda").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let ayuda = change.doc.data();
@@ -929,7 +918,6 @@ document.addEventListener("DOMContentLoaded", function () {
     voluntarioCreateForm.style.display = "none";
   });
 
-  // Listener en tiempo real para voluntarios
   db.collection("voluntarios").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let vol = change.doc.data();
@@ -1022,7 +1010,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
-    leftColumn.appendChild(horarioP);
     leftColumn.appendChild(habilidadesP);
 
     const profileDiv = document.createElement("div");
@@ -1133,31 +1120,27 @@ document.addEventListener("DOMContentLoaded", function () {
     alert("Formación profesional actualizada");
   });
 
-  // Manejo de subida de archivos en el Centro de Información
+  // Se comenta el listener original para manejo de subida de archivos en el Centro de Información,
+  // ya que ahora se gestiona a través del Panel de Administración.
+  /*
   document.getElementById("file-upload-form").addEventListener("submit", function (e) {
     e.preventDefault();
-
     const currentUser = localStorage.getItem("username");
     if (currentUser !== "Administrator") {
       document.getElementById("upload-message").innerText = "No tienes permiso para subir archivos.";
       return;
     }
-
     const title = document.getElementById("attachment-title").value.trim();
     const fileInput = document.getElementById("attachment-file");
-
     if (fileInput.files.length === 0) {
       document.getElementById("upload-message").innerText = "Por favor, selecciona un archivo.";
       return;
     }
-
     const file = fileInput.files[0];
-
     if (file.type !== "application/pdf") {
       document.getElementById("upload-message").innerText = "Por favor, selecciona un archivo PDF.";
       return;
     }
-
     const reader = new FileReader();
     reader.onload = function (ev) {
       const newAttachment = {
@@ -1166,7 +1149,6 @@ document.addEventListener("DOMContentLoaded", function () {
         fileUrl: ev.target.result,
         visibility: "public"
       };
-
       db.collection("public_files").add(newAttachment)
         .then(() => {
           document.getElementById("upload-message").innerText = "Archivo subido exitosamente.";
@@ -1179,6 +1161,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
     reader.readAsDataURL(file);
   });
+  */
 
   function updateAttachmentList() {
     const listContainer = document.getElementById("profile-attachment-list");
@@ -1218,7 +1201,78 @@ document.addEventListener("DOMContentLoaded", function () {
       listContainer.appendChild(attDiv);
     });
   }
+
+  // --- ADMIN PANEL EVENT LISTENERS ---
+  // Botón para mostrar/ocultar el Panel de Administración (dentro de Soporte)
+  var adminPanelLink = document.getElementById("admin-panel-link");
+  var adminPanel = document.getElementById("admin-panel");
+  adminPanelLink.addEventListener("click", function () {
+    adminPanel.style.display = (adminPanel.style.display === "none" || adminPanel.style.display === "") ? "block" : "none";
+  });
+
+  // Formulario de autenticación del panel de administración
+  var adminLoginForm = document.getElementById("admin-login-form");
+  adminLoginForm.addEventListener("submit", function(e) {
+    e.preventDefault();
+    var adminEmail = document.getElementById("admin-email").value.trim();
+    var adminPassword = document.getElementById("admin-password").value.trim();
+    if(adminEmail === "peopleforpeopleofficial@gmail.com" && adminPassword === "PeopleFP"){
+       // Credenciales válidas: se guarda la bandera de administrador y se muestra el contenido del panel
+       localStorage.setItem("isAdmin", "true");
+       alert("Acceso de administrador concedido.");
+       document.getElementById("admin-login-form").style.display = "none";
+       document.getElementById("admin-content").style.display = "block";
+       checkUserPermissions();
+    } else {
+       alert("Credenciales inválidas. Inténtalo de nuevo.");
+    }
+  });
+
+  // Formulario para editar información (dentro del panel de administración)
+  var adminEditForm = document.getElementById("admin-edit-form");
+  adminEditForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      var newInfo = document.getElementById("admin-info").value.trim();
+      // Aquí se podría actualizar la información en Firestore; se usa localStorage como ejemplo
+      localStorage.setItem("adminInfo", newInfo);
+      alert("Información actualizada exitosamente.");
+      adminEditForm.reset();
+  });
+  
+  // Formulario para subir archivos desde el panel de administración
+  var adminUploadForm = document.getElementById("admin-upload-form");
+  adminUploadForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      var title = document.getElementById("admin-attachment-title").value.trim();
+      var fileInput = document.getElementById("admin-attachment-file");
+      if(fileInput.files.length === 0){
+          document.getElementById("admin-upload-message").innerText = "Por favor, selecciona un archivo.";
+          return;
+      }
+      var file = fileInput.files[0];
+      var reader = new FileReader();
+      reader.onload = function(ev){
+         var newAttachment = {
+             title: title,
+             fileName: file.name,
+             fileUrl: ev.target.result,
+             visibility: "public",
+             timestamp: Date.now()
+         };
+         db.collection("public_files").add(newAttachment)
+          .then(function(){
+              document.getElementById("admin-upload-message").innerText = "Archivo subido exitosamente.";
+              adminUploadForm.reset();
+          })
+          .catch(function(error){
+              console.error("Error al subir el archivo:", error);
+              document.getElementById("admin-upload-message").innerText = "Error al subir el archivo.";
+          });
+      };
+      reader.readAsDataURL(file);
+  });
 });
+// --- FIN DEL DOMContentLoaded ---
 
 /* Función para abrir modal en pantalla completa para visualizar archivos */
 function openModal(url, fileName) {
