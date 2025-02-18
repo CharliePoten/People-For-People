@@ -44,7 +44,7 @@ body {
 
 /* Nueva regla para mostrar el creador */
 .message-box .creator {
-  font-family: 'Arial', sans-serif; /* Cambiar a una fuente diferente */
+  font-family: 'Arial', sans-serif;
   font-weight: bold;
   color: #ffffff;
   text-align: center;
@@ -53,10 +53,10 @@ body {
 
 /* Estilo del botón de aceptar */
 #accept-dev-message {
-  background: linear-gradient(45deg, #32cd32, #8a2be2); /* Verde-morado */
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
   border: none;
-  border-radius: 10px; /* Bordes redondeados */
+  border-radius: 10px;
   padding: 10px 20px;
   cursor: pointer;
   font-weight: bold;
@@ -65,7 +65,7 @@ body {
 }
 
 #accept-dev-message:hover {
-  background: linear-gradient(45deg, #8a2be2, #32cd32); /* Efecto hover */
+  background: linear-gradient(45deg, #8a2be2, #32cd32);
 }
 
 /* Pantallas completas */
@@ -75,6 +75,12 @@ body {
   display: flex;
   flex-direction: column;
   transition: all 0.4s ease;
+}
+
+/* Centrado vertical de la pantalla de registro */
+#registration-screen {
+  justify-content: center;
+  align-items: center;
 }
 
 /* Contenedores de formularios */
@@ -196,6 +202,24 @@ form button:hover {
   background-color: #f0f0f0;
 }
 
+/* Botón del Panel de Administración */
+#admin-panel-link {
+  background: linear-gradient(45deg, #32cd32, #8a2be2);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 25px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#admin-panel-link:hover {
+  background: linear-gradient(45deg, #8a2be2, #32cd32);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Botón de Salir */
 .logout-btn {
   background: linear-gradient(45deg, #8a2be2, #6a0dad);
@@ -206,6 +230,7 @@ form button:hover {
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .logout-btn:hover {
   background: linear-gradient(45deg, #6a0dad, #8a2be2);
   transform: scale(1.05);
@@ -236,9 +261,11 @@ form button:hover {
   border-radius: 10px;
   transition: height 0.4s ease;
 }
+
 #map-container {
   position: relative;
 }
+
 .fullscreen {
   position: fixed !important;
   top: 0 !important;
@@ -250,6 +277,7 @@ form button:hover {
   justify-content: center;
   align-items: center;
 }
+
 .fullscreen #map {
   height: 100%;
   border-radius: 0;
@@ -270,6 +298,7 @@ form button:hover {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 #fullscreen-btn:hover {
   transform: scale(1.05);
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
@@ -288,6 +317,7 @@ form button:hover {
   border-top: 2px solid #32cd32;
   z-index: 1000;
 }
+
 .menu-btn {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
   color: #fff;
@@ -298,6 +328,7 @@ form button:hover {
   cursor: pointer;
   transition: transform 0.2s ease, opacity 0.2s ease;
 }
+
 .menu-btn:hover {
   opacity: 0.9;
   transform: scale(1.02);
@@ -311,6 +342,7 @@ form button:hover {
   border-radius: 5px;
   background: #f7f7f7;
 }
+
 .chat-messages {
   height: 150px;
   overflow-y: auto;
@@ -376,6 +408,7 @@ form button:hover {
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .action-btn:hover {
   background: linear-gradient(45deg, #8a2be2, #32cd32);
   transform: scale(1.05);
@@ -393,6 +426,7 @@ form button:hover {
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .join-org-btn:hover {
   background: linear-gradient(45deg, #8a2be2, #32cd32);
   transform: scale(1.05);
@@ -409,6 +443,7 @@ form button:hover {
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .return-btn:hover {
   background: linear-gradient(45deg, #8a2be2, #6a0dad);
   transform: scale(1.05);
@@ -425,6 +460,7 @@ form button:hover {
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .delete-org-btn:hover, .delete-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
@@ -445,6 +481,7 @@ form button:hover {
   justify-content: space-between;
   align-items: center;
 }
+
 .voluntario-info {
   flex: 1;
 }
@@ -455,10 +492,12 @@ form button:hover {
   align-items: center;
   gap: 10px;
 }
+
 .org-item-left {
   display: flex;
   align-items: center;
 }
+
 .org-thumbnail {
   width: 40px;
   height: 40px;
@@ -467,6 +506,7 @@ form button:hover {
   margin-right: 10px;
   cursor: pointer;
 }
+
 .org-item-right {
   margin-left: auto;
   display: flex;
@@ -481,6 +521,7 @@ form button:hover {
   gap: 20px;
   padding: 10px;
 }
+
 .profile-display {
   display: flex;
   align-items: center;
@@ -489,30 +530,36 @@ form button:hover {
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
 .profile-photo-container {
   flex-shrink: 0;
   margin-right: 20px;
 }
+
 .profile-photo-container img {
   width: 100px;
   height: 100px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 .profile-info {
   flex: 1;
 }
+
 .profile-settings {
   background: #fff;
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
+
 .profile-tabs {
   display: flex;
   gap: 10px;
   margin-bottom: 10px;
 }
+
 .profile-tab-btn {
   background: #8a2be2;
   color: #fff;
@@ -522,12 +569,15 @@ form button:hover {
   cursor: pointer;
   transition: background 0.3s ease;
 }
+
 .profile-tab-btn.active {
   background: #32cd32;
 }
+
 .profile-tab-content {
   display: none;
 }
+
 .profile-tab-content.active {
   display: block;
 }
@@ -544,6 +594,7 @@ form button:hover {
   font-size: 0.9em;
   transition: background 0.3s ease;
 }
+
 .toggle-visibility-btn:hover, .view-att-btn:hover {
   background: #333;
 }
@@ -560,18 +611,21 @@ form button:hover {
   background: rgba(0, 0, 0, 0.9);
   display: none;
 }
+
 .modal-content {
   margin: 5% auto;
   width: 90%;
   height: 80%;
   position: relative;
 }
+
 .modal-content img,
 .modal-content iframe {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
+
 .close {
   position: absolute;
   top: 20px;
@@ -603,10 +657,13 @@ form button:hover {
 .map-btn:hover {
   background: linear-gradient(45deg, #8a2be2, #32cd32);
 }
+
+/* Grupo de habilidades */
 .form-group-voluntario label {
   display: block;
   margin-bottom: 6px;
 }
+
 .form-group-voluntario textarea {
   width: 100%;
   height: 60px;
