@@ -49,6 +49,7 @@
               <div class="dropdown-item" data-section="ajustes">Ajustes de perfil</div>
               <div class="dropdown-item" data-section="soporte">Soporte</div>
               <div class="dropdown-item" data-section="centro">Centro de información</div>
+              <!-- Nota: la opción "Publicar Archivo" se gestionará desde el panel de administración -->
             </div>
           </div>
         </div>
@@ -195,7 +196,7 @@
           <div class="profile-container-new">
             <div class="profile-display">
               <div class="profile-photo-container">
-                <img id="profile-large-photo" src="https://via.placeholder.com/100/FFFFFF/000000?text=Perfil" alt="Foto de Perfil">
+                <img id="profile-large-photo" src="https://via.placeholder.com/100/FFFFFF/000000?text=Perfil" alt="Foto de Perfil" />
               </div>
               <div class="profile-info">
                 <h3>Información de Perfil</h3>
@@ -237,7 +238,7 @@
                   <button type="submit" class="enhanced-btn">Guardar Formación</button>
                 </form>
                 <div class="file-attachment">
-                  <h4>Adjuntar Archivo</h4>
+                  <h4>Adjuntar Archivo (para uso general)</h4>
                   <form id="profile-attachment-form">
                     <input type="text" id="attachment-title" placeholder="Título del Archivo" required />
                     <input type="file" id="attachment-file" accept="application/pdf, image/*, .docx" required />
@@ -280,7 +281,7 @@
               
               <p>🌐 <a href="https://peopleforpeople7.wordpress.com" target="_blank">Más información en nuestra página web</a></p>
 
-              <!-- Recuadro para subir archivos (visible solo para el administrador correcto) -->
+              <!-- Este contenedor se usa para mostrar archivos subidos a la colección pública -->
               <div id="file-upload-container" style="margin-top: 20px; display: none;">
                 <h3>Subir Archivo</h3>
                 <form id="file-upload-form">
@@ -290,10 +291,6 @@
                 </form>
                 <div id="upload-message" style="margin-top: 10px;"></div>
               </div>
-
-              <!-- Contenedor para mostrar los archivos publicados -->
-              <h3>Archivos Publicados</h3>
-              <div id="public-files-list"></div>
             </div>
 
             <div class="profile-info-section" id="support" style="display:none;">
@@ -311,6 +308,35 @@
               
               <h3>🔹 Sugerencias y Comentarios</h3>
               <p>Tu opinión es importante para nosotros. Déjanos tus sugerencias para mejorar tu experiencia.</p>
+              
+              <!-- Botón para acceder al Panel de Administración -->
+              <button id="admin-panel-link" class="enhanced-btn">Panel de Administración</button>
+              
+              <!-- Panel de Administración (oculto por defecto) -->
+              <div id="admin-panel" style="margin-top:20px; display:none; border: 1px solid #ccc; padding: 10px;">
+                <h2>Panel de Administración</h2>
+                <!-- Formulario para autenticarse en el panel de administración -->
+                <form id="admin-login-form">
+                  <input type="email" id="admin-email" placeholder="Email de Administrador" required />
+                  <input type="password" id="admin-password" placeholder="Contraseña" required />
+                  <button type="submit" class="enhanced-btn">Acceder</button>
+                </form>
+                <!-- Contenido que se muestra una vez que se valida el usuario administrador -->
+                <div id="admin-content" style="display:none;">
+                  <h3>Editar Información</h3>
+                  <form id="admin-edit-form">
+                    <textarea id="admin-info" placeholder="Nueva Información..." required></textarea>
+                    <button type="submit" class="enhanced-btn">Guardar Cambios</button>
+                  </form>
+                  <h3>Subir Archivo</h3>
+                  <form id="admin-upload-form">
+                    <input type="text" id="admin-attachment-title" placeholder="Título del Archivo" required />
+                    <input type="file" id="admin-attachment-file" accept="application/pdf, image/*" required />
+                    <button type="submit" class="enhanced-btn">Subir Archivo</button>
+                  </form>
+                  <div id="admin-upload-message" style="margin-top:10px;"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
