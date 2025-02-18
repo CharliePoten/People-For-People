@@ -207,7 +207,7 @@ function initAdminChat(org) {
         text: message,
         timestamp: Date.now()
       }).catch(error => console.error("Error enviando mensaje en chat de administradores:", error));
-      adminChatInput.value = "";
+      adminChatInput.value = ""; // Limpiar el campo de entrada
     }
   };
 
@@ -239,7 +239,7 @@ function initOrgChat(org) {
         text: message,
         timestamp: Date.now()
       }).catch(error => console.error("Error enviando mensaje en chat de organización:", error));
-      orgChatInput.value = "";
+      orgChatInput.value = ""; // Limpiar el campo de entrada
     }
   };
 
@@ -306,11 +306,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentUser = localStorage.getItem("username");
     const fileUploadContainer = document.getElementById("file-upload-container");
 
-    // Ahora se verifica que el administrador tenga el correo correcto
-    if (currentUser === "peopleforpeopleofficial@gmail.com") {
-      fileUploadContainer.style.display = "block";
+    if (currentUser === "Administrator") {
+      fileUploadContainer.style.display = "block"; // Mostrar recuadro para subir archivos
     } else {
-      fileUploadContainer.style.display = "none";
+      fileUploadContainer.style.display = "none"; // Ocultar recuadro para subir archivos
     }
   }
 
@@ -337,8 +336,9 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // --- MODIFICACIÓN: Menú desplegable en el perfil ---
+  // Remplazamos el antiguo listener del botón de perfil
   profileBtn.addEventListener("click", function (e) {
-    e.stopPropagation();
+    e.stopPropagation(); // Evita que haga bubbling y cierre el dropdown inmediatamente
     var dropdown = document.getElementById("profile-dropdown");
     if (dropdown.style.display === "none" || dropdown.style.display === "") {
       dropdown.style.display = "block";
@@ -347,12 +347,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  // Listener para cada opción del dropdown
   var dropdownItems = document.querySelectorAll("#profile-dropdown .dropdown-item");
   dropdownItems.forEach(function(item) {
     item.addEventListener("click", function (e) {
       e.stopPropagation();
       var selection = this.getAttribute("data-section");
+      // Ocultar el dropdown
       document.getElementById("profile-dropdown").style.display = "none";
+      // Asegurarse de mostrar la sección de perfil y actualizar la vista
       showSection("perfil");
       updateProfileView();
       updateAttachmentList();
@@ -360,6 +363,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+  // Listener global para cerrar el dropdown al hacer clic fuera
   document.addEventListener("click", function () {
     var dropdown = document.getElementById("profile-dropdown");
     if (dropdown) {
@@ -630,6 +634,7 @@ document.addEventListener("DOMContentLoaded", function () {
       memberList.appendChild(noMembersItem);
     }
 
+    // Listener para el chat de Organización usando subcolección "messages"
     const orgChatContainer = document.getElementById("org-chat-messages");
     orgChatContainer.innerHTML = "";
     db.collection("organizaciones").doc(org.firebaseKey).collection("org_chat").orderBy("timestamp")
@@ -741,6 +746,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ayudaListView.style.display = "block";
   });
 
+  // Listener en tiempo real para puntos de ayuda
   db.collection("ayuda").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let ayuda = change.doc.data();
@@ -811,6 +817,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(img);
     }
+
     if (localStorage.getItem("username") === ayuda.creator) {
       const deleteHelpBtn = document.createElement("button");
       deleteHelpBtn.className = "delete-btn";
@@ -829,6 +836,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(deleteHelpBtn);
     }
+
     const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
     ayudaChatContainer.innerHTML = "";
     db.collection("ayuda_chat").doc(ayuda.firebaseKey).collection("messages").orderBy("timestamp")
@@ -841,6 +849,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       });
     currentAyuda = ayuda;
+
     const smallMap = new google.maps.Map(document.getElementById("small-map"), {
       center: { lat: ayuda.latitude, lng: ayuda.longitude },
       zoom: 15,
@@ -851,6 +860,7 @@ document.addEventListener("DOMContentLoaded", function () {
       title: "Punto de Ayuda: " + ayuda.titulo,
       icon: helpIcon
     });
+
     document.getElementById("ayuda-detail-view").style.display = "block";
   }
 
@@ -912,12 +922,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     const habilidades = document.getElementById("voluntario-habilidades").value.trim();
     newVoluntario.habilidades = habilidades;
+
     db.collection("voluntarios").add(newVoluntario)
       .catch(error => console.error("Error creando voluntario:", error));
     this.reset();
     voluntarioCreateForm.style.display = "none";
   });
 
+  // Listener en tiempo real para voluntarios
   db.collection("voluntarios").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let vol = change.doc.data();
@@ -986,26 +998,33 @@ document.addEventListener("DOMContentLoaded", function () {
     voluntarioCreateForm.style.display = "none";
     const voluntarioDetailDiv = document.getElementById("voluntario-detail");
     voluntarioDetailDiv.innerHTML = "";
+
     const detailContainer = document.createElement("div");
     detailContainer.style.display = "flex";
     detailContainer.style.justifyContent = "space-between";
     detailContainer.style.alignItems = "flex-start";
+
     const leftColumn = document.createElement("div");
     leftColumn.style.flex = "1";
     leftColumn.style.marginRight = "20px";
+
     const infoHeader = document.createElement("h3");
     infoHeader.innerText = "Detalle del Voluntario";
     leftColumn.appendChild(infoHeader);
+
     const horarioP = document.createElement("p");
     horarioP.innerText = "Horario: " + vol.horarioTexto;
     leftColumn.appendChild(horarioP);
+
     const userP = document.createElement("p");
     userP.innerText = "Ofrecido por: " + vol.user;
     leftColumn.appendChild(userP);
+
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
     leftColumn.appendChild(horarioP);
     leftColumn.appendChild(habilidadesP);
+
     const profileDiv = document.createElement("div");
     profileDiv.id = "voluntario-profile-info";
     profileDiv.innerHTML =
@@ -1014,7 +1033,9 @@ document.addEventListener("DOMContentLoaded", function () {
       "<p>Fecha de Nacimiento: " + (localStorage.getItem("profileDob") || "No definida") + "</p>" +
       "<p>Formación Profesional: " + (localStorage.getItem("profileFormation") || "No definida") + "</p>";
     leftColumn.appendChild(profileDiv);
+
     detailContainer.appendChild(leftColumn);
+
     const rightColumn = document.createElement("div");
     rightColumn.style.flexShrink = "0";
     rightColumn.style.display = "flex";
@@ -1026,7 +1047,9 @@ document.addEventListener("DOMContentLoaded", function () {
     profileImg.style.borderRadius = "50%";
     rightColumn.appendChild(profileImg);
     detailContainer.appendChild(rightColumn);
+
     voluntarioDetailDiv.appendChild(detailContainer);
+
     const privateChatDiv = document.createElement("div");
     privateChatDiv.id = "voluntario-private-chat";
     privateChatDiv.innerHTML =
@@ -1034,6 +1057,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "<div class='chat-messages' id='voluntario-private-chat-messages'></div>" +
       "<form id='voluntario-private-chat-form'><input type='text' id='voluntario-private-chat-input' placeholder='Escribe tu mensaje' required /><button type='submit' class='enhanced-btn'>Enviar</button></form>";
     voluntarioDetailDiv.appendChild(privateChatDiv);
+
     const currentUser = localStorage.getItem("username") || "Tú";
     const chatKey = [currentUser, vol.user].sort().join("_");
     const privateChatMessagesDiv = document.getElementById("voluntario-private-chat-messages");
@@ -1109,13 +1133,12 @@ document.addEventListener("DOMContentLoaded", function () {
     alert("Formación profesional actualizada");
   });
 
-  // Manejo de subida de archivos en el Centro de Información (actualizado)
+  // Manejo de subida de archivos en el Centro de Información
   document.getElementById("file-upload-form").addEventListener("submit", function (e) {
     e.preventDefault();
 
     const currentUser = localStorage.getItem("username");
-    // Se verifica que el usuario tenga el correo de administrador
-    if (currentUser !== "peopleforpeopleofficial@gmail.com") {
+    if (currentUser !== "Administrator") {
       document.getElementById("upload-message").innerText = "No tienes permiso para subir archivos.";
       return;
     }
@@ -1130,15 +1153,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const file = fileInput.files[0];
 
-    // Se permite subir archivos de cualquier tipo (pdf, png, jpg, jpeg, etc.)
+    if (file.type !== "application/pdf") {
+      document.getElementById("upload-message").innerText = "Por favor, selecciona un archivo PDF.";
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = function (ev) {
       const newAttachment = {
         title: title,
         fileName: file.name,
         fileUrl: ev.target.result,
-        visibility: "public",
-        timestamp: Date.now()
+        visibility: "public"
       };
 
       db.collection("public_files").add(newAttachment)
@@ -1152,29 +1178,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     };
     reader.readAsDataURL(file);
-  });
-
-  // Listener para cargar en tiempo real los archivos publicados en el Centro de Información
-  db.collection("public_files").orderBy("timestamp", "desc").onSnapshot(function(snapshot) {
-    const publicFilesList = document.getElementById("public-files-list");
-    if (publicFilesList) {
-      publicFilesList.innerHTML = "";
-      snapshot.forEach(function(doc) {
-        let file = doc.data();
-        file.firebaseKey = doc.id;
-        const fileDiv = document.createElement("div");
-        fileDiv.classList.add("public-file-item");
-        fileDiv.innerHTML = "<strong>" + file.title + "</strong> (" + file.fileName + ") - " + file.visibility;
-        const viewBtn = document.createElement("button");
-        viewBtn.className = "view-att-btn";
-        viewBtn.innerText = "Visualizar";
-        viewBtn.addEventListener("click", function () {
-          openModal(file.fileUrl, file.fileName);
-        });
-        fileDiv.appendChild(viewBtn);
-        publicFilesList.appendChild(fileDiv);
-      });
-    }
   });
 
   function updateAttachmentList() {
