@@ -318,13 +318,13 @@ document.addEventListener("DOMContentLoaded", function () {
       section.style.display = (section.id === sectionId) ? "block" : "none";
     });
 
-    // Mostrar las secciones de Soporte y Centro de Información
+    // Mostrar las secciones de Soporte y Centro de Información en el módulo de perfil
     if (sectionId === "perfil") {
-      document.getElementById("info-center").style.display = "block"; // Mostrar Centro de Información
-      document.getElementById("support").style.display = "block"; // Mostrar Soporte
+      document.getElementById("info-center").style.display = "block"; // Centro de Información
+      document.getElementById("support").style.display = "block"; // Soporte
     } else {
-      document.getElementById("info-center").style.display = "none"; // Ocultar Centro de Información
-      document.getElementById("support").style.display = "none"; // Ocultar Soporte
+      document.getElementById("info-center").style.display = "none";
+      document.getElementById("support").style.display = "none";
     }
   }
 
@@ -335,26 +335,42 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  profileBtn.addEventListener("click", function () {
-    showSection("perfil");
-    updateProfileView();
-    updateAttachmentList();
+  // --- MODIFICACIÓN: Menú desplegable en el perfil ---
+  // Remplazamos el antiguo listener del botón de perfil
+  profileBtn.addEventListener("click", function (e) {
+    e.stopPropagation(); // Evita que haga bubbling y cierre el dropdown inmediatamente
+    var dropdown = document.getElementById("profile-dropdown");
+    if (dropdown.style.display === "none" || dropdown.style.display === "") {
+      dropdown.style.display = "block";
+    } else {
+      dropdown.style.display = "none";
+    }
   });
 
-  function updateProfileView() {
-    document.getElementById("profile-username-display").innerText =
-      "Usuario: " + (localStorage.getItem("username") || "");
-    document.getElementById("profile-name-display").innerText =
-      "Nombre: " + (localStorage.getItem("profileNombre") || "");
-    document.getElementById("profile-surname-display").innerText =
-      "Apellido: " + (localStorage.getItem("profileApellido") || "");
-    document.getElementById("profile-dob-display").innerText =
-      "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
-    document.getElementById("profile-formation-display").innerText =
-      "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
-    document.getElementById("profile-large-photo").src =
-      localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
-  }
+  // Listener para cada opción del dropdown
+  var dropdownItems = document.querySelectorAll("#profile-dropdown .dropdown-item");
+  dropdownItems.forEach(function(item) {
+    item.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var selection = this.getAttribute("data-section");
+      // Ocultar el dropdown
+      document.getElementById("profile-dropdown").style.display = "none";
+      // Asegurarse de mostrar la sección de perfil y actualizar la vista
+      showSection("perfil");
+      updateProfileView();
+      updateAttachmentList();
+      updateProfileSubsection(selection);
+    });
+  });
+
+  // Listener global para cerrar el dropdown al hacer clic fuera
+  document.addEventListener("click", function () {
+    var dropdown = document.getElementById("profile-dropdown");
+    if (dropdown) {
+      dropdown.style.display = "none";
+    }
+  });
+  // --- FIN MODIFICACIÓN ---
 
   /* SLIDERS DE VOLUNTARIOS */
   const daysArray = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
@@ -605,7 +621,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Mostrar miembros de la organización
     const memberList = document.getElementById("org-member-list");
-    memberList.innerHTML = ""; // Limpiar la lista antes de agregar
+    memberList.innerHTML = "";
     if (org.members && org.members.length > 0) {
       org.members.forEach(function(member) {
         const memberItem = document.createElement("li");
@@ -802,7 +818,6 @@ document.addEventListener("DOMContentLoaded", function () {
       ayudaDetailDiv.appendChild(img);
     }
 
-    // Si el usuario es el creador, agregar botón para eliminar
     if (localStorage.getItem("username") === ayuda.creator) {
       const deleteHelpBtn = document.createElement("button");
       deleteHelpBtn.className = "delete-btn";
@@ -822,7 +837,6 @@ document.addEventListener("DOMContentLoaded", function () {
       ayudaDetailDiv.appendChild(deleteHelpBtn);
     }
 
-    // Chat de Ayuda: subcolección "messages" en "ayuda_chat"
     const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
     ayudaChatContainer.innerHTML = "";
     db.collection("ayuda_chat").doc(ayuda.firebaseKey).collection("messages").orderBy("timestamp")
@@ -836,7 +850,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     currentAyuda = ayuda;
 
-    // Mostrar el mapa pequeño
     const smallMap = new google.maps.Map(document.getElementById("small-map"), {
       center: { lat: ayuda.latitude, lng: ayuda.longitude },
       zoom: 15,
@@ -1009,6 +1022,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
+    leftColumn.appendChild(horarioP);
     leftColumn.appendChild(habilidadesP);
 
     const profileDiv = document.createElement("div");
@@ -1139,7 +1153,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const file = fileInput.files[0];
 
-    // Verificar que el archivo sea un PDF
     if (file.type !== "application/pdf") {
       document.getElementById("upload-message").innerText = "Por favor, selecciona un archivo PDF.";
       return;
@@ -1151,14 +1164,13 @@ document.addEventListener("DOMContentLoaded", function () {
         title: title,
         fileName: file.name,
         fileUrl: ev.target.result,
-        visibility: "public" // Se establece como público
+        visibility: "public"
       };
 
-      // Guardar el archivo en la base de datos
       db.collection("public_files").add(newAttachment)
         .then(() => {
           document.getElementById("upload-message").innerText = "Archivo subido exitosamente.";
-          document.getElementById("file-upload-form").reset(); // Reiniciar el formulario
+          document.getElementById("file-upload-form").reset();
         })
         .catch(error => {
           console.error("Error subiendo archivo:", error);
@@ -1252,4 +1264,43 @@ function openModal(url, fileName) {
     }
   });
   modal.style.display = "block";
+}
+
+/* Función para cambiar la subsección interna de Mi Perfil según la opción seleccionada */
+function updateProfileSubsection(option) {
+  var profileDisplay = document.querySelector(".profile-display");
+  var profileSettings = document.querySelector(".profile-settings");
+  var infoCenter = document.getElementById("info-center");
+  var support = document.getElementById("support");
+
+  if (profileDisplay) profileDisplay.style.display = "none";
+  if (profileSettings) profileSettings.style.display = "none";
+  if (infoCenter) infoCenter.style.display = "none";
+  if (support) support.style.display = "none";
+
+  if (option === "perfil") {
+    if (profileDisplay) profileDisplay.style.display = "block";
+  } else if (option === "ajustes") {
+    if (profileSettings) profileSettings.style.display = "block";
+  } else if (option === "soporte") {
+    if (support) support.style.display = "block";
+  } else if (option === "centro") {
+    if (infoCenter) infoCenter.style.display = "block";
+  }
+}
+
+/* Función para actualizar la vista de Mi Perfil */
+function updateProfileView() {
+  document.getElementById("profile-username-display").innerText =
+    "Usuario: " + (localStorage.getItem("username") || "");
+  document.getElementById("profile-name-display").innerText =
+    "Nombre: " + (localStorage.getItem("profileNombre") || "");
+  document.getElementById("profile-surname-display").innerText =
+    "Apellido: " + (localStorage.getItem("profileApellido") || "");
+  document.getElementById("profile-dob-display").innerText =
+    "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
+  document.getElementById("profile-formation-display").innerText =
+    "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
+  document.getElementById("profile-large-photo").src =
+    localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
 }
