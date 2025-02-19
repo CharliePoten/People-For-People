@@ -647,7 +647,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const joinOrgBtn = document.getElementById("unirse-org");
   if (joinOrgBtn) {
-    joinOrgBtn.addEventListener("click", function() {
+    joinOrgBtn.addEventListener("click", function(){
       if (!currentOrg) return;
       const currentUser = activeUser;
       if (currentOrg.admin === currentUser) {
@@ -977,6 +977,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function showVoluntarioDetail(vol) {
+    // Ocultamos la lista y el formulario
     voluntarioListView.style.display = "none";
     voluntarioCreateForm.style.display = "none";
     const voluntarioDetailDiv = document.getElementById("voluntario-detail");
@@ -1068,11 +1069,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
     currentVoluntario = vol;
-    voluntarioDetailDiv.style.display = "block";
+    // Mostrar el contenedor completo de detalle (voluntario-detail-view)
+    voluntarioDetailView.style.display = "block";
   }
 
+  // Actualización del botón "Volver" para el detalle de voluntario:
   document.getElementById("volver-voluntario-list").addEventListener("click", function () {
-    document.getElementById("voluntario-detail").style.display = "none";
+    voluntarioDetailView.style.display = "none";
     voluntarioListView.style.display = "block";
   });
 
