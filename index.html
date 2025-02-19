@@ -49,7 +49,7 @@
               <div class="dropdown-item" data-section="ajustes">Ajustes de perfil</div>
               <div class="dropdown-item" data-section="soporte">Soporte</div>
               <div class="dropdown-item" data-section="centro">Centro de información</div>
-              <!-- Nota: la opción "Publicar Archivo" se gestionará desde el panel de administración -->
+              <!-- Nota: la opción "Publicar Archivo" se gestionará desde el panel de administrador -->
             </div>
           </div>
         </div>
@@ -281,7 +281,7 @@
               
               <p>🌐 <a href="https://peopleforpeople7.wordpress.com" target="_blank">Más información en nuestra página web</a></p>
 
-              <!-- Este contenedor se usa para mostrar archivos subidos a la colección pública -->
+              <!-- Contenedor para archivos públicos -->
               <div id="file-upload-container" style="margin-top: 20px; display: none;">
                 <h3>Subir Archivo</h3>
                 <form id="file-upload-form">
@@ -306,23 +306,42 @@
               <p>Si experimentas algún error o fallo en la aplicación, repórtalo aquí y lo solucionaremos lo antes posible.</p>
               <p>💬 Chat en Vivo: Disponible en horario laboral</p>
               
+              <!-- Chat en Vivo de Soporte -->
+              <div id="soporte-live-chat">
+                <h3>Chat en Vivo</h3>
+                <div class="chat-messages" id="soporte-chat-messages" style="height:200px; overflow:auto; border:1px solid #ccc; padding:10px;"></div>
+                <form id="soporte-chat-form">
+                  <input type="text" id="soporte-chat-input" placeholder="Escribe tu mensaje" required />
+                  <button type="submit" class="enhanced-btn">Enviar</button>
+                </form>
+              </div>
+              
               <h3>🔹 Sugerencias y Comentarios</h3>
               <p>Tu opinión es importante para nosotros. Déjanos tus sugerencias para mejorar tu experiencia.</p>
               
-              <!-- Botón para acceder al Panel de Administración -->
-              <button id="admin-panel-link" class="enhanced-btn">Panel de Administración</button>
+              <!-- Recuadro para enviar comentarios -->
+              <div id="feedback-section">
+                <form id="feedback-form">
+                  <textarea id="feedback-text" placeholder="Escribe tu comentario aquí" required></textarea>
+                  <button type="submit" class="enhanced-btn">Enviar Comentario</button>
+                </form>
+              </div>
               
-              <!-- Panel de Administración (oculto por defecto) -->
+              <!-- Botón para acceder al Panel de Administrador -->
+              <button id="admin-panel-link" class="enhanced-btn">Panel de Administrador</button>
+              
+              <!-- Panel de Administración (oculto inicialmente) -->
               <div id="admin-panel" style="margin-top:20px; display:none; border: 1px solid #ccc; padding: 10px;">
                 <h2>Panel de Administración</h2>
-                <!-- Formulario para autenticarse en el panel de administración -->
+                <!-- Formulario para autenticarse en el panel -->
                 <form id="admin-login-form">
                   <input type="email" id="admin-email" placeholder="Email de Administrador" required />
                   <input type="password" id="admin-password" placeholder="Contraseña" required />
                   <button type="submit" class="enhanced-btn">Acceder</button>
                 </form>
-                <!-- Contenido que se muestra una vez que se valida el usuario administrador -->
+                <!-- Contenido del panel (oculto hasta la autenticación) -->
                 <div id="admin-content" style="display:none;">
+                  <button id="admin-logout-btn" class="enhanced-btn" style="float: right;">Cerrar Sesión</button>
                   <h3>Editar Información</h3>
                   <form id="admin-edit-form">
                     <textarea id="admin-info" placeholder="Nueva Información..." required></textarea>
@@ -335,12 +354,17 @@
                     <button type="submit" class="enhanced-btn">Subir Archivo</button>
                   </form>
                   <div id="admin-upload-message" style="margin-top:10px;"></div>
+                  
+                  <!-- Nuevo bloque: Lista de chats de soporte -->
+                  <div id="admin-support-chats">
+                    <h3>Chats de Soporte Abiertos</h3>
+                    <div id="admin-support-chats-list" style="border:1px solid #ccc; padding:10px; max-height:200px; overflow:auto;"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
       </main>
 
       <!-- Menú de navegación inferior -->
@@ -357,7 +381,8 @@
       <div class="modal-content"></div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Se carga el archivo principal con defer -->
+    <script defer src="app.js"></script>
     <!-- Carga asíncrona de Google Maps -->
     <script>
       window.onload = function () {
