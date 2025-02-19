@@ -214,7 +214,7 @@ function initAdminChat(org) {
   adminChatInput = document.getElementById("org-admin-chat-input");
   const sendButton = document.querySelector("#org-admin-chat-form button[type='submit']");
 
-  // Verificar si el usuario es el administrador
+  // Verificar si el usuario es el administrador (debe ser exactamente igual a org.admin)
   const currentUser = localStorage.getItem("username");
   if (currentUser !== org.admin) {
     console.log("El usuario", currentUser, "no es administrador de la organización.");
@@ -224,7 +224,7 @@ function initAdminChat(org) {
     return;
   }
 
-  // Listener para enviar mensajes
+  // Listener para enviar mensajes desde el panel de administración
   adminChatForm.onsubmit = function (e) {
     e.preventDefault();
     console.log("Enviando mensaje de admin...");
@@ -1075,11 +1075,11 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
     currentVoluntario = vol;
-    voluntarioDetailView.style.display = "block";
+    voluntarioDetailDiv.style.display = "block";
   }
 
   document.getElementById("volver-voluntario-list").addEventListener("click", function () {
-    voluntarioDetailView.style.display = "none";
+    voluntarioDetailDiv.style.display = "none";
     voluntarioListView.style.display = "block";
   });
 
@@ -1286,6 +1286,17 @@ document.addEventListener("DOMContentLoaded", function () {
              });
          });
   }
+
+  // Estilizar el botón de "Cerrar Sesión" si existe
+  const adminLogoutBtn = document.getElementById("admin-logout-btn");
+  if(adminLogoutBtn) {
+    adminLogoutBtn.style.backgroundColor = "#800080";
+    adminLogoutBtn.style.color = "white";
+    adminLogoutBtn.style.border = "none";
+    adminLogoutBtn.style.borderRadius = "10px";
+    adminLogoutBtn.style.padding = "10px 20px";
+    adminLogoutBtn.style.cursor = "pointer";
+  }
 });
 // --- FIN DEL DOMContentLoaded ---
 
@@ -1445,6 +1456,14 @@ function openSupportChatSession(chatId, user) {
   let closeChatBtn = document.createElement("button");
   closeChatBtn.innerText = "Cerrar Chat";
   closeChatBtn.className = "enhanced-btn";
+  // Aplicar estilo: botón rectangular con bordes redondeados y fondo morado
+  closeChatBtn.style.backgroundColor = "#800080";
+  closeChatBtn.style.color = "white";
+  closeChatBtn.style.border = "none";
+  closeChatBtn.style.borderRadius = "10px";
+  closeChatBtn.style.padding = "10px 20px";
+  closeChatBtn.style.cursor = "pointer";
+  closeChatBtn.style.marginTop = "10px";
   closeChatBtn.addEventListener("click", function(){
       unsubscribe();
       modal.style.display = "none";
