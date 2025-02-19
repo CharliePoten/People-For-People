@@ -25,7 +25,6 @@ function updateAttachmentList() {
   const attachmentListContainer = document.getElementById("profile-attachment-list");
   if (!attachmentListContainer) return;
   
-  // Intenta recuperar los adjuntos desde localStorage
   let attachments = [];
   if (localStorage.getItem("profileAttachments")) {
     try {
@@ -35,14 +34,12 @@ function updateAttachmentList() {
     }
   }
   
-  // Limpia el contenedor
   attachmentListContainer.innerHTML = "";
   
-  // Itera por cada adjunto y agrégalo al contenedor (ajusta la estructura según tus necesidades)
   attachments.forEach(attachment => {
     const div = document.createElement("div");
     div.classList.add("attachment-item");
-    div.innerText = attachment.title; // o cualquier otro dato relevante
+    div.innerText = attachment.title;
     attachmentListContainer.appendChild(div);
   });
 }
@@ -99,9 +96,13 @@ function initMap() {
 }
 window.initMap = initMap;
 
+/* VARIABLE GLOBAL PARA EL USUARIO ACTIVO */
+var activeUser = localStorage.getItem("username") || "Tú";
+
 /* Función para renderizar mensajes de chat con bocadillos */
 function renderChatMessage(msg, container) {
-  const currentUser = localStorage.getItem("username") || "Tú";
+  // Se utiliza activeUser en vez de leer el localStorage en cada renderización
+  const currentUser = activeUser;
   const messageContainer = document.createElement("div");
   messageContainer.classList.add("chat-message");
   if (msg.user === currentUser) {
@@ -214,24 +215,23 @@ function initAdminChat(org) {
   adminChatInput = document.getElementById("org-admin-chat-input");
   const sendButton = document.querySelector("#org-admin-chat-form button[type='submit']");
 
-  // Verificar si el usuario es el administrador (debe ser exactamente igual a org.admin)
-  const currentUser = localStorage.getItem("username");
+  // Verificar si el usuario es el administrador
+  const currentUser = activeUser;
   if (currentUser !== org.admin) {
     console.log("El usuario", currentUser, "no es administrador de la organización.");
-    // Ocultar el formulario de chat y el botón de enviar
     adminChatForm.style.display = "none";
     sendButton.style.display = "none";
     return;
   }
 
-  // Listener para enviar mensajes desde el panel de administración
+  // Envío de mensaje desde el panel de administración
   adminChatForm.onsubmit = function (e) {
     e.preventDefault();
     console.log("Enviando mensaje de admin...");
     const message = adminChatInput.value.trim();
     if (message !== "") {
       db.collection("organizaciones").doc(org.firebaseKey).collection("admin_chat").add({
-        user: localStorage.getItem("username") || "Administrador",
+        user: activeUser, // Será "Administrador" mientras esté activo
         text: message,
         timestamp: Date.now()
       }).catch(error => console.error("Error en admin chat:", error));
@@ -263,7 +263,7 @@ function initOrgChat(org) {
     const message = orgChatInput.value.trim();
     if (message !== "") {
       db.collection("organizaciones").doc(org.firebaseKey).collection("org_chat").add({
-        user: localStorage.getItem("username") || "Tú",
+        user: activeUser,
         text: message,
         timestamp: Date.now()
       }).catch(error => console.error("Error en org chat:", error));
@@ -284,7 +284,6 @@ function initOrgChat(org) {
 
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM completamente cargado.");
-  // Mostrar mensaje de bienvenida (prototipo)
   var acceptBtn = document.getElementById("accept-dev-message");
   if (acceptBtn) {
     acceptBtn.addEventListener("click", function () {
@@ -308,7 +307,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".profile-img").src = defaultProfilePhoto;
   }
 
-  // Función para revisar permisos de administrador
   function checkUserPermissions() {
     const fileUploadContainer = document.getElementById("file-upload-container");
     if (localStorage.getItem("isAdmin") === "true") {
@@ -334,6 +332,7 @@ document.addEventListener("DOMContentLoaded", function () {
     e.preventDefault();
     const username = document.getElementById("username").value.trim();
     localStorage.setItem("username", username);
+    activeUser = username;
     localStorage.setItem("userRegistered", true);
     registrationScreen.style.display = "none";
     mainApp.style.display = "block";
@@ -388,7 +387,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (dropdown) { dropdown.style.display = "none"; }
   });
 
-  /* SLIDERS DE VOLUNTARIOS */
   const daysArray = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
   document.getElementById("dia-inicio").addEventListener("input", function () {
     document.getElementById("dia-inicio-label").textContent = daysArray[this.value];
@@ -403,7 +401,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("hora-fin-label").textContent = this.value + ":00";
   });
 
-  /* BOTÓN DE PANTALLA COMPLETA */
   const fullscreenBtn = document.getElementById("fullscreen-btn");
   fullscreenBtn.addEventListener("click", function () {
     const mapContainer = document.getElementById("map-container");
@@ -452,7 +449,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  /* MÓDULO: ORGANIZACIONES */
   const orgListView = document.getElementById("org-list-view");
   const orgCreateFormDiv = document.getElementById("org-create-form");
   const orgDetailView = document.getElementById("org-detail-view");
@@ -475,7 +471,7 @@ document.addEventListener("DOMContentLoaded", function () {
       title: title,
       info: infoText,
       image: null,
-      admin: localStorage.getItem("username") || "Admin",
+      admin: activeUser,
       members: [],
       timestamp: Date.now()
     };
@@ -527,10 +523,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const orgDiv = document.createElement("div");
       orgDiv.classList.add("org-item");
       orgDiv.setAttribute("data-id", org.firebaseKey);
-
       const container = document.createElement("div");
       container.classList.add("org-item-container");
-
       const leftDiv = document.createElement("div");
       leftDiv.classList.add("org-item-left");
       if (org.image) {
@@ -546,14 +540,13 @@ document.addEventListener("DOMContentLoaded", function () {
       titleSpan.innerText = org.title;
       leftDiv.appendChild(titleSpan);
       container.appendChild(leftDiv);
-
       const rightDiv = document.createElement("div");
       rightDiv.classList.add("org-item-right");
       const adminSpan = document.createElement("span");
       adminSpan.classList.add("org-admin");
       adminSpan.innerText = "Admin: " + org.admin;
       rightDiv.appendChild(adminSpan);
-      if (org.admin === localStorage.getItem("username")) {
+      if (org.admin === activeUser) {
         const deleteOrgBtn = document.createElement("button");
         deleteOrgBtn.className = "delete-org-btn";
         deleteOrgBtn.innerText = "Eliminar";
@@ -656,12 +649,12 @@ document.addEventListener("DOMContentLoaded", function () {
   if (joinOrgBtn) {
     joinOrgBtn.addEventListener("click", function() {
       if (!currentOrg) return;
-      const currentUser = localStorage.getItem("username");
+      const currentUser = activeUser;
       if (currentOrg.admin === currentUser) {
         alert("Eres el administrador de esta organización.");
         return;
       }
-      if (currentOrg.members && currentOrg.members.includes(currentUser)) {
+      if (currentOrg.members && org.members.includes(currentUser)) {
         alert("Ya te has unido a esta organización.");
         return;
       }
@@ -681,7 +674,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const message = input.value.trim();
     if (message !== "" && currentOrg) {
       db.collection("organizaciones").doc(currentOrg.firebaseKey).collection("org_chat").add({
-        user: localStorage.getItem("username") || "Tú",
+        user: activeUser,
         text: message,
         timestamp: Date.now()
       }).catch(function(error) {
@@ -713,7 +706,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let newAyuda = {
       titulo: titulo,
       info: info,
-      creator: localStorage.getItem("username") || "Anónimo",
+      creator: activeUser,
       timestamp: Date.now()
     };
     if (currentLocationMarker) {
@@ -812,7 +805,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(img);
     }
-    if (localStorage.getItem("username") === ayuda.creator) {
+    if (activeUser === ayuda.creator) {
       const deleteHelpBtn = document.createElement("button");
       deleteHelpBtn.className = "delete-btn";
       deleteHelpBtn.innerText = "Eliminar Punto de Ayuda";
@@ -867,7 +860,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const voluntarioListContainer = document.getElementById("voluntario-list");
 
   document.getElementById("mostrar-voluntario-create").addEventListener("click", function () {
-    const currentUser = localStorage.getItem("username");
+    const currentUser = activeUser;
     db.collection("voluntarios").where("user", "==", currentUser).get().then(function(querySnapshot) {
       if (!querySnapshot.empty) {
         alert("Ya te has ofrecido como voluntario.");
@@ -896,7 +889,7 @@ document.addEventListener("DOMContentLoaded", function () {
       horaFinVal +
       ":00";
     let newVoluntario = {
-      user: localStorage.getItem("username") || "Tú",
+      user: activeUser,
       diaInicio: diaInicioVal,
       diaFin: diaFinVal,
       horaInicio: horaInicioVal,
@@ -950,7 +943,7 @@ document.addEventListener("DOMContentLoaded", function () {
       infoDiv.classList.add("voluntario-info");
       infoDiv.innerText = item.user + " - " + item.horarioTexto;
       itemDiv.appendChild(infoDiv);
-      if (item.user === localStorage.getItem("username")) {
+      if (item.user === activeUser) {
         const actionsDiv = document.createElement("div");
         actionsDiv.classList.add("voluntario-actions");
         const deleteBtn = document.createElement("button");
@@ -1047,7 +1040,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "<form id='voluntario-private-chat-form'><input type='text' id='voluntario-private-chat-input' placeholder='Escribe tu mensaje' required /><button type='submit' class='enhanced-btn'>Enviar</button></form>";
     voluntarioDetailDiv.appendChild(privateChatDiv);
 
-    const currentUser = localStorage.getItem("username") || "Tú";
+    const currentUser = activeUser;
     const chatKey = [currentUser, vol.user].sort().join("_");
     const privateChatMessagesDiv = document.getElementById("voluntario-private-chat-messages");
     privateChatMessagesDiv.innerHTML = "";
@@ -1067,7 +1060,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const message = chatInput.value.trim();
       if (message !== "") {
         db.collection("voluntario_chat").doc(chatKey).collection("messages").add({
-          user: currentUser,
+          user: activeUser,
           text: message,
           timestamp: Date.now()
         }).catch(error => console.error("Error en chat privado:", error));
@@ -1079,7 +1072,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   document.getElementById("volver-voluntario-list").addEventListener("click", function () {
-    voluntarioDetailDiv.style.display = "none";
+    document.getElementById("voluntario-detail").style.display = "none";
     voluntarioListView.style.display = "block";
   });
 
@@ -1141,6 +1134,7 @@ document.addEventListener("DOMContentLoaded", function () {
        var normalUser = localStorage.getItem("username");
        localStorage.setItem("normalUsername", normalUser);
        localStorage.setItem("username", "Administrador");
+       activeUser = "Administrador";
        localStorage.setItem("isAdmin", "true");
        alert("Acceso de administrador concedido.");
        adminLoginForm.style.display = "none";
@@ -1152,7 +1146,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Delegación de eventos para el botón de Cerrar Sesión en el panel de administración:
-  // Al cerrar sesion se revierte el usuario a su valor original
+  // Al cerrar sesión se revierte el usuario a su valor original
   document.getElementById("admin-content").addEventListener("click", function(e) {
     if (e.target && e.target.id === "admin-logout-btn") {
       console.log("Clic en el botón Cerrar Sesión");
@@ -1160,6 +1154,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var normalUser = localStorage.getItem("normalUsername");
       if(normalUser){
          localStorage.setItem("username", normalUser);
+         activeUser = normalUser;
          localStorage.removeItem("normalUsername");
       }
       alert("Sesión de administrador cerrada.");
@@ -1217,7 +1212,7 @@ document.addEventListener("DOMContentLoaded", function () {
          e.preventDefault();
          let message = document.getElementById("soporte-chat-input").value.trim();
          if(message !== ""){
-             let currentUser = localStorage.getItem("username") || "Tú";
+             let currentUser = activeUser;
              let chatId = "chat_" + currentUser;
              db.collection("soporte_chats").doc(chatId).collection("messages").add({
                   user: currentUser,
@@ -1234,7 +1229,7 @@ document.addEventListener("DOMContentLoaded", function () {
      });
      
      // Escuchar mensajes del chat de soporte (para usuario)
-     let currentUser = localStorage.getItem("username") || "Tú";
+     let currentUser = activeUser;
      let chatId = "chat_" + currentUser;
      let soporteChatMessages = document.getElementById("soporte-chat-messages");
      db.collection("soporte_chats").doc(chatId).collection("messages").orderBy("timestamp")
@@ -1253,7 +1248,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("feedback-form").addEventListener("submit", function(e){
           e.preventDefault();
           let feedbackText = document.getElementById("feedback-text").value.trim();
-          let currentUser = localStorage.getItem("username") || "Anónimo";
+          let currentUser = activeUser;
           db.collection("feedback").add({
              user: currentUser,
              text: feedbackText,
@@ -1298,7 +1293,7 @@ document.addEventListener("DOMContentLoaded", function () {
     adminLogoutBtn.style.cursor = "pointer";
   }
 });
-// --- FIN DEL DOMContentLoaded ---
+// --- FIN DEL DOMCONTENTLOADED ---
 
 function openModal(url, fileName) {
   let ext = "";
@@ -1426,7 +1421,7 @@ function openSupportChatSession(chatId, user) {
   form.addEventListener("submit", function(e){
     e.preventDefault();
     let message = input.value.trim();
-    let currentUser = localStorage.getItem("username") || "Administrador";
+    let currentUser = activeUser;
     if(message !== ""){
       db.collection("soporte_chats").doc(chatId).collection("messages").add({
         user: currentUser,
@@ -1456,7 +1451,6 @@ function openSupportChatSession(chatId, user) {
   let closeChatBtn = document.createElement("button");
   closeChatBtn.innerText = "Cerrar Chat";
   closeChatBtn.className = "enhanced-btn";
-  // Aplicar estilo: botón rectangular con bordes redondeados y fondo morado
   closeChatBtn.style.backgroundColor = "#800080";
   closeChatBtn.style.color = "white";
   closeChatBtn.style.border = "none";
