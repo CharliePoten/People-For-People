@@ -2,7 +2,7 @@
 var map;
 var currentLocationMarker = null;
 var organizations = [];
-var currentOrg = null;
+var currentOrg = null; // Se actualizará cuando el usuario seleccione o cree una organización
 var currentAyuda = null;
 var currentVoluntario = null;
 
@@ -24,18 +24,13 @@ function updateAttachmentList() {
   console.log("Actualizando la lista de adjuntos");
   const attachmentListContainer = document.getElementById("profile-attachment-list");
   if (!attachmentListContainer) return;
-  
   let attachments = [];
-  if (localStorage.getItem("profileAttachments")) {
-    try {
-      attachments = JSON.parse(localStorage.getItem("profileAttachments"));
-    } catch (error) {
-      console.error("Error parseando profileAttachments:", error);
-    }
+  try {
+    attachments = JSON.parse(localStorage.getItem("profileAttachments")) || [];
+  } catch (error) {
+    console.error("Error parseando profileAttachments:", error);
   }
-  
   attachmentListContainer.innerHTML = "";
-  
   attachments.forEach(attachment => {
     const div = document.createElement("div");
     div.classList.add("attachment-item");
@@ -62,6 +57,9 @@ var db = firebase.firestore();
 const helpIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
 const volunteerIcon = "http://maps.google.com/mapfiles/ms/icons/purple-dot.png";
 const currentLocationIcon = "http://maps.google.com/mapfiles/ms/icons/blue-dot.png";
+
+/* VARIABLE GLOBAL PARA EL MODO ACTUAL */
+var currentMode = localStorage.getItem("userMode") || "voluntario";
 
 /* INICIALIZACIÓN DEL MAPA */
 function initMap() {
@@ -101,23 +99,16 @@ var activeUser = localStorage.getItem("username") || "Tú";
 
 /* Función para renderizar mensajes de chat con bocadillos */
 function renderChatMessage(msg, container) {
-  // Se utiliza activeUser en vez de leer el localStorage en cada renderización
   const currentUser = activeUser;
   const messageContainer = document.createElement("div");
   messageContainer.classList.add("chat-message");
-  if (msg.user === currentUser) {
-    messageContainer.classList.add("mine");
-  } else {
-    messageContainer.classList.add("other");
-  }
+  messageContainer.classList.add(msg.user === currentUser ? "mine" : "other");
 
   const bubble = document.createElement("div");
   bubble.classList.add("chat-bubble");
-  if (msg.user === currentUser) {
-    bubble.classList.add("mine");
-  } else {
-    bubble.classList.add("other");
-    // Se añade el nombre del usuario para mensajes de otros
+  bubble.classList.add(msg.user === currentUser ? "mine" : "other");
+
+  if (msg.user !== currentUser) {
     const usernameElement = document.createElement("div");
     usernameElement.classList.add("chat-username");
     usernameElement.innerText = msg.user;
@@ -146,7 +137,7 @@ function getUserColor(username) {
   return window.userColors[username];
 }
 
-/* Funciones para marcadores de Ayuda */
+/* Funciones para marcadores de Ayuda y Voluntarios */
 function addHelpMarker(ayuda) {
   if (ayuda.latitude && ayuda.longitude) {
     var marker = new google.maps.Marker({
@@ -169,7 +160,6 @@ function removeHelpMarker(key) {
   });
 }
 
-/* Funciones para marcadores de Voluntarios */
 function addVolunteerMarker(vol) {
   if (vol.latitude && vol.longitude) {
     var marker = new google.maps.Marker({
@@ -206,41 +196,40 @@ document.addEventListener("fullscreenchange", function () {
 let ayudaItems = [];
 let voluntarioItems = [];
 
-// Funciones para el chat de administradores
-let adminChatForm, adminChatInput;
+/* CHAT DE ADMINISTRADORES (Modo Organizador) */
 function initAdminChat(org) {
   console.log("Inicializando chat de administrador para org:", org.title);
   const adminChatContainer = document.getElementById("org-admin-chat-messages");
-  adminChatForm = document.getElementById("org-admin-chat-form");
-  adminChatInput = document.getElementById("org-admin-chat-input");
-  const sendButton = document.querySelector("#org-admin-chat-form button[type='submit']");
+  const adminChatForm = document.getElementById("org-admin-chat-form");
+  const adminChatInput = document.getElementById("org-admin-chat-input");
 
-  // Verificar si el usuario es el administrador
-  const currentUser = activeUser;
-  if (currentUser !== org.admin) {
-    console.log("El usuario", currentUser, "no es administrador de la organización.");
+  // Si el usuario no es admin, ocultar este chat.
+  if (activeUser !== org.admin) {
     adminChatForm.style.display = "none";
-    sendButton.style.display = "none";
     return;
   }
 
-  // Envío de mensaje desde el panel de administración
   adminChatForm.onsubmit = function (e) {
     e.preventDefault();
-    console.log("Enviando mensaje de admin...");
     const message = adminChatInput.value.trim();
     if (message !== "") {
-      db.collection("organizaciones").doc(org.firebaseKey).collection("admin_chat").add({
-        user: activeUser, // Será "Administrador" mientras esté activo
-        text: message,
-        timestamp: Date.now()
-      }).catch(error => console.error("Error en admin chat:", error));
+      db.collection("organizaciones")
+        .doc(org.firebaseKey)
+        .collection("admin_chat")
+        .add({
+          user: activeUser,
+          text: message,
+          timestamp: Date.now()
+        })
+        .catch(error => console.error("Error en admin chat:", error));
       adminChatInput.value = "";
     }
   };
 
-  // Listener en tiempo real para mensajes
-  db.collection("organizaciones").doc(org.firebaseKey).collection("admin_chat").orderBy("timestamp")
+  db.collection("organizaciones")
+    .doc(org.firebaseKey)
+    .collection("admin_chat")
+    .orderBy("timestamp")
     .onSnapshot(function(snapshot) {
       snapshot.docChanges().forEach(function(change) {
         if (change.type === "added") {
@@ -251,7 +240,7 @@ function initAdminChat(org) {
     });
 }
 
-// Funciones para el chat de la organización
+/* CHAT DE LA ORGANIZACIÓN (Modo Organizador) */
 function initOrgChat(org) {
   console.log("Inicializando chat de organización para org:", org.title);
   const orgChatContainer = document.getElementById("org-chat-messages");
@@ -261,17 +250,24 @@ function initOrgChat(org) {
   orgChatForm.onsubmit = function (e) {
     e.preventDefault();
     const message = orgChatInput.value.trim();
-    if (message !== "") {
-      db.collection("organizaciones").doc(org.firebaseKey).collection("org_chat").add({
-        user: activeUser,
-        text: message,
-        timestamp: Date.now()
-      }).catch(error => console.error("Error en org chat:", error));
+    if (message !== "" && currentOrg) {
+      db.collection("organizaciones")
+        .doc(org.firebaseKey)
+        .collection("org_chat")
+        .add({
+          user: activeUser,
+          text: message,
+          timestamp: Date.now()
+        })
+        .catch(error => console.error("Error en org chat:", error));
       orgChatInput.value = "";
     }
   };
 
-  db.collection("organizaciones").doc(org.firebaseKey).collection("org_chat").orderBy("timestamp")
+  db.collection("organizaciones")
+    .doc(org.firebaseKey)
+    .collection("org_chat")
+    .orderBy("timestamp")
     .onSnapshot(function(snapshot) {
       snapshot.docChanges().forEach(function(change) {
         if (change.type === "added") {
@@ -282,23 +278,116 @@ function initOrgChat(org) {
     });
 }
 
+/* FUNCIONES PARA EL MODO ORGANIZADOR */
+function loadAdminOrganizations() {
+  const orgListContainer = document.getElementById("orgmode-list");
+  orgListContainer.innerHTML = "";
+  db.collection("organizaciones")
+    .where("admin", "==", activeUser)
+    .orderBy("timestamp")
+    .onSnapshot(function(snapshot) {
+      orgListContainer.innerHTML = "";
+      snapshot.forEach(function(doc) {
+        let org = doc.data();
+        org.firebaseKey = doc.id;
+        const orgDiv = document.createElement("div");
+        orgDiv.classList.add("org-item");
+        orgDiv.textContent = org.title;
+        orgDiv.addEventListener("click", function () {
+          document.getElementById("org-mode-menu").style.display = "none";
+          loadOrganizationDetails(org);
+        });
+        orgListContainer.appendChild(orgDiv);
+      });
+    });
+}
+
+function loadOrganizationDetails(org) {
+  // Actualiza la interfaz de modo organizador
+  const orgModeHome = document.getElementById("org-mode-home");
+  orgModeHome.innerHTML = "<h3>" + org.title + "</h3><p>" + org.info + "</p>";
+}
+
+/* FUNCIÓN DE ALTERNANCIA DE MODO (VOLUNTARIO <-> ORGANIZADOR) */
+function toggleUserMode() {
+  if (currentMode === "voluntario") {
+    currentMode = "organizador";
+    localStorage.setItem("userMode", "organizador");
+    // Actualizar el texto de los botones toggle
+    document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Voluntario");
+    // Ocultar la interfaz de modo voluntario y mostrar la de modo organizador
+    document.getElementById("main-app").style.display = "none";
+    document.getElementById("org-mode-app").style.display = "block";
+    // Cerrar el dropdown de perfil, si está abierto
+    document.getElementById("profile-dropdown").style.display = "none";
+    // Si no hay organización seleccionada, mostrar el modal del modo organizador
+    if (!currentOrg) {
+      document.getElementById("org-mode-menu").style.display = "block";
+    }
+    // Al entrar en modo organizador, asignamos los manejadores para el menú inferior
+    bindOrgModeNavigation();
+  } else {
+    currentMode = "voluntario";
+    localStorage.setItem("userMode", "voluntario");
+    document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Organizador");
+    document.getElementById("org-mode-app").style.display = "none";
+    document.getElementById("main-app").style.display = "block";
+    // Cerrar el modal de modo organizador si se encuentra abierto
+    document.getElementById("org-mode-menu").style.display = "none";
+    // Cerrar el dropdown de perfil
+    document.getElementById("profile-dropdown").style.display = "none";
+  }
+}
+
+/* NUEVA FUNCIÓN: Asignar eventos a los botones del menú inferior del modo Organizador */
+function bindOrgModeNavigation() {
+  const orgMenuBtns = document.querySelectorAll(".org-menu-btn");
+  if (!orgMenuBtns) return;
+  orgMenuBtns.forEach(btn => {
+    btn.addEventListener("click", function () {
+      // Ocultar todas las secciones de contenido en modo organizador
+      const orgSections = document.querySelectorAll(".org-content-section");
+      orgSections.forEach(section => {
+        section.style.display = "none";
+      });
+      // Mostrar la sección cuyo id esté en data-target
+      const target = this.getAttribute("data-target");
+      if (target) {
+        const targetEl = document.getElementById(target);
+        if (targetEl) {
+          targetEl.style.display = "block";
+        } else {
+          console.error("No se encontró la sección con id:", target);
+        }
+      }
+    });
+  });
+}
+
+/* EVENTOS PRINCIPALES */
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM completamente cargado.");
-  var acceptBtn = document.getElementById("accept-dev-message");
+
+  // Cerrar mensaje de desarrollo
+  const acceptBtn = document.getElementById("accept-dev-message");
   if (acceptBtn) {
     acceptBtn.addEventListener("click", function () {
-      console.log("Se hizo clic en 'Aceptar' en el mensaje de desarrollo.");
-      document.getElementById("dev-message").style.display = "none";
+      const devMessage = document.getElementById("dev-message");
+      if (devMessage) {
+        devMessage.style.display = "none";
+      } else {
+        console.error("No se encontró 'dev-message'");
+      }
     });
   }
 
+  // Registro y persistencia de usuario
   const registrationForm = document.getElementById("registration-form");
   const registrationScreen = document.getElementById("registration-screen");
   const mainApp = document.getElementById("main-app");
   const menuButtons = document.querySelectorAll(".menu-btn");
   const contentSections = document.querySelectorAll(".content-section");
   const profileBtn = document.getElementById("profile-btn");
-
   const defaultProfilePhoto = "https://via.placeholder.com/40/FFFFFF/FFFFFF?text=";
   const storedProfilePhoto = localStorage.getItem("profilePhoto");
   if (storedProfilePhoto && storedProfilePhoto.trim() !== "") {
@@ -358,22 +447,21 @@ document.addEventListener("DOMContentLoaded", function () {
   menuButtons.forEach(function (btn) {
     btn.addEventListener("click", function () {
       const target = this.getAttribute("data-target");
-      console.log("Mostrando sección:", target);
       showSection(target);
     });
   });
 
   profileBtn.addEventListener("click", function (e) {
     e.stopPropagation();
-    var dropdown = document.getElementById("profile-dropdown");
-    dropdown.style.display = (dropdown.style.display === "none" || dropdown.style.display === "") ? "block" : "none";
+    const dropdown = document.getElementById("profile-dropdown");
+    dropdown.style.display = (!dropdown.style.display || dropdown.style.display === "none") ? "block" : "none";
   });
 
   var dropdownItems = document.querySelectorAll("#profile-dropdown .dropdown-item");
-  dropdownItems.forEach(function(item) {
+  dropdownItems.forEach(function (item) {
     item.addEventListener("click", function (e) {
       e.stopPropagation();
-      var selection = this.getAttribute("data-section");
+      const selection = this.getAttribute("data-section");
       document.getElementById("profile-dropdown").style.display = "none";
       showSection("perfil");
       updateProfileView();
@@ -383,7 +471,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   document.addEventListener("click", function () {
-    var dropdown = document.getElementById("profile-dropdown");
+    const dropdown = document.getElementById("profile-dropdown");
     if (dropdown) { dropdown.style.display = "none"; }
   });
 
@@ -449,6 +537,99 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
+  /* EVENTOS PARA EL MODO ORGANIZADOR */
+  // Asignar el evento a los botones que cambian el modo (ya existentes)
+  document.querySelectorAll(".mode-toggle-btn").forEach(function(btn) {
+    btn.addEventListener("click", function () {
+      toggleUserMode();
+    });
+  });
+
+  // Modal del Modo Organizador: pestañas y cierre
+  const closeOrgMenu = document.getElementById("close-org-menu");
+  if (closeOrgMenu) {
+    closeOrgMenu.addEventListener("click", function () {
+      document.getElementById("org-mode-menu").style.display = "none";
+    });
+  }
+  const createOrgTab = document.getElementById("create-org-tab");
+  const selectOrgTab = document.getElementById("select-org-tab");
+  if (createOrgTab && selectOrgTab) {
+    createOrgTab.addEventListener("click", function () {
+      this.classList.add("active");
+      selectOrgTab.classList.remove("active");
+      document.getElementById("create-org-section").style.display = "block";
+      document.getElementById("select-org-section").style.display = "none";
+    });
+    selectOrgTab.addEventListener("click", function () {
+      this.classList.add("active");
+      createOrgTab.classList.remove("active");
+      document.getElementById("create-org-section").style.display = "none";
+      document.getElementById("select-org-section").style.display = "block";
+      loadAdminOrganizations();
+    });
+  }
+
+  const createOrgFormOrgMode = document.getElementById("create-org-form-orgmode");
+  if (createOrgFormOrgMode) {
+    createOrgFormOrgMode.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const title = document.getElementById("orgmode-title").value.trim();
+      const infoText = document.getElementById("orgmode-info").value.trim();
+      const imageInput = document.getElementById("orgmode-image");
+      let newOrg = {
+        title: title,
+        info: infoText,
+        image: null,
+        admin: activeUser,
+        members: [],
+        timestamp: Date.now()
+      };
+      if (currentLocationMarker) {
+        newOrg.latitude = currentLocationMarker.getPosition().lat();
+        newOrg.longitude = currentLocationMarker.getPosition().lng();
+      } else {
+        newOrg.latitude = 40.416775;
+        newOrg.longitude = -3.70379;
+      }
+      function pushOrg() {
+        db.collection("organizaciones").add(newOrg)
+          .then(function(docRef) {
+            alert("Organización creada.");
+            document.getElementById("org-mode-menu").style.display = "none";
+            newOrg.firebaseKey = docRef.id;
+            loadOrganizationDetails(newOrg);
+          })
+          .catch(function(error) {
+            console.error("Error creando organización:", error);
+          });
+      }
+      if (imageInput.files && imageInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          newOrg.image = e.target.result;
+          pushOrg();
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+      } else {
+        pushOrg();
+      }
+    });
+  }
+
+  // Listener para el botón "Crear Organización" para el modo organizador
+  const crearOrgOrganizadorBtn = document.getElementById("crear-org-organizador-btn");
+  if (crearOrgOrganizadorBtn) {
+    crearOrgOrganizadorBtn.addEventListener("click", function() {
+      document.getElementById("org-mode-menu").style.display = "block";
+      document.getElementById("create-org-tab").classList.add("active");
+      document.getElementById("select-org-tab").classList.remove("active");
+      document.getElementById("create-org-section").style.display = "block";
+      document.getElementById("select-org-section").style.display = "none";
+    });
+  }
+
+  /* MÓDULO: ORGANIZACIONES (modo voluntario) */
   const orgListView = document.getElementById("org-list-view");
   const orgCreateFormDiv = document.getElementById("org-create-form");
   const orgDetailView = document.getElementById("org-detail-view");
@@ -597,7 +778,6 @@ document.addEventListener("DOMContentLoaded", function () {
     infoP.innerText = org.info;
     orgDetailDiv.appendChild(infoP);
   
-    // Inicializa chats
     initAdminChat(org);
     initOrgChat(org);
 
@@ -654,7 +834,7 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Eres el administrador de esta organización.");
         return;
       }
-      if (currentOrg.members && org.members.includes(currentUser)) {
+      if (currentOrg.members && currentOrg.members.includes(currentUser)) {
         alert("Ya te has unido a esta organización.");
         return;
       }
@@ -678,7 +858,7 @@ document.addEventListener("DOMContentLoaded", function () {
         text: message,
         timestamp: Date.now()
       }).catch(function(error) {
-        console.error("Error en org-chat:", error);
+        console.error("Error en org chat:", error);
       });
       input.value = "";
     }
@@ -977,7 +1157,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function showVoluntarioDetail(vol) {
-    // Ocultamos la lista y el formulario
     voluntarioListView.style.display = "none";
     voluntarioCreateForm.style.display = "none";
     const voluntarioDetailDiv = document.getElementById("voluntario-detail");
@@ -1006,6 +1185,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
+    leftColumn.appendChild(horarioP);
     leftColumn.appendChild(habilidadesP);
 
     const profileDiv = document.createElement("div");
@@ -1045,7 +1225,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const chatKey = [currentUser, vol.user].sort().join("_");
     const privateChatMessagesDiv = document.getElementById("voluntario-private-chat-messages");
     privateChatMessagesDiv.innerHTML = "";
-    db.collection("voluntario_chat").doc(chatKey).collection("messages").orderBy("timestamp")
+    db.collection("voluntario_chat")
+      .doc(chatKey)
+      .collection("messages")
+      .orderBy("timestamp")
       .onSnapshot(function(snapshot) {
         snapshot.docChanges().forEach(function(change) {
           if (change.type === "added") {
@@ -1060,20 +1243,22 @@ document.addEventListener("DOMContentLoaded", function () {
       const chatInput = document.getElementById("voluntario-private-chat-input");
       const message = chatInput.value.trim();
       if (message !== "") {
-        db.collection("voluntario_chat").doc(chatKey).collection("messages").add({
-          user: activeUser,
-          text: message,
-          timestamp: Date.now()
-        }).catch(error => console.error("Error en chat privado:", error));
+        db.collection("voluntario_chat")
+          .doc(chatKey)
+          .collection("messages")
+          .add({
+            user: activeUser,
+            text: message,
+            timestamp: Date.now()
+          })
+          .catch(error => console.error("Error en chat privado:", error));
         chatInput.value = "";
       }
     };
     currentVoluntario = vol;
-    // Mostrar el contenedor completo de detalle (voluntario-detail-view)
     voluntarioDetailView.style.display = "block";
   }
 
-  // Actualización del botón "Volver" para el detalle de voluntario:
   document.getElementById("volver-voluntario-list").addEventListener("click", function () {
     voluntarioDetailView.style.display = "none";
     voluntarioListView.style.display = "block";
@@ -1126,8 +1311,6 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("Se hizo clic en Panel de Administrador.");
   });
 
-  // Formulario de autenticación del panel de administración:
-  // Al iniciar sesión se guarda el usuario normal y se cambia a "Administrador"
   var adminLoginForm = document.getElementById("admin-login-form");
   adminLoginForm.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -1148,11 +1331,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Delegación de eventos para el botón de Cerrar Sesión en el panel de administración:
-  // Al cerrar sesión se revierte el usuario a su valor original
   document.getElementById("admin-content").addEventListener("click", function(e) {
     if (e.target && e.target.id === "admin-logout-btn") {
-      console.log("Clic en el botón Cerrar Sesión");
       localStorage.removeItem("isAdmin");
       var normalUser = localStorage.getItem("normalUsername");
       if(normalUser){
@@ -1175,7 +1355,7 @@ document.addEventListener("DOMContentLoaded", function () {
       alert("Información actualizada exitosamente.");
       adminEditForm.reset();
   });
-  
+
   var adminUploadForm = document.getElementById("admin-upload-form");
   adminUploadForm.addEventListener("submit", function(e){
       e.preventDefault();
@@ -1209,7 +1389,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // --- NUEVAS FUNCIONALIDADES: CHAT DE SOPORTE Y FEEDBACK ---
-  // Chat en Soporte (para usuario)
   if(document.getElementById("soporte-chat-form")) {
      document.getElementById("soporte-chat-form").addEventListener("submit", function(e){
          e.preventDefault();
@@ -1231,7 +1410,6 @@ document.addEventListener("DOMContentLoaded", function () {
          }
      });
      
-     // Escuchar mensajes del chat de soporte (para usuario)
      let currentUser = activeUser;
      let chatId = "chat_" + currentUser;
      let soporteChatMessages = document.getElementById("soporte-chat-messages");
@@ -1246,7 +1424,6 @@ document.addEventListener("DOMContentLoaded", function () {
          });
   }
 
-  // Feedback: Sugerencias y Comentarios
   if(document.getElementById("feedback-form")) {
       document.getElementById("feedback-form").addEventListener("submit", function(e){
           e.preventDefault();
@@ -1263,7 +1440,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  // En el panel de administración: Listar chats de soporte abiertos
   if(document.getElementById("admin-support-chats-list")) {
        db.collection("soporte_chats").orderBy("updatedAt", "desc")
          .onSnapshot(snapshot => {
@@ -1285,7 +1461,6 @@ document.addEventListener("DOMContentLoaded", function () {
          });
   }
 
-  // Estilizar el botón de "Cerrar Sesión" si existe
   const adminLogoutBtn = document.getElementById("admin-logout-btn");
   if(adminLogoutBtn) {
     adminLogoutBtn.style.backgroundColor = "#800080";
@@ -1296,8 +1471,34 @@ document.addEventListener("DOMContentLoaded", function () {
     adminLogoutBtn.style.cursor = "pointer";
   }
 });
-// --- FIN DEL DOMCONTENTLOADED ---
+/* --- FIN DEL DOMCONTENTLOADED --- */
 
+/* NUEVA FUNCIÓN: Asignar eventos a los botones de menú del modo Organizador */
+function bindOrgModeNavigation() {
+  const orgMenuBtns = document.querySelectorAll(".org-menu-btn");
+  if (!orgMenuBtns) return;
+  orgMenuBtns.forEach(btn => {
+    btn.addEventListener("click", function () {
+      // Ocultar todas las secciones en modo organizador.
+      const orgSections = document.querySelectorAll(".org-content-section");
+      orgSections.forEach(section => {
+        section.style.display = "none";
+      });
+      // Mostrar la sección cuyo id se encuentra en data-target.
+      const target = this.getAttribute("data-target");
+      if (target) {
+        const targetEl = document.getElementById(target);
+        if (targetEl) {
+          targetEl.style.display = "block";
+        } else {
+          console.error("No se encontró la sección con id:", target);
+        }
+      }
+    });
+  });
+}
+
+/* FUNCIÓN PARA ABRIR MODAL DE VISTA PREVIA DE ARCHIVOS */
 function openModal(url, fileName) {
   let ext = "";
   if (fileName) {
@@ -1342,10 +1543,10 @@ function openModal(url, fileName) {
 }
 
 function updateProfileSubsection(option) {
-  var profileDisplay = document.querySelector(".profile-display");
-  var profileSettings = document.querySelector(".profile-settings");
-  var infoCenter = document.getElementById("info-center");
-  var support = document.getElementById("support");
+  const profileDisplay = document.querySelector(".profile-display");
+  const profileSettings = document.querySelector(".profile-settings");
+  const infoCenter = document.getElementById("info-center");
+  const support = document.getElementById("support");
 
   if (profileDisplay) profileDisplay.style.display = "none";
   if (profileSettings) profileSettings.style.display = "none";
@@ -1378,25 +1579,22 @@ function updateProfileView() {
     localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
 }
 
-// --- NUEVA FUNCIÓN: Abrir sesión de chat de soporte en el panel de administración ---
+/* FUNCIÓN PARA ABRIR CHAT DE SOPORTE EN EL PANEL DE ADMINISTRACIÓN */
 function openSupportChatSession(chatId, user) {
   let modal = document.getElementById("modal-viewer");
   let modalContent = document.querySelector(".modal-content");
   modalContent.innerHTML = "";
   
-  // Botón de cierre (x)
   let closeBtn = document.createElement("span");
   closeBtn.className = "close";
   closeBtn.innerHTML = "&times;";
   closeBtn.addEventListener("click", function(){ modal.style.display = "none"; });
   modalContent.appendChild(closeBtn);
   
-  // Título del chat
   let title = document.createElement("h3");
   title.innerText = "Chat de Soporte con " + user;
   modalContent.appendChild(title);
   
-  // Área de mensajes
   let messagesDiv = document.createElement("div");
   messagesDiv.className = "chat-messages";
   messagesDiv.style.height = "300px";
@@ -1405,7 +1603,6 @@ function openSupportChatSession(chatId, user) {
   messagesDiv.style.padding = "10px";
   modalContent.appendChild(messagesDiv);
   
-  // Formulario para enviar respuesta
   let form = document.createElement("form");
   form.id = "admin-support-chat-form";
   let input = document.createElement("input");
@@ -1420,7 +1617,6 @@ function openSupportChatSession(chatId, user) {
   form.appendChild(button);
   modalContent.appendChild(form);
   
-  // Listener para enviar mensajes
   form.addEventListener("submit", function(e){
     e.preventDefault();
     let message = input.value.trim();
@@ -1439,7 +1635,6 @@ function openSupportChatSession(chatId, user) {
     }
   });
   
-  // Escuchar mensajes del chat seleccionado y obtener función de desuscripción
   let unsubscribe = db.collection("soporte_chats").doc(chatId).collection("messages").orderBy("timestamp")
       .onSnapshot(snapshot => {
         snapshot.docChanges().forEach(change => {
@@ -1450,7 +1645,6 @@ function openSupportChatSession(chatId, user) {
         });
       });
   
-  // Botón para cerrar el chat (además del botón "x")
   let closeChatBtn = document.createElement("button");
   closeChatBtn.innerText = "Cerrar Chat";
   closeChatBtn.className = "enhanced-btn";
@@ -1469,3 +1663,227 @@ function openSupportChatSession(chatId, user) {
   
   modal.style.display = "block";
 }
+
+/* FUNCIÓN DE ALTERNANCIA DE MODO (VOLUNTARIO <-> ORGANIZADOR) */
+function toggleUserMode() {
+  if (currentMode === "voluntario") {
+    currentMode = "organizador";
+    localStorage.setItem("userMode", "organizador");
+    // Actualizar el texto de todos los botones toggle a "Cambiar a Voluntario"
+    document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Voluntario");
+    // Ocultar la interfaz principal de modo voluntario y mostrar la interfaz de modo organizador
+    document.getElementById("main-app").style.display = "none";
+    document.getElementById("org-mode-app").style.display = "block";
+    // Cerrar el dropdown de perfil
+    document.getElementById("profile-dropdown").style.display = "none";
+    // Si aún no se ha seleccionado una organización, mostrar el modal del modo organizador
+    if (!currentOrg) {
+      document.getElementById("org-mode-menu").style.display = "block";
+    }
+    // Asignar manejadores a los botones del menú inferior en modo Organizador
+    bindOrgModeNavigation();
+  } else {
+    currentMode = "voluntario";
+    localStorage.setItem("userMode", "voluntario");
+    document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Organizador");
+    document.getElementById("org-mode-app").style.display = "none";
+    document.getElementById("main-app").style.display = "block";
+    // Cerrar el modal de modo organizador, si se encuentra abierto
+    document.getElementById("org-mode-menu").style.display = "none";
+    // Cerrar el dropdown de perfil
+    document.getElementById("profile-dropdown").style.display = "none";
+  }
+}
+
+/* NUEVA FUNCIÓN: Asignar eventos a los botones del menú inferior del modo Organizador */
+function bindOrgModeNavigation() {
+  const orgMenuBtns = document.querySelectorAll(".org-menu-btn");
+  if (!orgMenuBtns) return;
+  orgMenuBtns.forEach(btn => {
+    btn.addEventListener("click", function () {
+      // Ocultar todas las secciones de contenido en modo organizador
+      const orgSections = document.querySelectorAll(".org-content-section");
+      orgSections.forEach(section => {
+        section.style.display = "none";
+      });
+      // Mostrar la sección cuyo id se encuentre en data-target del botón
+      const target = this.getAttribute("data-target");
+      if (target) {
+        const targetEl = document.getElementById(target);
+        if (targetEl) {
+          targetEl.style.display = "block";
+        } else {
+          console.error("No se encontró la sección con id:", target);
+        }
+      }
+    });
+  });
+}
+
+/* FUNCIÓN PARA ABRIR MODAL DE VISTA PREVIA DE ARCHIVOS */
+function openModal(url, fileName) {
+  let ext = "";
+  if (fileName) {
+    ext = fileName.split(".").pop().toLowerCase();
+  } else {
+    if (url.indexOf("data:image") === 0) {
+      ext = "image";
+    } else if (url.indexOf("data:application/pdf") === 0) {
+      ext = "pdf";
+    }
+  }
+  const modal = document.getElementById("modal-viewer");
+  const modalContent = document.querySelector(".modal-content");
+  modalContent.innerHTML = "";
+  const closeBtn = document.createElement("span");
+  closeBtn.className = "close";
+  closeBtn.innerHTML = "&times;";
+  closeBtn.addEventListener("click", function () {
+    modal.style.display = "none";
+  });
+  modalContent.appendChild(closeBtn);
+  if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "image") {
+    const img = document.createElement("img");
+    img.src = url;
+    modalContent.appendChild(img);
+    img.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+  } else if (ext === "pdf") {
+    const iframe = document.createElement("iframe");
+    iframe.src = url;
+    modalContent.appendChild(iframe);
+  } else {
+    const msg = document.createElement("p");
+    msg.textContent = "Vista previa no disponible para este tipo de archivo.";
+    modalContent.appendChild(msg);
+  }
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) { modal.style.display = "none"; }
+  });
+  modal.style.display = "block";
+}
+
+function updateProfileSubsection(option) {
+  const profileDisplay = document.querySelector(".profile-display");
+  const profileSettings = document.querySelector(".profile-settings");
+  const infoCenter = document.getElementById("info-center");
+  const support = document.getElementById("support");
+
+  if (profileDisplay) profileDisplay.style.display = "none";
+  if (profileSettings) profileSettings.style.display = "none";
+  if (infoCenter) infoCenter.style.display = "none";
+  if (support) support.style.display = "none";
+
+  if (option === "perfil") {
+    if (profileDisplay) profileDisplay.style.display = "block";
+  } else if (option === "ajustes") {
+    if (profileSettings) profileSettings.style.display = "block";
+  } else if (option === "soporte") {
+    if (support) support.style.display = "block";
+  } else if (option === "centro") {
+    if (infoCenter) infoCenter.style.display = "block";
+  }
+}
+
+function updateProfileView() {
+  document.getElementById("profile-username-display").innerText =
+    "Usuario: " + (localStorage.getItem("username") || "");
+  document.getElementById("profile-name-display").innerText =
+    "Nombre: " + (localStorage.getItem("profileNombre") || "");
+  document.getElementById("profile-surname-display").innerText =
+    "Apellido: " + (localStorage.getItem("profileApellido") || "");
+  document.getElementById("profile-dob-display").innerText =
+    "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
+  document.getElementById("profile-formation-display").innerText =
+    "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
+  document.getElementById("profile-large-photo").src =
+    localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
+}
+
+/* FUNCIÓN PARA ABRIR CHAT DE SOPORTE EN EL PANEL DE ADMINISTRACIÓN */
+function openSupportChatSession(chatId, user) {
+  let modal = document.getElementById("modal-viewer");
+  let modalContent = document.querySelector(".modal-content");
+  modalContent.innerHTML = "";
+  
+  let closeBtn = document.createElement("span");
+  closeBtn.className = "close";
+  closeBtn.innerHTML = "&times;";
+  closeBtn.addEventListener("click", function(){ modal.style.display = "none"; });
+  modalContent.appendChild(closeBtn);
+  
+  let title = document.createElement("h3");
+  title.innerText = "Chat de Soporte con " + user;
+  modalContent.appendChild(title);
+  
+  let messagesDiv = document.createElement("div");
+  messagesDiv.className = "chat-messages";
+  messagesDiv.style.height = "300px";
+  messagesDiv.style.overflowY = "scroll";
+  messagesDiv.style.border = "1px solid #ccc";
+  messagesDiv.style.padding = "10px";
+  modalContent.appendChild(messagesDiv);
+  
+  let form = document.createElement("form");
+  form.id = "admin-support-chat-form";
+  let input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Escribe tu respuesta";
+  input.required = true;
+  form.appendChild(input);
+  let button = document.createElement("button");
+  button.type = "submit";
+  button.className = "enhanced-btn";
+  button.innerText = "Enviar";
+  form.appendChild(button);
+  modalContent.appendChild(form);
+  
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    let message = input.value.trim();
+    let currentUser = activeUser;
+    if(message !== ""){
+      db.collection("soporte_chats").doc(chatId).collection("messages").add({
+        user: currentUser,
+        text: message,
+        timestamp: Date.now()
+      }).then(() => {
+        db.collection("soporte_chats").doc(chatId).set({
+          updatedAt: Date.now()
+        }, {merge:true});
+      }).catch(error => console.error("Error en admin soporte chat:", error));
+      input.value = "";
+    }
+  });
+  
+  let unsubscribe = db.collection("soporte_chats").doc(chatId).collection("messages").orderBy("timestamp")
+      .onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if(change.type === "added"){
+            let msg = change.doc.data();
+            renderChatMessage(msg, messagesDiv);
+          }
+        });
+      });
+  
+  let closeChatBtn = document.createElement("button");
+  closeChatBtn.innerText = "Cerrar Chat";
+  closeChatBtn.className = "enhanced-btn";
+  closeChatBtn.style.backgroundColor = "#800080";
+  closeChatBtn.style.color = "white";
+  closeChatBtn.style.border = "none";
+  closeChatBtn.style.borderRadius = "10px";
+  closeChatBtn.style.padding = "10px 20px";
+  closeChatBtn.style.cursor = "pointer";
+  closeChatBtn.style.marginTop = "10px";
+  closeChatBtn.addEventListener("click", function(){
+      unsubscribe();
+      modal.style.display = "none";
+  });
+  modalContent.appendChild(closeChatBtn);
+  
+  modal.style.display = "block";
+}
+
+/* --- FIN DE EVENTOS Y FUNCIONALIDAD PRINCIPAL --- */
