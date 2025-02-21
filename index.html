@@ -11,7 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
   </head>
   <body>
-    <!-- Mensaje de bienvenida / prototipo -->
+    <!-- Mensaje de Bienvenida / Prototipo -->
     <div id="dev-message">
       <div class="message-box">
         <p>
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <!-- Aplicación Principal -->
+    <!-- Aplicación Principal (Modo Voluntario) -->
     <div id="main-app" class="screen" style="display: none;">
       <header class="app-header">
         <h1 class="app-title">People For People</h1>
@@ -44,12 +44,15 @@
           <div class="profile-container" id="profile-btn">
             <img src="https://via.placeholder.com/40/FFFFFF/FFFFFF?text=" alt="Perfil" class="profile-img" />
             <span class="profile-label">Mi perfil</span>
+            <!-- Menú desplegable con opciones de perfil y el botón toggle de modo -->
             <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
               <div class="dropdown-item" data-section="perfil">Mi perfil</div>
               <div class="dropdown-item" data-section="ajustes">Ajustes de perfil</div>
               <div class="dropdown-item" data-section="soporte">Soporte</div>
               <div class="dropdown-item" data-section="centro">Centro de información</div>
-              <!-- Nota: la opción "Publicar Archivo" se gestionará desde el panel de administrador -->
+              <div class="dropdown-item mode-toggle-btn" style="background-color: #800080; color: white; cursor: pointer;">
+                Cambiar a Organizador
+              </div>
             </div>
           </div>
         </div>
@@ -70,9 +73,7 @@
           <h2>Pedir Ayuda</h2>
           <div id="ayuda-view">
             <div id="ayuda-list-view">
-              <button id="mostrar-ayuda-create" class="action-btn">
-                Crear Punto de Ayuda
-              </button>
+              <button id="mostrar-ayuda-create" class="action-btn">Crear Punto de Ayuda</button>
               <div id="ayuda-list" class="list-box"></div>
             </div>
             <div id="ayuda-create-form" class="form-container" style="display:none;">
@@ -107,9 +108,7 @@
           <h2>Voluntarios</h2>
           <div id="voluntario-view">
             <div id="voluntario-list-view">
-              <button id="mostrar-voluntario-create" class="action-btn">
-                Ofrecerme como Voluntario
-              </button>
+              <button id="mostrar-voluntario-create" class="action-btn">Ofrecerme como Voluntario</button>
               <div id="voluntario-list" class="list-box"></div>
             </div>
             <div id="voluntario-create-form" class="form-container" style="display:none;">
@@ -142,14 +141,12 @@
           </div>
         </div>
 
-        <!-- Sección Organizaciones -->
+        <!-- Sección Organizaciones (Modo Voluntario) -->
         <div id="organizaciones" class="content-section" style="display:none;">
           <h2>Organizaciones de Voluntarios</h2>
           <div id="org-view">
             <div id="org-list-view">
-              <button id="mostrar-org-create" class="action-btn">
-                Crear Organización
-              </button>
+              <button id="mostrar-org-create" class="action-btn">Crear Organización</button>
               <div id="org-list" class="list-box"></div>
             </div>
             <div id="org-create-form" class="form-container" style="display:none;">
@@ -211,15 +208,9 @@
             <div class="profile-settings">
               <h3>Ajustes de Perfil</h3>
               <div class="profile-tabs">
-                <button type="button" class="profile-tab-btn active" data-target="profile-datos">
-                  Datos Personales
-                </button>
-                <button type="button" class="profile-tab-btn" data-target="profile-formacion">
-                  Formación Profesional
-                </button>
-                <button type="button" class="profile-tab-btn" data-target="profile-foto">
-                  Cambiar Foto
-                </button>
+                <button type="button" class="profile-tab-btn active" data-target="profile-datos">Datos Personales</button>
+                <button type="button" class="profile-tab-btn" data-target="profile-formacion">Formación Profesional</button>
+                <button type="button" class="profile-tab-btn" data-target="profile-foto">Cambiar Foto</button>
               </div>
               <div class="profile-tab-content" id="profile-datos" style="display:block;">
                 <form id="profile-datos-form">
@@ -281,7 +272,6 @@
               
               <p>🌐 <a href="https://peopleforpeople7.wordpress.com" target="_blank">Más información en nuestra página web</a></p>
 
-              <!-- Contenedor para archivos públicos -->
               <div id="file-upload-container" style="margin-top: 20px; display: none;">
                 <h3>Subir Archivo</h3>
                 <form id="file-upload-form">
@@ -306,7 +296,6 @@
               <p>Si experimentas algún error o fallo en la aplicación, repórtalo aquí y lo solucionaremos lo antes posible.</p>
               <p>💬 Chat en Vivo: Disponible en horario laboral</p>
               
-              <!-- Chat en Vivo de Soporte -->
               <div id="soporte-live-chat">
                 <h3>Chat en Vivo</h3>
                 <div class="chat-messages" id="soporte-chat-messages" style="height:200px; overflow:auto; border:1px solid #ccc; padding:10px;"></div>
@@ -318,8 +307,7 @@
               
               <h3>🔹 Sugerencias y Comentarios</h3>
               <p>Tu opinión es importante para nosotros. Déjanos tus sugerencias para mejorar tu experiencia.</p>
-              
-              <!-- Recuadro para enviar comentarios -->
+
               <div id="feedback-section">
                 <form id="feedback-form">
                   <textarea id="feedback-text" placeholder="Escribe tu comentario aquí" required></textarea>
@@ -327,19 +315,15 @@
                 </form>
               </div>
               
-              <!-- Botón para acceder al Panel de Administrador -->
               <button id="admin-panel-link" class="enhanced-btn">Panel de Administrador</button>
               
-              <!-- Panel de Administración (oculto inicialmente) -->
               <div id="admin-panel" style="margin-top:20px; display:none; border: 1px solid #ccc; padding: 10px;">
                 <h2>Panel de Administración</h2>
-                <!-- Formulario para autenticarse en el panel -->
                 <form id="admin-login-form">
                   <input type="email" id="admin-email" placeholder="Email de Administrador" required />
                   <input type="password" id="admin-password" placeholder="Contraseña" required />
                   <button type="submit" class="enhanced-btn">Acceder</button>
                 </form>
-                <!-- Contenido del panel (oculto hasta la autenticación) -->
                 <div id="admin-content" style="display:none;">
                   <button id="admin-logout-btn" class="enhanced-btn" style="float: right;">Cerrar Sesión</button>
                   <h3>Editar Información</h3>
@@ -355,7 +339,6 @@
                   </form>
                   <div id="admin-upload-message" style="margin-top:10px;"></div>
                   
-                  <!-- Nuevo bloque: Lista de chats de soporte -->
                   <div id="admin-support-chats">
                     <h3>Chats de Soporte Abiertos</h3>
                     <div id="admin-support-chats-list" style="border:1px solid #ccc; padding:10px; max-height:200px; overflow:auto;"></div>
@@ -367,18 +350,116 @@
         </div>
       </main>
 
-      <!-- Menú de navegación inferior -->
+      <!-- Menú de Navegación Inferior (Modo Voluntario) -->
       <nav class="app-menu">
-        <button class="menu-btn" data-target="map-view">Mapa</button>
-        <button class="menu-btn" data-target="pedir-ayuda">Pedir Ayuda</button>
-        <button class="menu-btn" data-target="ofrecer-voluntario">Voluntarios</button>
-        <button class="menu-btn" data-target="organizaciones">Organizaciones</button>
+        <button class="menu-btn" data-target="map-view">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true" alt="Icono Mapa" />
+          Mapa
+        </button>
+        <button class="menu-btn" data-target="pedir-ayuda">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20pedir%20ayuda.png?raw=true" alt="Icono Pedir Ayuda" />
+          Pedir Ayuda
+        </button>
+        <button class="menu-btn" data-target="ofrecer-voluntario">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20voluntario.png?raw=true" alt="Icono Voluntario" />
+          Voluntarios
+        </button>
+        <button class="menu-btn" data-target="organizaciones">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20organizaciones.png?raw=true" alt="Icono Organizaciones" />
+          Organizaciones
+        </button>
       </nav>
     </div>
 
     <!-- Modal para vista previa de archivos -->
     <div id="modal-viewer" class="modal">
       <div class="modal-content"></div>
+    </div>
+
+    <!-- Modal para Modo Organizador: Seleccionar/Crear Organización -->
+    <div id="org-mode-menu" class="modal">
+      <div class="modal-content org-menu-content">
+        <span class="close" id="close-org-menu">&times;</span>
+        <h2>Modo Organizador</h2>
+        <div class="org-menu-tabs">
+          <button id="create-org-tab" class="org-menu-tab active">Crear Organización</button>
+          <button id="select-org-tab" class="org-menu-tab">Mis Organizaciones</button>
+        </div>
+        <div id="create-org-section" class="org-menu-section">
+          <h3>Crear Nueva Organización</h3>
+          <form id="create-org-form-orgmode">
+            <input type="text" id="orgmode-title" placeholder="Título de la Organización" required />
+            <textarea id="orgmode-info" placeholder="Información de la Organización" required></textarea>
+            <input type="file" id="orgmode-image" accept="image/*" />
+            <button type="submit" class="action-btn">Crear Organización</button>
+          </form>
+        </div>
+        <div id="select-org-section" class="org-menu-section" style="display:none;">
+          <h3>Mis Organizaciones</h3>
+          <div id="orgmode-list" class="list-box">
+            <!-- Lista en tiempo real de organizaciones donde eres admin -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aplicación Modo Organizador -->
+    <div id="org-mode-app" class="screen org-mode" style="display:none;">
+      <header class="app-header org-header">
+        <h1 class="app-title">Modo Organizador</h1>
+        <!-- En este modo el botón toggle también se incluye en el menú desplegable de perfil (desde el main-app) -->
+      </header>
+      <main class="app-content org-content">
+        <!-- Secciones para los 3 menús -->
+        <div id="org-chats" class="org-content-section" style="display:none;">
+          <h2>Centro de Chats</h2>
+          <!-- Chat Público -->
+          <div id="org-chat-public" class="chat-container">
+            <h3>Chat Público</h3>
+            <div class="chat-messages" id="org-chat-messages-public"></div>
+            <form id="org-chat-form-public">
+              <input type="text" id="org-chat-input-public" placeholder="Escribe tu mensaje" required />
+              <!-- Campo para adjuntar archivo -->
+              <input type="file" id="org-chat-file-public" accept="image/*, application/pdf" />
+              <button type="submit" class="enhanced-btn">Enviar</button>
+            </form>
+          </div>
+          <!-- Chat de Administrador -->
+          <div id="org-chat-admin" class="chat-container">
+            <h3>Chat de Administradores</h3>
+            <div class="chat-messages" id="org-admin-chat-messages"></div>
+            <form id="org-admin-chat-form">
+              <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
+              <!-- Campo para adjuntar archivo -->
+              <input type="file" id="org-admin-chat-file" accept="image/*, application/pdf" />
+              <button type="submit" class="enhanced-btn">Enviar</button>
+            </form>
+          </div>
+        </div>
+
+        <div id="org-info" class="org-content-section" style="display:none;">
+          <h2>Información</h2>
+          <p>Gestione la información, datos y archivos de la empresa aquí.</p>
+        </div>
+
+        <div id="org-list" class="org-content-section" style="display:none;">
+          <h2>Mis Organizaciones</h2>
+          <div id="org-list-organizador" class="list-box"></div>
+          <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">
+            Crear Organización
+          </button>
+        </div>
+
+        <!-- Sección de Inicio (opcional) -->
+        <div id="org-mode-home" class="org-content-section" style="display:block;">
+          <p>Bienvenido al modo organizador. Selecciona una opción del menú inferior.</p>
+        </div>
+      </main>
+      <nav class="app-menu org-app-menu">
+        <button class="menu-btn org-menu-btn" data-target="org-chats">Centro de Chats</button>
+        <button class="menu-btn org-menu-btn" data-target="org-info">Información</button>
+        <button class="menu-btn org-menu-btn" data-target="org-list">Mis Organizaciones</button>
+      </nav>
     </div>
 
     <!-- Se carga el archivo principal con defer -->
