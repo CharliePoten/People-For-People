@@ -25,8 +25,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
+  background: rgba(0, 0, 0, 0.6);   
   justify-content: center;
   align-items: center;
   z-index: 2000;
@@ -332,6 +331,14 @@ form button:hover {
 .menu-btn:hover {
   opacity: 0.9;
   transform: scale(1.02);
+}
+
+/* Icono para menú inferior */
+.menu-icon {
+  width: 20px;
+  height: auto;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
 /* Chat container y mensajes */
@@ -714,4 +721,94 @@ form button:hover {
 
 .profile-info-section h3 {
   margin-bottom: 10px;
+}
+
+/* Nuevos Estilos para Modo Organizador */
+
+/* Botón para cambiar de modo (en perfil) */
+.toggle-mode-btn {
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.3s ease;
+}
+
+.toggle-mode-btn:hover {
+  background: #e68900;
+}
+
+/* Modal para Modo Organizador */
+.org-menu-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 600px;
+  width: 90%;
+  margin: auto;
+}
+
+.org-menu-tabs {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+}
+
+.org-menu-tab {
+  flex: 1;
+  padding: 10px;
+  cursor: pointer;
+  background: #8a2be2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+.org-menu-tab.active {
+  background: #32cd32;
+}
+
+/* Modo Organizador */
+.org-mode {
+  background: #f0f0f0;
+}
+
+.org-header {
+  background: #333;
+  color: #fff;
+  padding: 1em;
+}
+
+.org-content {
+  padding: 120px 1em 80px;
+}
+
+.org-app-menu {
+  background: #333;
+  padding: 0.5em 0;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 2px solid #32cd32;
+}
+
+.org-menu-btn {
+  background: #32cd32;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.org-menu-btn:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
