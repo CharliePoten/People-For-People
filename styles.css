@@ -18,16 +18,17 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Overlay del mensaje de prototipo */
+/* Overlay del mensaje de prototipo (centrado mediante flex) */
 #dev-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.6);   
-  justify-content: center;
-  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
   z-index: 2000;
 }
 
@@ -41,7 +42,6 @@ body {
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Nueva regla para mostrar el creador */
 .message-box .creator {
   font-family: 'Arial', sans-serif;
   font-weight: bold;
@@ -76,7 +76,6 @@ body {
   transition: all 0.4s ease;
 }
 
-/* Centrado vertical de la pantalla de registro */
 #registration-screen {
   justify-content: center;
   align-items: center;
@@ -216,7 +215,7 @@ form button:hover {
 #admin-panel-link:hover {
   background: linear-gradient(45deg, #8a2be2, #32cd32);
   transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Botón de Salir */
@@ -232,7 +231,12 @@ form button:hover {
 
 .logout-btn:hover {
   background: linear-gradient(45deg, #6a0dad, #8a2be2);
-  transform: scale(1.05);
+}
+
+/* Sección para el botón Cerrar Sesión en Ajustes */
+.logout-section {
+  margin-top: 20px;
+  text-align: center;
 }
 
 /* Área de contenido */
@@ -335,9 +339,17 @@ form button:hover {
 
 /* Icono para menú inferior */
 .menu-icon {
-  width: 20px;
+  width: 28px;
   height: auto;
-  margin-right: 8px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+/* Estilos para icono de enviar en chats */
+.send-icon {
+  width: 24px;
+  height: auto;
+  margin-right: 6px;
   vertical-align: middle;
 }
 
@@ -647,6 +659,19 @@ form button:hover {
   margin: 10px 0;
 }
 
+.form-group-voluntario label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-group-voluntario textarea {
+  width: 100%;
+  height: 60px;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
 /* Estilo del botón "Ver en el Mapa" */
 .map-btn {
   background: linear-gradient(45deg, #32cd32, #8a2be2);
@@ -663,20 +688,6 @@ form button:hover {
 
 .map-btn:hover {
   background: linear-gradient(45deg, #8a2be2, #32cd32);
-}
-
-/* Grupo de habilidades */
-.form-group-voluntario label {
-  display: block;
-  margin-bottom: 6px;
-}
-
-.form-group-voluntario textarea {
-  width: 100%;
-  height: 60px;
-  padding: 8px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
 }
 
 /* Responsive */
@@ -700,7 +711,7 @@ form button:hover {
   }
 }
 
-/* Estilos para los recuadros de Centro de Información y Soporte */
+/* Recadrados para Centro de Información y Soporte */
 .info-container {
   display: flex;
   flex-direction: column;
@@ -742,14 +753,32 @@ form button:hover {
   background: #e68900;
 }
 
+/* Alternativamente, si se utiliza la clase "mode-toggle-btn" */
+.mode-toggle-btn {
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 20px;
+  margin: 10px 0;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background 0.3s ease;
+}
+
+.mode-toggle-btn:hover {
+  background: #e68900;
+}
+
 /* Modal para Modo Organizador */
 .org-menu-content {
   background: #fff;
-  padding: 20px;
+  padding: 30px;
   border-radius: 15px;
-  max-width: 600px;
+  max-width: 700px;
   width: 90%;
   margin: auto;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .org-menu-tabs {
@@ -771,6 +800,63 @@ form button:hover {
 
 .org-menu-tab.active {
   background: #32cd32;
+}
+
+/* Contenedores dentro del Modal de Modo Organizador */
+.org-menu-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.org-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.org-menu-header h3 {
+  margin: 0;
+  font-size: 1.3em;
+  color: #333;
+}
+
+#create-org-form-orgmode-container {
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* Paneles para el menú Información en Modo Organizador */
+.org-info-display,
+.org-info-edit {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.org-info-display p,
+.org-info-edit p,
+.org-info-display h2,
+.org-info-edit h3 {
+  margin-bottom: 10px;
+}
+
+.attachment-display {
+  padding: 10px;
+  border-top: 1px solid #ccc;
+  margin-top: 10px;
+}
+
+/* Contenedor para "Mis Organizaciones" */
+.org-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 /* Modo Organizador */
