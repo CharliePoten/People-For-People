@@ -97,7 +97,7 @@ window.initMap = initMap;
 /* VARIABLE GLOBAL PARA EL USUARIO ACTIVO */
 var activeUser = localStorage.getItem("username") || "Tú";
 
-/* Función para renderizar mensajes de chat con bocadillos */
+/* Función para renderizar mensajes de chat */
 function renderChatMessage(msg, container) {
   const currentUser = activeUser;
   const messageContainer = document.createElement("div");
@@ -203,7 +203,6 @@ function initAdminChat(org) {
   const adminChatForm = document.getElementById("org-admin-chat-form");
   const adminChatInput = document.getElementById("org-admin-chat-input");
 
-  // Si el usuario no es admin, ocultar este chat.
   if (activeUser !== org.admin) {
     adminChatForm.style.display = "none";
     return;
@@ -279,8 +278,11 @@ function initOrgChat(org) {
 }
 
 /* FUNCIONES PARA EL MODO ORGANIZADOR */
+
+/* CARGAR LAS ORGANIZACIONES (en el modal de selección/creación) */
 function loadAdminOrganizations() {
   const orgListContainer = document.getElementById("orgmode-list");
+  if (!orgListContainer) return;
   orgListContainer.innerHTML = "";
   db.collection("organizaciones")
     .where("admin", "==", activeUser)
@@ -295,17 +297,194 @@ function loadAdminOrganizations() {
         orgDiv.textContent = org.title;
         orgDiv.addEventListener("click", function () {
           document.getElementById("org-mode-menu").style.display = "none";
-          loadOrganizationDetails(org);
+          currentOrg = org;
+          updateOrgInfoDisplay();
         });
         orgListContainer.appendChild(orgDiv);
       });
     });
 }
 
-function loadOrganizationDetails(org) {
-  // Actualiza la interfaz de modo organizador
-  const orgModeHome = document.getElementById("org-mode-home");
-  orgModeHome.innerHTML = "<h3>" + org.title + "</h3><p>" + org.info + "</p>";
+/* NUEVA FUNCIÓN PARA CARGAR "MIS ORGANIZACIONES"
+   Se crea un recuadro con un encabezado, un botón para CREAR ORGANIZACIÓN y la lista de organizaciones
+   donde el usuario es administrador.
+*/
+function loadOrganizadorList() {
+  const container = document.getElementById("org-list-organizador");
+  if (!container) {
+    console.error("No se encontró el contenedor 'org-list-organizador'.");
+    return;
+  }
+  container.innerHTML = "";
+  
+  // Agregar encabezado del recuadro
+  const header = document.createElement("h3");
+  header.innerText = "Mis Organizaciones";
+  container.appendChild(header);
+  
+  // Crear botón "Crear Organización"
+  const createBtn = document.createElement("button");
+  createBtn.innerText = "Crear Organización";
+  createBtn.classList.add("action-btn");
+  createBtn.addEventListener("click", function() {
+    document.getElementById("create-org-form-orgmode-container").style.display = "block";
+  });
+  container.appendChild(createBtn);
+
+  db.collection("organizaciones")
+    .where("admin", "==", activeUser)
+    .orderBy("timestamp")
+    .onSnapshot(function(snapshot) {
+      // Reinicializar contenedor reinsertando el encabezado y botón
+      container.innerHTML = "";
+      container.appendChild(header);
+      container.appendChild(createBtn);
+      let empty = true;
+      snapshot.forEach(function(doc) {
+        let org = doc.data();
+        org.firebaseKey = doc.id;
+        empty = false;
+        const orgDiv = document.createElement("div");
+        orgDiv.classList.add("org-item");
+        orgDiv.textContent = org.title;
+        orgDiv.addEventListener("click", function () {
+          currentOrg = org;
+          mostrarOrgDetalle(org);
+        });
+        container.appendChild(orgDiv);
+      });
+      if (empty) {
+        const noMsg = document.createElement("p");
+        noMsg.innerText = "No tienes organizaciones.";
+        container.appendChild(noMsg);
+      }
+    });
+}
+
+/* Actualizar la información de la organización (vista) */
+function updateOrgInfoDisplay() {
+  if (!currentOrg) return;
+  document.getElementById("org-info-titulo").innerText = "Título: " + currentOrg.title;
+  document.getElementById("org-info-creador").innerText = "Creador: " + currentOrg.admin;
+  document.getElementById("org-info-detalle").innerText = "Información: " + currentOrg.info;
+  document.getElementById("org-info-lugar").innerText = "Lugar: " + (currentOrg.lugar || "No definido");
+  document.getElementById("org-info-fecha").innerText =
+    "Fecha de Creación: " + (currentOrg.timestamp ? new Date(currentOrg.timestamp).toLocaleDateString() : "No definida");
+}
+
+/* FUNCIÓN PARA ABRIR EL PANEL DE EDICIÓN.
+   Se ha quitado el botón que estaba dentro del recuadro de People For People; ahora la edición se hace vía recuadro edit (ya implementado en el HTML).
+*/
+function enableOrgInfoEditing() {
+  document.getElementById("org-info-display").style.display = "none";
+  document.getElementById("org-info-edit").style.display = "block";
+}
+
+/* FUNCIÓN PARA CANCELAR LA EDICIÓN DE INFORMACIÓN */
+function cancelOrgInfoEditing() {
+  document.getElementById("org-info-edit").style.display = "none";
+  document.getElementById("org-info-display").style.display = "block";
+}
+
+/* FUNCIÓN PARA SUBIR ARCHIVOS (dentro de la sección de información) */
+function uploadOrgFile(e) {
+  e.preventDefault();
+  var title = document.getElementById("org-file-title").value.trim();
+  var fileInput = document.getElementById("org-file-upload");
+  if (fileInput.files.length === 0) {
+    alert("Por favor, selecciona un archivo.");
+    return;
+  }
+  var file = fileInput.files[0];
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var newAttachment = {
+      title: title,
+      fileName: file.name,
+      fileUrl: ev.target.result,
+      visibility: "public",
+      timestamp: Date.now()
+    };
+    db.collection("public_files").add(newAttachment)
+      .then(function() {
+          alert("Archivo subido exitosamente.");
+          document.getElementById("org-file-upload-form").reset();
+      })
+      .catch(function(error) {
+          console.error("Error al subir el archivo:", error);
+      });
+  };
+  reader.readAsDataURL(file);
+}
+
+/* FUNCIÓN PARA CREAR EL BOTÓN DE PERFIL EN MODO ORGANIZADOR */
+function createOrgProfileButton() {
+  const orgHeader = document.querySelector(".org-header");
+  if (!orgHeader) return;
+  if (!document.getElementById("org-profile-btn")) {
+    let divProfile = document.createElement("div");
+    divProfile.className = "profile-container";
+    divProfile.id = "org-profile-btn";
+    let img = document.createElement("img");
+    img.src = localStorage.getItem("profilePhoto") || "https://via.placeholder.com/40/FFFFFF/FFFFFF?text=";
+    img.alt = "Perfil";
+    img.className = "profile-img";
+    img.onerror = function() {
+      this.src = "https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true";
+    };
+    divProfile.appendChild(img);
+    let span = document.createElement("span");
+    span.className = "profile-label";
+    span.innerText = "Mi perfil";
+    divProfile.appendChild(span);
+    let items = [
+      { text: "Mi perfil", section: "perfil" },
+      { text: "Ajustes de perfil", section: "ajustes" },
+      { text: "Soporte", section: "soporte" },
+      { text: "People For People", section: "centro" },
+      { text: "Cambiar a Voluntario", isToggle: true }
+    ];
+    let dropdown = document.createElement("div");
+    dropdown.id = "org-profile-dropdown";
+    dropdown.className = "profile-dropdown";
+    dropdown.style.display = "none";
+    items.forEach(item => {
+      let divItem = document.createElement("div");
+      divItem.className = "dropdown-item";
+      if (item.isToggle) {
+        divItem.classList.add("mode-toggle-btn");
+        divItem.style.backgroundColor = "#800080";
+        divItem.style.color = "white";
+        divItem.style.cursor = "pointer";
+      }
+      divItem.innerText = item.text;
+      if (item.section) {
+        divItem.setAttribute("data-section", item.section);
+      }
+      dropdown.appendChild(divItem);
+    });
+    divProfile.appendChild(dropdown);
+    orgHeader.appendChild(divProfile);
+    divProfile.addEventListener("click", function(e) {
+      e.stopPropagation();
+      dropdown.style.display = (dropdown.style.display === "none" || dropdown.style.display === "") ? "block" : "none";
+    });
+    let orgDropdownItems = dropdown.querySelectorAll(".dropdown-item");
+    orgDropdownItems.forEach(function(item) {
+      item.addEventListener("click", function(e) {
+        e.stopPropagation();
+        if (this.classList.contains("mode-toggle-btn")) {
+          toggleUserMode();
+        } else {
+          dropdown.style.display = "none";
+          updateProfileSubsection(this.getAttribute("data-section"));
+        }
+      });
+    });
+    document.addEventListener("click", function() {
+      dropdown.style.display = "none";
+    });
+  }
 }
 
 /* FUNCIÓN DE ALTERNANCIA DE MODO (VOLUNTARIO <-> ORGANIZADOR) */
@@ -313,55 +492,218 @@ function toggleUserMode() {
   if (currentMode === "voluntario") {
     currentMode = "organizador";
     localStorage.setItem("userMode", "organizador");
-    // Actualizar el texto de los botones toggle
     document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Voluntario");
-    // Ocultar la interfaz de modo voluntario y mostrar la de modo organizador
     document.getElementById("main-app").style.display = "none";
     document.getElementById("org-mode-app").style.display = "block";
-    // Cerrar el dropdown de perfil, si está abierto
     document.getElementById("profile-dropdown").style.display = "none";
-    // Si no hay organización seleccionada, mostrar el modal del modo organizador
-    if (!currentOrg) {
-      document.getElementById("org-mode-menu").style.display = "block";
-    }
-    // Al entrar en modo organizador, asignamos los manejadores para el menú inferior
+    createOrgProfileButton();
+    // Mostrar el menú de organizador y cargar las listas:
+    document.getElementById("org-mode-menu").style.display = "block";
+    loadAdminOrganizations();
+    loadOrganizadorList();
     bindOrgModeNavigation();
+    // Cambiar el texto del botón que muestra la información a "Centro de Información"
+    document.querySelectorAll(".org-menu-btn").forEach(function(btn) {
+      if (btn.getAttribute("data-target") === "org-info") {
+        btn.textContent = "Centro de Información";
+      }
+    });
   } else {
     currentMode = "voluntario";
     localStorage.setItem("userMode", "voluntario");
     document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Organizador");
     document.getElementById("org-mode-app").style.display = "none";
     document.getElementById("main-app").style.display = "block";
-    // Cerrar el modal de modo organizador si se encuentra abierto
     document.getElementById("org-mode-menu").style.display = "none";
-    // Cerrar el dropdown de perfil
     document.getElementById("profile-dropdown").style.display = "none";
   }
 }
 
-/* NUEVA FUNCIÓN: Asignar eventos a los botones del menú inferior del modo Organizador */
+/* ASIGNAR EVENTOS A LOS BOTONES DEL MENÚ INFERIOR DEL MODO ORGANIZADOR */
 function bindOrgModeNavigation() {
   const orgMenuBtns = document.querySelectorAll(".org-menu-btn");
   if (!orgMenuBtns) return;
   orgMenuBtns.forEach(btn => {
     btn.addEventListener("click", function () {
-      // Ocultar todas las secciones de contenido en modo organizador
       const orgSections = document.querySelectorAll(".org-content-section");
-      orgSections.forEach(section => {
-        section.style.display = "none";
-      });
-      // Mostrar la sección cuyo id esté en data-target
+      orgSections.forEach(section => { section.style.display = "none"; });
       const target = this.getAttribute("data-target");
       if (target) {
         const targetEl = document.getElementById(target);
         if (targetEl) {
           targetEl.style.display = "block";
+          if (target === "org-list") {
+            loadOrganizadorList();
+          }
         } else {
           console.error("No se encontró la sección con id:", target);
         }
       }
     });
   });
+}
+
+/* FUNCIÓN PARA ABRIR MODAL DE VISTA PREVIA DE ARCHIVOS */
+function openModal(url, fileName) {
+  let ext = "";
+  if (fileName) {
+    ext = fileName.split(".").pop().toLowerCase();
+  } else {
+    if (url.indexOf("data:image") === 0) {
+      ext = "image";
+    } else if (url.indexOf("data:application/pdf") === 0) {
+      ext = "pdf";
+    }
+  }
+  const modal = document.getElementById("modal-viewer");
+  const modalContent = document.querySelector(".modal-content");
+  modalContent.innerHTML = "";
+  const closeBtn = document.createElement("span");
+  closeBtn.className = "close";
+  closeBtn.innerHTML = "&times;";
+  closeBtn.addEventListener("click", function () { modal.style.display = "none"; });
+  modalContent.appendChild(closeBtn);
+  if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "image") {
+    const img = document.createElement("img");
+    img.src = url;
+    modalContent.appendChild(img);
+    img.addEventListener("click", function () { modal.style.display = "none"; });
+  } else if (ext === "pdf") {
+    const iframe = document.createElement("iframe");
+    iframe.src = url;
+    modalContent.appendChild(iframe);
+  } else {
+    const msg = document.createElement("p");
+    msg.textContent = "Vista previa no disponible para este tipo de archivo.";
+    modalContent.appendChild(msg);
+  }
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) { modal.style.display = "none"; }
+  });
+  modal.style.display = "block";
+}
+
+/* Navegación entre sub-secciones del perfil */
+function updateProfileSubsection(option) {
+  const profileDisplay = document.querySelector(".profile-display");
+  const profileSettings = document.querySelector(".profile-settings");
+  const infoCenter = document.getElementById("info-center");
+  const support = document.getElementById("support");
+
+  if (profileDisplay) profileDisplay.style.display = "none";
+  if (profileSettings) profileSettings.style.display = "none";
+  if (infoCenter) infoCenter.style.display = "none";
+  if (support) support.style.display = "none";
+
+  if (option === "perfil") {
+    if (profileDisplay) profileDisplay.style.display = "block";
+  } else if (option === "ajustes") {
+    if (profileSettings) profileSettings.style.display = "block";
+  } else if (option === "soporte") {
+    if (support) support.style.display = "block";
+  } else if (option === "centro") {
+    if (infoCenter) infoCenter.style.display = "block";
+  }
+}
+
+function updateProfileView() {
+  document.getElementById("profile-username-display").innerText =
+    "Usuario: " + (localStorage.getItem("username") || "");
+  document.getElementById("profile-name-display").innerText =
+    "Nombre: " + (localStorage.getItem("profileNombre") || "");
+  document.getElementById("profile-surname-display").innerText =
+    "Apellido: " + (localStorage.getItem("profileApellido") || "");
+  document.getElementById("profile-dob-display").innerText =
+    "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
+  document.getElementById("profile-formation-display").innerText =
+    "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
+  document.getElementById("profile-large-photo").src =
+    localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
+}
+
+/* Evento para abrir el chat de soporte en el panel de administración */
+function openSupportChatSession(chatId, user) {
+  let modal = document.getElementById("modal-viewer");
+  let modalContent = document.querySelector(".modal-content");
+  modalContent.innerHTML = "";
+  
+  let closeBtn = document.createElement("span");
+  closeBtn.className = "close";
+  closeBtn.innerHTML = "&times;";
+  closeBtn.addEventListener("click", function() { modal.style.display = "none"; });
+  modalContent.appendChild(closeBtn);
+  
+  let title = document.createElement("h3");
+  title.innerText = "Chat de Soporte con " + user;
+  modalContent.appendChild(title);
+  
+  let messagesDiv = document.createElement("div");
+  messagesDiv.className = "chat-messages";
+  messagesDiv.style.height = "300px";
+  messagesDiv.style.overflowY = "scroll";
+  messagesDiv.style.border = "1px solid #ccc";
+  messagesDiv.style.padding = "10px";
+  modalContent.appendChild(messagesDiv);
+  
+  let form = document.createElement("form");
+  form.id = "admin-support-chat-form";
+  let input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Escribe tu respuesta";
+  input.required = true;
+  form.appendChild(input);
+  let button = document.createElement("button");
+  button.type = "submit";
+  button.className = "enhanced-btn";
+  button.innerText = "Enviar";
+  form.appendChild(button);
+  modalContent.appendChild(form);
+  
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    let message = input.value.trim();
+    let currentUser = activeUser;
+    if(message !== ""){
+      db.collection("soporte_chats").doc(chatId).collection("messages").add({
+        user: currentUser,
+        text: message,
+        timestamp: Date.now()
+      }).then(() => {
+        db.collection("soporte_chats").doc(chatId).set({
+          updatedAt: Date.now()
+        }, { merge: true });
+      }).catch(error => console.error("Error en admin soporte chat:", error));
+      input.value = "";
+    }
+  });
+  
+  let unsubscribe = db.collection("soporte_chats").doc(chatId).collection("messages").orderBy("timestamp")
+      .onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if(change.type === "added"){
+            let msg = change.doc.data();
+            renderChatMessage(msg, messagesDiv);
+          }
+        });
+      });
+  
+  let closeChatBtn = document.createElement("button");
+  closeChatBtn.innerText = "Cerrar Chat";
+  closeChatBtn.className = "enhanced-btn";
+  closeChatBtn.style.backgroundColor = "#800080";
+  closeChatBtn.style.color = "white";
+  closeChatBtn.style.border = "none";
+  closeChatBtn.style.borderRadius = "10px";
+  closeChatBtn.style.padding = "10px 20px";
+  closeChatBtn.style.cursor = "pointer";
+  closeChatBtn.style.marginTop = "10px";
+  closeChatBtn.addEventListener("click", function(){
+      unsubscribe();
+      modal.style.display = "none";
+  });
+  modalContent.appendChild(closeChatBtn);
+  
+  modal.style.display = "block";
 }
 
 /* EVENTOS PRINCIPALES */
@@ -400,8 +742,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const fileUploadContainer = document.getElementById("file-upload-container");
     if (localStorage.getItem("isAdmin") === "true") {
       fileUploadContainer.style.display = "block";
-    } else {
-      fileUploadContainer.style.display = "none";
     }
     console.log("checkUserPermissions:", localStorage.getItem("isAdmin"));
   }
@@ -538,94 +878,78 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /* EVENTOS PARA EL MODO ORGANIZADOR */
-  // Asignar el evento a los botones que cambian el modo (ya existentes)
   document.querySelectorAll(".mode-toggle-btn").forEach(function(btn) {
     btn.addEventListener("click", function () {
       toggleUserMode();
     });
   });
 
-  // Modal del Modo Organizador: pestañas y cierre
+  /* EVENTOS y funcionalidades del Modal para Modo Organizador */
   const closeOrgMenu = document.getElementById("close-org-menu");
   if (closeOrgMenu) {
     closeOrgMenu.addEventListener("click", function () {
       document.getElementById("org-mode-menu").style.display = "none";
     });
   }
-  const createOrgTab = document.getElementById("create-org-tab");
-  const selectOrgTab = document.getElementById("select-org-tab");
-  if (createOrgTab && selectOrgTab) {
-    createOrgTab.addEventListener("click", function () {
-      this.classList.add("active");
-      selectOrgTab.classList.remove("active");
-      document.getElementById("create-org-section").style.display = "block";
-      document.getElementById("select-org-section").style.display = "none";
-    });
-    selectOrgTab.addEventListener("click", function () {
-      this.classList.add("active");
-      createOrgTab.classList.remove("active");
-      document.getElementById("create-org-section").style.display = "none";
-      document.getElementById("select-org-section").style.display = "block";
-      loadAdminOrganizations();
-    });
-  }
-
-  const createOrgFormOrgMode = document.getElementById("create-org-form-orgmode");
-  if (createOrgFormOrgMode) {
-    createOrgFormOrgMode.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const title = document.getElementById("orgmode-title").value.trim();
-      const infoText = document.getElementById("orgmode-info").value.trim();
-      const imageInput = document.getElementById("orgmode-image");
-      let newOrg = {
-        title: title,
-        info: infoText,
-        image: null,
-        admin: activeUser,
-        members: [],
-        timestamp: Date.now()
-      };
-      if (currentLocationMarker) {
-        newOrg.latitude = currentLocationMarker.getPosition().lat();
-        newOrg.longitude = currentLocationMarker.getPosition().lng();
-      } else {
-        newOrg.latitude = 40.416775;
-        newOrg.longitude = -3.70379;
-      }
-      function pushOrg() {
-        db.collection("organizaciones").add(newOrg)
-          .then(function(docRef) {
-            alert("Organización creada.");
-            document.getElementById("org-mode-menu").style.display = "none";
-            newOrg.firebaseKey = docRef.id;
-            loadOrganizationDetails(newOrg);
-          })
-          .catch(function(error) {
-            console.error("Error creando organización:", error);
-          });
-      }
-      if (imageInput.files && imageInput.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          newOrg.image = e.target.result;
-          pushOrg();
-        };
-        reader.readAsDataURL(imageInput.files[0]);
-      } else {
-        pushOrg();
-      }
-    });
-  }
-
-  // Listener para el botón "Crear Organización" para el modo organizador
   const crearOrgOrganizadorBtn = document.getElementById("crear-org-organizador-btn");
   if (crearOrgOrganizadorBtn) {
-    crearOrgOrganizadorBtn.addEventListener("click", function() {
-      document.getElementById("org-mode-menu").style.display = "block";
-      document.getElementById("create-org-tab").classList.add("active");
-      document.getElementById("select-org-tab").classList.remove("active");
-      document.getElementById("create-org-section").style.display = "block";
-      document.getElementById("select-org-section").style.display = "none";
+    crearOrgOrganizadorBtn.addEventListener("click", function(){
+         document.getElementById("orgmode-list").style.display = "none";
+         document.getElementById("create-org-form-orgmode-container").style.display = "block";
+    });
+  }
+  const cancelarOrgModalBtn = document.getElementById("cancelar-org-modal");
+  if (cancelarOrgModalBtn) {
+    cancelarOrgModalBtn.addEventListener("click", function(){
+         document.getElementById("create-org-form-orgmode-container").style.display = "none";
+         document.getElementById("orgmode-list").style.display = "block";
+    });
+  }
+  const createOrgFormOrgMode = document.getElementById("create-org-form-orgmode");
+  if (createOrgFormOrgMode) {
+    createOrgFormOrgMode.addEventListener("submit", function(e){
+         e.preventDefault();
+         const title = document.getElementById("orgmode-title").value.trim();
+         const infoText = document.getElementById("orgmode-info").value.trim();
+         const imageInput = document.getElementById("orgmode-image");
+         let newOrg = {
+              title: title,
+              info: infoText,
+              image: null,
+              admin: activeUser,
+              members: [],
+              timestamp: Date.now()
+         };
+         if (currentLocationMarker) {
+             newOrg.latitude = currentLocationMarker.getPosition().lat();
+             newOrg.longitude = currentLocationMarker.getPosition().lng();
+         } else {
+             newOrg.latitude = 40.416775;
+             newOrg.longitude = -3.70379;
+         }
+         function pushOrg() {
+             db.collection("organizaciones").add(newOrg)
+             .then(function(docRef){
+                 alert("Organización creada.");
+                 document.getElementById("org-mode-menu").style.display = "none";
+                 newOrg.firebaseKey = docRef.id;
+                 currentOrg = newOrg;
+                 updateOrgInfoDisplay();
+             })
+             .catch(function(error){
+                 console.error("Error creando organización:", error);
+             });
+         }
+         if (imageInput.files && imageInput.files[0]) {
+             const reader = new FileReader();
+             reader.onload = function(e){
+                 newOrg.image = e.target.result;
+                 pushOrg();
+             }
+             reader.readAsDataURL(imageInput.files[0]);
+         } else {
+             pushOrg();
+         }
     });
   }
 
@@ -682,6 +1006,7 @@ document.addEventListener("DOMContentLoaded", function () {
     orgListView.style.display = "block";
   });
 
+  // Actualizar listado para el modo voluntario
   db.collection("organizaciones").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let org = change.doc.data();
@@ -729,7 +1054,7 @@ document.addEventListener("DOMContentLoaded", function () {
       rightDiv.appendChild(adminSpan);
       if (org.admin === activeUser) {
         const deleteOrgBtn = document.createElement("button");
-        deleteOrgBtn.className = "delete-org-btn";
+        deleteOrgBtn.classList.add("delete-org-btn");
         deleteOrgBtn.innerText = "Eliminar";
         deleteOrgBtn.addEventListener("click", function(e){
           e.stopPropagation();
@@ -777,6 +1102,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const infoP = document.createElement("p");
     infoP.innerText = org.info;
     orgDetailDiv.appendChild(infoP);
+    // Se elimina el botón de “Editar Información” de este recuadro (People For People) para no duplicar la funcionalidad.
   
     initAdminChat(org);
     initOrgChat(org);
@@ -1256,7 +1582,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
     currentVoluntario = vol;
-    voluntarioDetailView.style.display = "block";
+    voluntarioDetailDiv.style.display = "block";
   }
 
   document.getElementById("volver-voluntario-list").addEventListener("click", function () {
@@ -1279,6 +1605,19 @@ document.addEventListener("DOMContentLoaded", function () {
       content.classList.add("active");
     });
   });
+
+  // AÑADIR BOTÓN DE CERRAR SESIÓN EN AJUSTES DE PERFIL
+  if (document.getElementById("profile-settings")) {
+    const closeSessionBtn = document.createElement("button");
+    closeSessionBtn.innerText = "Cerrar Sesión";
+    closeSessionBtn.classList.add("action-btn");
+    closeSessionBtn.addEventListener("click", function(){
+      localStorage.removeItem("userRegistered");
+      localStorage.removeItem("username");
+      window.location.href = window.location.href;
+    });
+    document.getElementById("profile-settings").appendChild(closeSessionBtn);
+  }
 
   document.getElementById("profile-datos-form").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -1303,7 +1642,7 @@ document.addEventListener("DOMContentLoaded", function () {
     alert("Formación profesional actualizada");
   });
 
-  // --- ADMIN PANEL EVENT LISTENERS ---
+  // EVENTOS DEL ADMIN PANEL
   var adminPanelLink = document.getElementById("admin-panel-link");
   var adminPanel = document.getElementById("admin-panel");
   adminPanelLink.addEventListener("click", function () {
@@ -1388,7 +1727,7 @@ document.addEventListener("DOMContentLoaded", function () {
       reader.readAsDataURL(file);
   });
 
-  // --- NUEVAS FUNCIONALIDADES: CHAT DE SOPORTE Y FEEDBACK ---
+  // NUEVAS FUNCIONALIDADES: CHAT DE SOPORTE Y FEEDBACK
   if(document.getElementById("soporte-chat-form")) {
      document.getElementById("soporte-chat-form").addEventListener("submit", function(e){
          e.preventDefault();
@@ -1470,420 +1809,36 @@ document.addEventListener("DOMContentLoaded", function () {
     adminLogoutBtn.style.padding = "10px 20px";
     adminLogoutBtn.style.cursor = "pointer";
   }
+
+  // EVENTO PARA EDITAR LA INFORMACIÓN de People for People.
+  // Se ha quitado el botón dentro del recuadro de centro de información;
+  // ahora la edición se realiza en el recuadro de información (org-info-edit)
+  // y se guarda mediante el formulario "org-info-edit-form" sin alterar el módulo de perfil.
+  document.getElementById("org-info-edit-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const newTitle = document.getElementById("edit-org-titulo").value.trim();
+    const newAdmin = document.getElementById("edit-org-creador").value.trim();
+    const newInfo = document.getElementById("edit-org-detalle").value.trim();
+    const newLugar = document.getElementById("edit-org-lugar").value.trim();
+    const newFecha = document.getElementById("edit-org-fecha").value;
+    db.collection("organizaciones").doc(currentOrg.firebaseKey).update({
+      title: newTitle,
+      admin: newAdmin,
+      info: newInfo,
+      lugar: newLugar,
+      timestamp: new Date(newFecha).getTime()
+    }).then(() => {
+      alert("People for People actualizada.");
+      cancelOrgInfoEditing();
+    }).catch(error => console.error("Error actualizando People for People:", error));
+  });
+
+  // EVENTO PARA CERRAR SESIÓN desde Ajustes de Perfil
+  // Este botón estará en el módulo de ajustes de perfil y redirige al formulario de registro.
+  document.getElementById("logout-btn").addEventListener("click", function () {
+    localStorage.removeItem("userRegistered");
+    localStorage.removeItem("username");
+    window.location.href = window.location.href;
+  });
 });
 /* --- FIN DEL DOMCONTENTLOADED --- */
-
-/* NUEVA FUNCIÓN: Asignar eventos a los botones de menú del modo Organizador */
-function bindOrgModeNavigation() {
-  const orgMenuBtns = document.querySelectorAll(".org-menu-btn");
-  if (!orgMenuBtns) return;
-  orgMenuBtns.forEach(btn => {
-    btn.addEventListener("click", function () {
-      // Ocultar todas las secciones en modo organizador.
-      const orgSections = document.querySelectorAll(".org-content-section");
-      orgSections.forEach(section => {
-        section.style.display = "none";
-      });
-      // Mostrar la sección cuyo id se encuentra en data-target.
-      const target = this.getAttribute("data-target");
-      if (target) {
-        const targetEl = document.getElementById(target);
-        if (targetEl) {
-          targetEl.style.display = "block";
-        } else {
-          console.error("No se encontró la sección con id:", target);
-        }
-      }
-    });
-  });
-}
-
-/* FUNCIÓN PARA ABRIR MODAL DE VISTA PREVIA DE ARCHIVOS */
-function openModal(url, fileName) {
-  let ext = "";
-  if (fileName) {
-    ext = fileName.split(".").pop().toLowerCase();
-  } else {
-    if (url.indexOf("data:image") === 0) {
-      ext = "image";
-    } else if (url.indexOf("data:application/pdf") === 0) {
-      ext = "pdf";
-    }
-  }
-  const modal = document.getElementById("modal-viewer");
-  const modalContent = document.querySelector(".modal-content");
-  modalContent.innerHTML = "";
-  const closeBtn = document.createElement("span");
-  closeBtn.className = "close";
-  closeBtn.innerHTML = "&times;";
-  closeBtn.addEventListener("click", function () {
-    modal.style.display = "none";
-  });
-  modalContent.appendChild(closeBtn);
-  if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "image") {
-    const img = document.createElement("img");
-    img.src = url;
-    modalContent.appendChild(img);
-    img.addEventListener("click", function () {
-      modal.style.display = "none";
-    });
-  } else if (ext === "pdf") {
-    const iframe = document.createElement("iframe");
-    iframe.src = url;
-    modalContent.appendChild(iframe);
-  } else {
-    const msg = document.createElement("p");
-    msg.textContent = "Vista previa no disponible para este tipo de archivo.";
-    modalContent.appendChild(msg);
-  }
-  modal.addEventListener("click", function (e) {
-    if (e.target === modal) { modal.style.display = "none"; }
-  });
-  modal.style.display = "block";
-}
-
-function updateProfileSubsection(option) {
-  const profileDisplay = document.querySelector(".profile-display");
-  const profileSettings = document.querySelector(".profile-settings");
-  const infoCenter = document.getElementById("info-center");
-  const support = document.getElementById("support");
-
-  if (profileDisplay) profileDisplay.style.display = "none";
-  if (profileSettings) profileSettings.style.display = "none";
-  if (infoCenter) infoCenter.style.display = "none";
-  if (support) support.style.display = "none";
-
-  if (option === "perfil") {
-    if (profileDisplay) profileDisplay.style.display = "block";
-  } else if (option === "ajustes") {
-    if (profileSettings) profileSettings.style.display = "block";
-  } else if (option === "soporte") {
-    if (support) support.style.display = "block";
-  } else if (option === "centro") {
-    if (infoCenter) infoCenter.style.display = "block";
-  }
-}
-
-function updateProfileView() {
-  document.getElementById("profile-username-display").innerText =
-    "Usuario: " + (localStorage.getItem("username") || "");
-  document.getElementById("profile-name-display").innerText =
-    "Nombre: " + (localStorage.getItem("profileNombre") || "");
-  document.getElementById("profile-surname-display").innerText =
-    "Apellido: " + (localStorage.getItem("profileApellido") || "");
-  document.getElementById("profile-dob-display").innerText =
-    "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
-  document.getElementById("profile-formation-display").innerText =
-    "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
-  document.getElementById("profile-large-photo").src =
-    localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
-}
-
-/* FUNCIÓN PARA ABRIR CHAT DE SOPORTE EN EL PANEL DE ADMINISTRACIÓN */
-function openSupportChatSession(chatId, user) {
-  let modal = document.getElementById("modal-viewer");
-  let modalContent = document.querySelector(".modal-content");
-  modalContent.innerHTML = "";
-  
-  let closeBtn = document.createElement("span");
-  closeBtn.className = "close";
-  closeBtn.innerHTML = "&times;";
-  closeBtn.addEventListener("click", function(){ modal.style.display = "none"; });
-  modalContent.appendChild(closeBtn);
-  
-  let title = document.createElement("h3");
-  title.innerText = "Chat de Soporte con " + user;
-  modalContent.appendChild(title);
-  
-  let messagesDiv = document.createElement("div");
-  messagesDiv.className = "chat-messages";
-  messagesDiv.style.height = "300px";
-  messagesDiv.style.overflowY = "scroll";
-  messagesDiv.style.border = "1px solid #ccc";
-  messagesDiv.style.padding = "10px";
-  modalContent.appendChild(messagesDiv);
-  
-  let form = document.createElement("form");
-  form.id = "admin-support-chat-form";
-  let input = document.createElement("input");
-  input.type = "text";
-  input.placeholder = "Escribe tu respuesta";
-  input.required = true;
-  form.appendChild(input);
-  let button = document.createElement("button");
-  button.type = "submit";
-  button.className = "enhanced-btn";
-  button.innerText = "Enviar";
-  form.appendChild(button);
-  modalContent.appendChild(form);
-  
-  form.addEventListener("submit", function(e){
-    e.preventDefault();
-    let message = input.value.trim();
-    let currentUser = activeUser;
-    if(message !== ""){
-      db.collection("soporte_chats").doc(chatId).collection("messages").add({
-        user: currentUser,
-        text: message,
-        timestamp: Date.now()
-      }).then(() => {
-        db.collection("soporte_chats").doc(chatId).set({
-          updatedAt: Date.now()
-        }, {merge:true});
-      }).catch(error => console.error("Error en admin soporte chat:", error));
-      input.value = "";
-    }
-  });
-  
-  let unsubscribe = db.collection("soporte_chats").doc(chatId).collection("messages").orderBy("timestamp")
-      .onSnapshot(snapshot => {
-        snapshot.docChanges().forEach(change => {
-          if(change.type === "added"){
-            let msg = change.doc.data();
-            renderChatMessage(msg, messagesDiv);
-          }
-        });
-      });
-  
-  let closeChatBtn = document.createElement("button");
-  closeChatBtn.innerText = "Cerrar Chat";
-  closeChatBtn.className = "enhanced-btn";
-  closeChatBtn.style.backgroundColor = "#800080";
-  closeChatBtn.style.color = "white";
-  closeChatBtn.style.border = "none";
-  closeChatBtn.style.borderRadius = "10px";
-  closeChatBtn.style.padding = "10px 20px";
-  closeChatBtn.style.cursor = "pointer";
-  closeChatBtn.style.marginTop = "10px";
-  closeChatBtn.addEventListener("click", function(){
-      unsubscribe();
-      modal.style.display = "none";
-  });
-  modalContent.appendChild(closeChatBtn);
-  
-  modal.style.display = "block";
-}
-
-/* FUNCIÓN DE ALTERNANCIA DE MODO (VOLUNTARIO <-> ORGANIZADOR) */
-function toggleUserMode() {
-  if (currentMode === "voluntario") {
-    currentMode = "organizador";
-    localStorage.setItem("userMode", "organizador");
-    // Actualizar el texto de todos los botones toggle a "Cambiar a Voluntario"
-    document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Voluntario");
-    // Ocultar la interfaz principal de modo voluntario y mostrar la interfaz de modo organizador
-    document.getElementById("main-app").style.display = "none";
-    document.getElementById("org-mode-app").style.display = "block";
-    // Cerrar el dropdown de perfil
-    document.getElementById("profile-dropdown").style.display = "none";
-    // Si aún no se ha seleccionado una organización, mostrar el modal del modo organizador
-    if (!currentOrg) {
-      document.getElementById("org-mode-menu").style.display = "block";
-    }
-    // Asignar manejadores a los botones del menú inferior en modo Organizador
-    bindOrgModeNavigation();
-  } else {
-    currentMode = "voluntario";
-    localStorage.setItem("userMode", "voluntario");
-    document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Organizador");
-    document.getElementById("org-mode-app").style.display = "none";
-    document.getElementById("main-app").style.display = "block";
-    // Cerrar el modal de modo organizador, si se encuentra abierto
-    document.getElementById("org-mode-menu").style.display = "none";
-    // Cerrar el dropdown de perfil
-    document.getElementById("profile-dropdown").style.display = "none";
-  }
-}
-
-/* NUEVA FUNCIÓN: Asignar eventos a los botones del menú inferior del modo Organizador */
-function bindOrgModeNavigation() {
-  const orgMenuBtns = document.querySelectorAll(".org-menu-btn");
-  if (!orgMenuBtns) return;
-  orgMenuBtns.forEach(btn => {
-    btn.addEventListener("click", function () {
-      // Ocultar todas las secciones de contenido en modo organizador
-      const orgSections = document.querySelectorAll(".org-content-section");
-      orgSections.forEach(section => {
-        section.style.display = "none";
-      });
-      // Mostrar la sección cuyo id se encuentre en data-target del botón
-      const target = this.getAttribute("data-target");
-      if (target) {
-        const targetEl = document.getElementById(target);
-        if (targetEl) {
-          targetEl.style.display = "block";
-        } else {
-          console.error("No se encontró la sección con id:", target);
-        }
-      }
-    });
-  });
-}
-
-/* FUNCIÓN PARA ABRIR MODAL DE VISTA PREVIA DE ARCHIVOS */
-function openModal(url, fileName) {
-  let ext = "";
-  if (fileName) {
-    ext = fileName.split(".").pop().toLowerCase();
-  } else {
-    if (url.indexOf("data:image") === 0) {
-      ext = "image";
-    } else if (url.indexOf("data:application/pdf") === 0) {
-      ext = "pdf";
-    }
-  }
-  const modal = document.getElementById("modal-viewer");
-  const modalContent = document.querySelector(".modal-content");
-  modalContent.innerHTML = "";
-  const closeBtn = document.createElement("span");
-  closeBtn.className = "close";
-  closeBtn.innerHTML = "&times;";
-  closeBtn.addEventListener("click", function () {
-    modal.style.display = "none";
-  });
-  modalContent.appendChild(closeBtn);
-  if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "image") {
-    const img = document.createElement("img");
-    img.src = url;
-    modalContent.appendChild(img);
-    img.addEventListener("click", function () {
-      modal.style.display = "none";
-    });
-  } else if (ext === "pdf") {
-    const iframe = document.createElement("iframe");
-    iframe.src = url;
-    modalContent.appendChild(iframe);
-  } else {
-    const msg = document.createElement("p");
-    msg.textContent = "Vista previa no disponible para este tipo de archivo.";
-    modalContent.appendChild(msg);
-  }
-  modal.addEventListener("click", function (e) {
-    if (e.target === modal) { modal.style.display = "none"; }
-  });
-  modal.style.display = "block";
-}
-
-function updateProfileSubsection(option) {
-  const profileDisplay = document.querySelector(".profile-display");
-  const profileSettings = document.querySelector(".profile-settings");
-  const infoCenter = document.getElementById("info-center");
-  const support = document.getElementById("support");
-
-  if (profileDisplay) profileDisplay.style.display = "none";
-  if (profileSettings) profileSettings.style.display = "none";
-  if (infoCenter) infoCenter.style.display = "none";
-  if (support) support.style.display = "none";
-
-  if (option === "perfil") {
-    if (profileDisplay) profileDisplay.style.display = "block";
-  } else if (option === "ajustes") {
-    if (profileSettings) profileSettings.style.display = "block";
-  } else if (option === "soporte") {
-    if (support) support.style.display = "block";
-  } else if (option === "centro") {
-    if (infoCenter) infoCenter.style.display = "block";
-  }
-}
-
-function updateProfileView() {
-  document.getElementById("profile-username-display").innerText =
-    "Usuario: " + (localStorage.getItem("username") || "");
-  document.getElementById("profile-name-display").innerText =
-    "Nombre: " + (localStorage.getItem("profileNombre") || "");
-  document.getElementById("profile-surname-display").innerText =
-    "Apellido: " + (localStorage.getItem("profileApellido") || "");
-  document.getElementById("profile-dob-display").innerText =
-    "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
-  document.getElementById("profile-formation-display").innerText =
-    "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
-  document.getElementById("profile-large-photo").src =
-    localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
-}
-
-/* FUNCIÓN PARA ABRIR CHAT DE SOPORTE EN EL PANEL DE ADMINISTRACIÓN */
-function openSupportChatSession(chatId, user) {
-  let modal = document.getElementById("modal-viewer");
-  let modalContent = document.querySelector(".modal-content");
-  modalContent.innerHTML = "";
-  
-  let closeBtn = document.createElement("span");
-  closeBtn.className = "close";
-  closeBtn.innerHTML = "&times;";
-  closeBtn.addEventListener("click", function(){ modal.style.display = "none"; });
-  modalContent.appendChild(closeBtn);
-  
-  let title = document.createElement("h3");
-  title.innerText = "Chat de Soporte con " + user;
-  modalContent.appendChild(title);
-  
-  let messagesDiv = document.createElement("div");
-  messagesDiv.className = "chat-messages";
-  messagesDiv.style.height = "300px";
-  messagesDiv.style.overflowY = "scroll";
-  messagesDiv.style.border = "1px solid #ccc";
-  messagesDiv.style.padding = "10px";
-  modalContent.appendChild(messagesDiv);
-  
-  let form = document.createElement("form");
-  form.id = "admin-support-chat-form";
-  let input = document.createElement("input");
-  input.type = "text";
-  input.placeholder = "Escribe tu respuesta";
-  input.required = true;
-  form.appendChild(input);
-  let button = document.createElement("button");
-  button.type = "submit";
-  button.className = "enhanced-btn";
-  button.innerText = "Enviar";
-  form.appendChild(button);
-  modalContent.appendChild(form);
-  
-  form.addEventListener("submit", function(e){
-    e.preventDefault();
-    let message = input.value.trim();
-    let currentUser = activeUser;
-    if(message !== ""){
-      db.collection("soporte_chats").doc(chatId).collection("messages").add({
-        user: currentUser,
-        text: message,
-        timestamp: Date.now()
-      }).then(() => {
-        db.collection("soporte_chats").doc(chatId).set({
-          updatedAt: Date.now()
-        }, {merge:true});
-      }).catch(error => console.error("Error en admin soporte chat:", error));
-      input.value = "";
-    }
-  });
-  
-  let unsubscribe = db.collection("soporte_chats").doc(chatId).collection("messages").orderBy("timestamp")
-      .onSnapshot(snapshot => {
-        snapshot.docChanges().forEach(change => {
-          if(change.type === "added"){
-            let msg = change.doc.data();
-            renderChatMessage(msg, messagesDiv);
-          }
-        });
-      });
-  
-  let closeChatBtn = document.createElement("button");
-  closeChatBtn.innerText = "Cerrar Chat";
-  closeChatBtn.className = "enhanced-btn";
-  closeChatBtn.style.backgroundColor = "#800080";
-  closeChatBtn.style.color = "white";
-  closeChatBtn.style.border = "none";
-  closeChatBtn.style.borderRadius = "10px";
-  closeChatBtn.style.padding = "10px 20px";
-  closeChatBtn.style.cursor = "pointer";
-  closeChatBtn.style.marginTop = "10px";
-  closeChatBtn.addEventListener("click", function(){
-      unsubscribe();
-      modal.style.display = "none";
-  });
-  modalContent.appendChild(closeChatBtn);
-  
-  modal.style.display = "block";
-}
-
-/* --- FIN DE EVENTOS Y FUNCIONALIDAD PRINCIPAL --- */
