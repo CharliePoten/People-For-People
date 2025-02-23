@@ -1840,5 +1840,11 @@ document.addEventListener("DOMContentLoaded", function () {
     localStorage.removeItem("username");
     window.location.href = window.location.href;
   });
+  const newUsernameInput = document.getElementById("new-username");
+  newUsernameInput.addEventListener("input", function () {
+    const newUsername = newUsernameInput.value.trim();
+    localStorage.setItem("username", newUsername);
+    updateProfileView();
+});
 });
 /* --- FIN DEL DOMCONTENTLOADED --- */
