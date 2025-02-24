@@ -220,7 +220,7 @@ form button:hover {
 
 /* Botón de Salir */
 .logout-btn {
-  background: linear-gradient(45deg, #8a2be2, #6a0dad);
+  background: linear-gradient(45deg, #ff4d4d, #ff1a1a);
   color: #fff;
   border: none;
   border-radius: 10px;
@@ -230,16 +230,16 @@ form button:hover {
 }
 
 .logout-btn:hover {
-  background: linear-gradient(45deg, #6a0dad, #8a2be2);
+  background: linear-gradient(45deg, #ff1a1a, #ff4d4d);
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Sección para el botón Cerrar Sesión en Ajustes */
 .logout-section {
   margin-top: 20px;
   text-align: center;
-  
 }
-
 
 /* Área de contenido */
 .app-content {
@@ -859,6 +859,12 @@ form button:hover {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #f9f9f9;
 }
 
 /* Modo Organizador */
