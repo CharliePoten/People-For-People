@@ -1511,7 +1511,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const habilidadesP = document.createElement("p");
     habilidadesP.innerText = "Habilidades: " + (vol.habilidades || "No especificadas");
-    leftColumn.appendChild(horarioP);
     leftColumn.appendChild(habilidadesP);
 
     const profileDiv = document.createElement("div");
@@ -1547,14 +1546,11 @@ document.addEventListener("DOMContentLoaded", function () {
       "<form id='voluntario-private-chat-form'><input type='text' id='voluntario-private-chat-input' placeholder='Escribe tu mensaje' required /><button type='submit' class='enhanced-btn'>Enviar</button></form>";
     voluntarioDetailDiv.appendChild(privateChatDiv);
 
-    const currentUser = activeUser;
+    const currentUser = localStorage.getItem("username") || "Tú";
     const chatKey = [currentUser, vol.user].sort().join("_");
     const privateChatMessagesDiv = document.getElementById("voluntario-private-chat-messages");
     privateChatMessagesDiv.innerHTML = "";
-    db.collection("voluntario_chat")
-      .doc(chatKey)
-      .collection("messages")
-      .orderBy("timestamp")
+    db.collection("voluntario_chat").doc(chatKey).collection("messages").orderBy("timestamp")
       .onSnapshot(function(snapshot) {
         snapshot.docChanges().forEach(function(change) {
           if (change.type === "added") {
@@ -1569,22 +1565,18 @@ document.addEventListener("DOMContentLoaded", function () {
       const chatInput = document.getElementById("voluntario-private-chat-input");
       const message = chatInput.value.trim();
       if (message !== "") {
-        db.collection("voluntario_chat")
-          .doc(chatKey)
-          .collection("messages")
-          .add({
-            user: activeUser,
-            text: message,
-            timestamp: Date.now()
-          })
-          .catch(error => console.error("Error en chat privado:", error));
+        db.collection("voluntario_chat").doc(chatKey).collection("messages").add({
+          user: currentUser,
+          text: message,
+          timestamp: Date.now()
+        }).catch(error => console.error("Error en chat privado:", error));
         chatInput.value = "";
       }
     };
     currentVoluntario = vol;
-    voluntarioDetailDiv.style.display = "block";
+    voluntarioDetailView.style.display = "block";
   }
-
+  
   document.getElementById("volver-voluntario-list").addEventListener("click", function () {
     voluntarioDetailView.style.display = "none";
     voluntarioListView.style.display = "block";
@@ -1845,6 +1837,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const newUsername = newUsernameInput.value.trim();
     localStorage.setItem("username", newUsername);
     updateProfileView();
+});
+});
+/* --- FIN DEL DOMCONTENTLOADED --- */
 });
 });
 /* --- FIN DEL DOMCONTENTLOADED --- */
