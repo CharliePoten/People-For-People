@@ -11,13 +11,13 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.8/firebase-firestore-compat.js"></script>
   </head>
   <body>
-    <!-- Mensaje de Bienvenida / Prototipo (centrado mediante CSS) -->
+    <!-- Mensaje de bienvenida / prototipo -->
     <div id="dev-message">
       <div class="message-box">
         <p>
           Bienvenido a People For People. Este es un prototipo de aplicación para la startup de People For People. Actualmente estamos integrando las últimas tecnologías y desarrollando nuevas funcionalidades para brindar una experiencia de usuario excepcional. Le agradecemos por participar en esta fase de pruebas.
         </p>
-        <p class="creator">Creado por: Carlos Potenciano</p>
+        <p class="creator">Created By: Carlos Potenciano</p>
         <button id="accept-dev-message" class="accept-btn">Aceptar</button>
       </div>
     </div>
@@ -35,30 +35,15 @@
       </div>
     </div>
 
-    <!-- Aplicación Principal (Modo Voluntario) -->
+    <!-- Aplicación Principal -->
     <div id="main-app" class="screen" style="display: none;">
       <header class="app-header">
         <h1 class="app-title">People For People</h1>
-        <!-- Botón de perfil en el header con menú desplegable -->
+        <!-- Botón de perfil en el header -->
         <div class="header-actions">
           <div class="profile-container" id="profile-btn">
-            <img
-              src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true"
-              alt="Perfil"
-              class="profile-img"
-              onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'"
-            />
+            <img src="https://via.placeholder.com/40/FFFFFF/FFFFFF?text=" alt="Perfil" class="profile-img" />
             <span class="profile-label">Mi perfil</span>
-            <!-- Menú desplegable -->
-            <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
-              <div class="dropdown-item" data-section="perfil">Mi perfil</div>
-              <div class="dropdown-item" data-section="ajustes">Ajustes de perfil</div>
-              <div class="dropdown-item" data-section="soporte">Soporte</div>
-              <div class="dropdown-item" data-section="centro">People for People</div>
-              <div class="dropdown-item mode-toggle-btn" style="background-color: #800080; color: white; cursor: pointer;">
-                Cambiar a Organizador
-              </div>
-            </div>
           </div>
         </div>
       </header>
@@ -78,7 +63,9 @@
           <h2>Pedir Ayuda</h2>
           <div id="ayuda-view">
             <div id="ayuda-list-view">
-              <button id="mostrar-ayuda-create" class="action-btn">Crear Punto de Ayuda</button>
+              <button id="mostrar-ayuda-create" class="action-btn">
+                Crear Punto de Ayuda
+              </button>
               <div id="ayuda-list" class="list-box"></div>
             </div>
             <div id="ayuda-create-form" class="form-container" style="display:none;">
@@ -87,9 +74,7 @@
                 <input type="text" id="ayuda-titulo" placeholder="Título del Punto de Ayuda" required />
                 <textarea id="ayuda-info" placeholder="Información del Punto de Ayuda" required></textarea>
                 <input type="file" id="ayuda-image" accept="image/*" />
-                <button type="submit" class="action-btn">
-                  <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
-                </button>
+                <button type="submit" class="action-btn">Crear Punto de Ayuda</button>
                 <button type="button" id="cancelar-ayuda" class="return-btn">Volver</button>
               </form>
             </div>
@@ -103,9 +88,7 @@
                 <div class="chat-messages" id="ayuda-chat-messages"></div>
                 <form id="ayuda-chat-form">
                   <input type="text" id="ayuda-chat-input" placeholder="Escribe tu mensaje" required />
-                  <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
-                  </button>
+                  <button type="submit" class="enhanced-btn">Enviar</button>
                 </form>
               </div>
             </div>
@@ -117,7 +100,9 @@
           <h2>Voluntarios</h2>
           <div id="voluntario-view">
             <div id="voluntario-list-view">
-              <button id="mostrar-voluntario-create" class="action-btn">Ofrecerme como Voluntario</button>
+              <button id="mostrar-voluntario-create" class="action-btn">
+                Ofrecerme como Voluntario
+              </button>
               <div id="voluntario-list" class="list-box"></div>
             </div>
             <div id="voluntario-create-form" class="form-container" style="display:none;">
@@ -150,12 +135,14 @@
           </div>
         </div>
 
-        <!-- Sección Organizaciones (Modo Voluntario) -->
+        <!-- Sección Organizaciones -->
         <div id="organizaciones" class="content-section" style="display:none;">
           <h2>Organizaciones de Voluntarios</h2>
           <div id="org-view">
             <div id="org-list-view">
-              <button id="mostrar-org-create" class="action-btn">Crear Organización</button>
+              <button id="mostrar-org-create" class="action-btn">
+                Crear Organización
+              </button>
               <div id="org-list" class="list-box"></div>
             </div>
             <div id="org-create-form" class="form-container" style="display:none;">
@@ -181,9 +168,7 @@
                 <div class="chat-messages" id="org-admin-chat-messages"></div>
                 <form id="org-admin-chat-form">
                   <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
-                  <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
-                  </button>
+                  <button type="submit" class="enhanced-btn">Enviar</button>
                 </form>
               </div>
               <div id="org-chat" class="chat-container">
@@ -191,9 +176,7 @@
                 <div class="chat-messages" id="org-chat-messages"></div>
                 <form id="org-chat-form">
                   <input type="text" id="org-chat-input" placeholder="Escribe tu mensaje" required />
-                  <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
-                  </button>
+                  <button type="submit" class="enhanced-btn">Enviar</button>
                 </form>
               </div>
             </div>
@@ -206,12 +189,7 @@
           <div class="profile-container-new">
             <div class="profile-display">
               <div class="profile-photo-container">
-                <img
-                  id="profile-large-photo"
-                  src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true"
-                  alt="Foto de Perfil"
-                  onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'"
-                />
+                <img id="profile-large-photo" src="https://via.placeholder.com/100/FFFFFF/000000?text=Perfil" alt="Foto de Perfil">
               </div>
               <div class="profile-info">
                 <h3>Información de Perfil</h3>
@@ -226,15 +204,20 @@
             <div class="profile-settings">
               <h3>Ajustes de Perfil</h3>
               <div class="profile-tabs">
-                <button type="button" class="profile-tab-btn active" data-target="profile-datos">Datos Personales</button>
-                <button type="button" class="profile-tab-btn" data-target="profile-formacion">Formación Profesional</button>
-                <button type="button" class="profile-tab-btn" data-target="profile-foto">Cambiar Foto</button>
+                <button type="button" class="profile-tab-btn active" data-target="profile-datos">
+                  Datos Personales
+                </button>
+                <button type="button" class="profile-tab-btn" data-target="profile-formacion">
+                  Formación Profesional
+                </button>
+                <button type="button" class="profile-tab-btn" data-target="profile-foto">
+                  Cambiar Foto
+                </button>
               </div>
               <div class="profile-tab-content" id="profile-datos" style="display:block;">
                 <form id="profile-datos-form">
                   <input type="text" id="profile-nombre" placeholder="Nombre" required />
                   <input type="text" id="profile-apellido" placeholder="Apellido" required />
-                  <input type="text" id="new-username" placeholder="Nombre de Usuario" />
                   <input type="date" id="profile-dob" required />
                   <input type="text" id="profile-phone" placeholder="Teléfono (opcional)" />
                   <button type="submit" class="enhanced-btn">Guardar Datos</button>
@@ -248,7 +231,7 @@
                   <button type="submit" class="enhanced-btn">Guardar Formación</button>
                 </form>
                 <div class="file-attachment">
-                  <h4>Adjuntar Archivo (para uso general)</h4>
+                  <h4>Adjuntar Archivo</h4>
                   <form id="profile-attachment-form">
                     <input type="text" id="attachment-title" placeholder="Título del Archivo" required />
                     <input type="file" id="attachment-file" accept="application/pdf, image/*, .docx" required />
@@ -267,9 +250,6 @@
                   <input type="file" id="profile-new-photo" accept="image/*" required />
                   <button type="submit" class="enhanced-btn">Actualizar Foto</button>
                 </form>
-              </div>
-              <div class="logout-section">
-                <button type="button" id="logout-btn" class="logout-btn">Cerrar Sesión</button>
               </div>
             </div>
           </div>
@@ -292,17 +272,7 @@
               <p>Flexibilidad: Participa según tu disponibilidad y capacidades.</p>
               <p>Comunidad Solidaria: Forma parte de una red comprometida con el bienestar común.</p>
               
-              <p>🌐 <a href="https://www.peopleforpeople.es/" target="_blank">Visite nuestra página WEB para más información</a></p>
-
-              <div id="file-upload-container" style="margin-top: 20px; display: none;">
-                <h3>Subir Archivo</h3>
-                <form id="file-upload-form">
-                  <input type="text" id="attachment-title" placeholder="Título del Archivo" required />
-                  <input type="file" id="attachment-file" accept="application/pdf, image/*" required />
-                  <button type="submit" class="enhanced-btn">Subir Archivo</button>
-                </form>
-                <div id="upload-message" style="margin-top: 10px;"></div>
-              </div>
+              <p>🌐 <a href="https://peopleforpeople7.wordpress.com" target="_blank">Más información en nuestra página web</a></p>
             </div>
 
             <div class="profile-info-section" id="support" style="display:none;">
@@ -318,96 +288,20 @@
               <p>Si experimentas algún error o fallo en la aplicación, repórtalo aquí y lo solucionaremos lo antes posible.</p>
               <p>💬 Chat en Vivo: Disponible en horario laboral</p>
               
-              <div id="soporte-live-chat">
-                <h3>Chat en Vivo</h3>
-                <div class="chat-messages" id="soporte-chat-messages" style="height:200px; overflow:auto; border:1px solid #ccc; padding:10px;"></div>
-                <form id="soporte-chat-form">
-                  <input type="text" id="soporte-chat-input" placeholder="Escribe tu mensaje" required />
-                  <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
-                  </button>
-                </form>
-              </div>
-              
               <h3>🔹 Sugerencias y Comentarios</h3>
               <p>Tu opinión es importante para nosotros. Déjanos tus sugerencias para mejorar tu experiencia.</p>
-
-              <div id="feedback-section">
-                <form id="feedback-form">
-                  <textarea id="feedback-text" placeholder="Escribe tu comentario aquí" required></textarea>
-                  <button type="submit" class="enhanced-btn">Enviar Comentario</button>
-                </form>
-              </div>
-              
-              <button id="admin-panel-link" class="enhanced-btn">Panel de Administrador</button>
-              
-              <div id="admin-panel" style="margin-top:20px; display:none; border: 1px solid #ccc; padding: 10px;">
-                <h2>Panel de Administración</h2>
-                <form id="admin-login-form">
-                  <input type="email" id="admin-email" placeholder="Email de Administrador" required />
-                  <input type="password" id="admin-password" placeholder="Contraseña" required />
-                  <button type="submit" class="enhanced-btn">Acceder</button>
-                </form>
-                <div id="admin-content" style="display:none;">
-                  <button id="admin-logout-btn" class="enhanced-btn" style="float: right;">Cerrar Sesión</button>
-                  <h3>Editar Información</h3>
-                  <form id="admin-edit-form">
-                    <textarea id="admin-info" placeholder="Nueva Información..." required></textarea>
-                    <button type="submit" class="enhanced-btn">Guardar Cambios</button>
-                  </form>
-                  <h3>Subir Archivo</h3>
-                  <form id="admin-upload-form">
-                    <input type="text" id="admin-attachment-title" placeholder="Título del Archivo" required />
-                    <input type="file" id="admin-attachment-file" accept="application/pdf, image/*" required />
-                    <button type="submit" class="enhanced-btn">Subir Archivo</button>
-                  </form>
-                  <div id="admin-upload-message" style="margin-top:10px;"></div>
-                  
-                  <div id="admin-support-chats">
-                    <h3>Chats de Soporte Abiertos</h3>
-                    <div id="admin-support-chats-list" style="border:1px solid #ccc; padding:10px; max-height:200px; overflow:auto;"></div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
+
       </main>
 
-      <!-- Menú de Navegación Inferior (Modo Voluntario) -->
+      <!-- Menú de navegación inferior -->
       <nav class="app-menu">
-        <button class="menu-btn" data-target="map-view">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true"
-            alt="Icono Mapa"
-          />
-          Mapa
-        </button>
-        <button class="menu-btn" data-target="pedir-ayuda">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20pedir%20ayuda.png?raw=true"
-            alt="Icono Pedir Ayuda"
-          />
-          Pedir Ayuda
-        </button>
-        <button class="menu-btn" data-target="ofrecer-voluntario">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20voluntario.png?raw=true"
-            alt="Icono Voluntario"
-          />
-          Voluntarios
-        </button>
-        <button class="menu-btn" data-target="organizaciones">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20organizaciones.png?raw=true"
-            alt="Icono Organizaciones"
-          />
-          Organizaciones
-        </button>
+        <button class="menu-btn" data-target="map-view">Mapa</button>
+        <button class="menu-btn" data-target="pedir-ayuda">Pedir Ayuda</button>
+        <button class="menu-btn" data-target="ofrecer-voluntario">Voluntarios</button>
+        <button class="menu-btn" data-target="organizaciones">Organizaciones</button>
       </nav>
     </div>
 
@@ -416,158 +310,7 @@
       <div class="modal-content"></div>
     </div>
 
-    <!-- Modal para Modo Organizador: Seleccionar/Crear Organización -->
-    <div id="org-mode-menu" class="modal">
-      <div class="modal-content org-menu-content">
-        <span class="close" id="close-org-menu">&times;</span>
-        <h2>Modo Organizador</h2>
-        <div class="org-menu-container">
-          <div class="org-menu-header">
-            <h3>Mis Organizaciones</h3>
-            <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">Crear Organización</button>
-          </div>
-          <div id="orgmode-list" class="list-box">
-            <!-- Lista en tiempo real de organizaciones donde eres admin -->
-          </div>
-          <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
-            <h3>Crear Nueva Organización</h3>
-            <form id="create-org-form-orgmode">
-              <input type="text" id="orgmode-title" placeholder="Título de la Organización" required />
-              <textarea id="orgmode-info" placeholder="Información de la Organización" required></textarea>
-              <input type="file" id="orgmode-image" accept="image/*" />
-              <button type="submit" class="action-btn">Crear Organización</button>
-              <button type="button" id="cancelar-org-modal" class="return-btn">Cancelar</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Aplicación Modo Organizador -->
-    <div id="org-mode-app" class="screen org-mode" style="display:none;">
-      <header class="app-header org-header">
-        <h1 class="app-title">Modo Organizador</h1>
-        <!-- El botón de perfil en modo organizador se creará dinámicamente -->
-      </header>
-      <main class="app-content org-content">
-        <!-- Sección Chats -->
-        <div id="org-chats" class="org-content-section" style="display:none;">
-          <h2>Centro de Chats</h2>
-          <!-- Chat Público -->
-          <div id="org-chat-public" class="chat-container">
-            <h3>Chat Público</h3>
-            <div class="chat-messages" id="org-chat-messages-public"></div>
-            <form id="org-chat-form-public">
-              <input type="text" id="org-chat-input-public" placeholder="Escribe tu mensaje" required />
-              <input type="file" id="org-chat-file-public" accept="image/*, application/pdf" />
-              <button type="submit" class="enhanced-btn">
-                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
-              </button>
-            </form>
-          </div>
-          <!-- Chat de Administrador -->
-          <div id="org-chat-admin" class="chat-container">
-            <h3>Chat de Administradores</h3>
-            <div class="chat-messages" id="org-admin-chat-messages"></div>
-            <form id="org-admin-chat-form">
-              <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
-              <input type="file" id="org-admin-chat-file" accept="image/*, application/pdf" />
-              <button type="submit" class="enhanced-btn">
-                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Sección Información (People for People) -->
-        <div id="org-info" class="org-content-section" style="display:none;">
-          <h2>People for People</h2>
-          <!-- Panel de visualización -->
-          <div id="org-info-display" class="org-info-display">
-            <p id="org-info-titulo">Título: </p>
-            <p id="org-info-creador">Creador: </p>
-            <p id="org-info-detalle">Información: </p>
-            <p id="org-info-lugar">Lugar: </p>
-            <p id="org-info-fecha">Fecha de Creación: </p>
-            <div id="org-info-attachments" class="attachment-display">
-              <!-- Archivos adjuntos se mostrarán aquí -->
-            </div>
-            <button id="btn-editar-info" class="action-btn">Editar People for People</button>
-          </div>
-          <!-- Panel de edición -->
-          <div id="org-info-edit" class="org-info-edit" style="display:none;">
-            <h3>Editar People for People</h3>
-            <form id="org-info-edit-form">
-              <input type="text" id="edit-org-titulo" placeholder="Título" required />
-              <input type="text" id="edit-org-creador" placeholder="Creador" required />
-              <textarea id="edit-org-detalle" placeholder="Información" required></textarea>
-              <input type="text" id="edit-org-lugar" placeholder="Lugar" required />
-              <input type="date" id="edit-org-fecha" placeholder="Fecha" required />
-              <button type="submit" class="action-btn">Guardar Cambios</button>
-              <button type="button" id="cancelar-editar-info" class="return-btn">Cancelar</button>
-            </form>
-            <h3>Subir Archivo</h3>
-            <form id="org-file-upload-form" class="form-container">
-              <input type="text" id="org-file-title" placeholder="Título del Archivo" required />
-              <input type="file" id="org-file-upload" accept="application/pdf, image/*" required />
-              <button type="submit" class="action-btn">Subir Archivo</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Sección Mis Organizaciones -->
-        <div id="org-list" class="org-content-section" style="display:none;">
-          <h2>Mis Organizaciones</h2>
-          <div class="org-list-container">
-            <div id="org-list-organizador" class="list-box">
-              <!-- Lista en tiempo real de organizaciones donde eres admin o miembro -->
-            </div>
-            <button id="crear-org-btn-organizador" class="action-btn" style="background-color:#800080; color:white;">
-              Crear Organización
-            </button>
-          </div>
-        </div>
-
-        <!-- Sección de Inicio (opcional) -->
-        <div id="org-mode-home" class="org-content-section" style="display:block;">
-          <p>Bienvenido al modo organizador. Selecciona una opción del menú inferior.</p>
-        </div>
-      </main>
-      <nav class="app-menu org-app-menu">
-        <button class="menu-btn org-menu-btn" data-target="org-chats">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20chats.png?raw=true"
-            alt="Icono Chats"
-          />
-          Centro de Chats
-        </button>
-        <button class="menu-btn org-menu-btn" data-target="org-info">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20informacion.png?raw=true"
-            alt="Icono Información"
-          />
-          People for People
-        </button>
-        <button class="menu-btn org-menu-btn" data-target="org-list">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20listas.png?raw=true"
-            alt="Icono Mis Organizaciones"
-          />
-          Mis Organizaciones
-        </button>
-      </nav>
-    </div>
-
-    <!-- Modal para vista previa de archivos -->
-    <div id="modal-viewer" class="modal">
-      <div class="modal-content"></div>
-    </div>
-
-    <!-- Se carga el archivo principal con defer -->
-    <script defer src="app.js"></script>
+    <script src="app.js"></script>
     <!-- Carga asíncrona de Google Maps -->
     <script>
       window.onload = function () {
