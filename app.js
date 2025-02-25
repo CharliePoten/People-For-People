@@ -1351,8 +1351,39 @@ document.addEventListener("DOMContentLoaded", function () {
       title: "Punto de Ayuda: " + ayuda.titulo,
       icon: helpIcon
     });
+    // Mostrar el mapa pequeño
+    new google.maps.Marker({
+      position: { lat: ayuda.latitude, lng: ayuda.longitude },
+      map: smallMap,
+      title: "Punto de Ayuda: " + ayuda.titulo,
+      icon: helpIcon
+    });
+
     document.getElementById("ayuda-detail-view").style.display = "block";
   }
+
+  document.getElementById("volver-ayuda-list").addEventListener("click", function () {
+    document.getElementById("ayuda-detail-view").style.display = "none";
+    ayudaListView.style.display = "block";
+  });
+
+  document.getElementById("view-on-map").addEventListener("click", function () {
+    showSection("map-view"); // Cambia a la sección del mapa
+    const pos = { lat: currentAyuda.latitude, lng: currentAyuda.longitude };
+    map.setCenter(pos);
+    map.setZoom(15); // Ajusta el zoom según sea necesario
+    if (currentLocationMarker) {
+      currentLocationMarker.setPosition(pos);
+    } else {
+      currentLocationMarker = new google.maps.Marker({
+        position: pos,
+        map: map,
+        title: "Punto de Ayuda: " + currentAyuda.titulo,
+        icon: helpIcon
+      });
+    }
+  });
+    document.getElementById("ayuda-detail-view").style.display = "block";
 
   document.getElementById("volver-ayuda-list").addEventListener("click", function () {
     document.getElementById("ayuda-detail-view").style.display = "none";
