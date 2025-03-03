@@ -1212,7 +1212,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let newAyuda = {
       titulo: titulo,
       info: info,
-      creator: activeUser,
+      creator: localStorage.getItem("username") || "Anónimo",
       timestamp: Date.now()
     };
     if (currentLocationMarker) {
@@ -1224,7 +1224,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     function pushAyuda() {
       db.collection("ayuda").add(newAyuda)
-        .catch(error => console.error("Error en crear punto de ayuda:", error));
+        .catch(error => console.error("Error creando punto de ayuda", error));
     }
     if (imageInput.files && imageInput.files[0]) {
       const reader = new FileReader();
@@ -1240,7 +1240,8 @@ document.addEventListener("DOMContentLoaded", function () {
     ayudaCreateForm.style.display = "none";
     ayudaListView.style.display = "block";
   });
-
+  
+  // Listener en tiempo real para puntos de ayuda
   db.collection("ayuda").orderBy("timestamp").onSnapshot(function (snapshot) {
     snapshot.docChanges().forEach(function (change) {
       let ayuda = change.doc.data();
@@ -1259,7 +1260,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
-
+  
   function updateAyudaList() {
     ayudaListContainer.innerHTML = "";
     ayudaItems.sort((a, b) => a.timestamp - b.timestamp);
@@ -1271,7 +1272,7 @@ document.addEventListener("DOMContentLoaded", function () {
       ayudaListContainer.appendChild(itemDiv);
     });
   }
-
+  
   ayudaListContainer.addEventListener("click", function (e) {
     const itemDiv = e.target.closest(".ayuda-item");
     if (itemDiv) {
@@ -1285,7 +1286,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
-
+  
   function showAyudaDetail(ayuda) {
     ayudaListView.style.display = "none";
     ayudaCreateForm.style.display = "none";
@@ -1311,7 +1312,9 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(img);
     }
-    if (activeUser === ayuda.creator) {
+
+    // Si el usuario es el creador, agregar botón para eliminar
+    if (localStorage.getItem("username") === ayuda.creator) {
       const deleteHelpBtn = document.createElement("button");
       deleteHelpBtn.className = "delete-btn";
       deleteHelpBtn.innerText = "Eliminar Punto de Ayuda";
@@ -1329,6 +1332,8 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       ayudaDetailDiv.appendChild(deleteHelpBtn);
     }
+
+    // Chat de Ayuda: subcolección "messages" en "ayuda_chat"
     const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
     ayudaChatContainer.innerHTML = "";
     db.collection("ayuda_chat").doc(ayuda.firebaseKey).collection("messages").orderBy("timestamp")
@@ -1341,17 +1346,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       });
     currentAyuda = ayuda;
+
+    // Mostrar el mapa pequeño
     const smallMap = new google.maps.Map(document.getElementById("small-map"), {
       center: { lat: ayuda.latitude, lng: ayuda.longitude },
       zoom: 15,
     });
-    new google.maps.Marker({
-      position: { lat: ayuda.latitude, lng: ayuda.longitude },
-      map: smallMap,
-      title: "Punto de Ayuda: " + ayuda.titulo,
-      icon: helpIcon
-    });
-    // Mostrar el mapa pequeño
     new google.maps.Marker({
       position: { lat: ayuda.latitude, lng: ayuda.longitude },
       map: smallMap,
@@ -1383,12 +1383,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     }
   });
-    document.getElementById("ayuda-detail-view").style.display = "block";
 
-  document.getElementById("volver-ayuda-list").addEventListener("click", function () {
-    document.getElementById("ayuda-detail-view").style.display = "none";
-    ayudaListView.style.display = "block";
-  });
 
   /* MÓDULO: VOLUNTARIOS */
   const voluntarioListView = document.getElementById("voluntario-list-view");
@@ -1614,7 +1609,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   /* MÓDULO: MI PERFIL */
-  const profileTabButtons = document.querySelectorAll(".profile-tab-btn");
+    const profileTabButtons = document.querySelectorAll(".profile-tab-btn");
   profileTabButtons.forEach(function (btn) {
     btn.addEventListener("click", function (e) {
       e.preventDefault();
@@ -1628,20 +1623,7 @@ document.addEventListener("DOMContentLoaded", function () {
       content.classList.add("active");
     });
   });
-
-  // AÑADIR BOTÓN DE CERRAR SESIÓN EN AJUSTES DE PERFIL
-  if (document.getElementById("profile-settings")) {
-    const closeSessionBtn = document.createElement("button");
-    closeSessionBtn.innerText = "Cerrar Sesión";
-    closeSessionBtn.classList.add("action-btn");
-    closeSessionBtn.addEventListener("click", function(){
-      localStorage.removeItem("userRegistered");
-      localStorage.removeItem("username");
-      window.location.href = window.location.href;
-    });
-    document.getElementById("profile-settings").appendChild(closeSessionBtn);
-  }
-
+  
   document.getElementById("profile-datos-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const nombre = document.getElementById("profile-nombre").value.trim();
@@ -1653,7 +1635,7 @@ document.addEventListener("DOMContentLoaded", function () {
     updateProfileView();
     alert("Datos personales actualizados");
   });
-
+  
   document.getElementById("profile-formacion-form").addEventListener("submit", function (e) {
     e.preventDefault();
     const titulo = document.getElementById("profile-titulo").value.trim();
@@ -1664,6 +1646,132 @@ document.addEventListener("DOMContentLoaded", function () {
     updateProfileView();
     alert("Formación profesional actualizada");
   });
+  
+  document.getElementById("profile-attachment-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const attTitle = document.getElementById("attachment-title").value.trim();
+    const fileInput = document.getElementById("attachment-file");
+    const visibility = document.getElementById("attachment-visibility").value;
+    if (attTitle && fileInput.files && fileInput.files[0]) {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        const newAttachment = {
+          title: attTitle,
+          fileName: file.name,
+          fileUrl: ev.target.result,
+          visibility: visibility
+        };
+        profileAttachments.push(newAttachment);
+        localStorage.setItem("profileAttachments", JSON.stringify(profileAttachments));
+        updateAttachmentList();
+        alert("Archivo adjuntado");
+      };
+      reader.readAsDataURL(file);
+    }
+    this.reset();
+  });
+  
+  document.getElementById("profile-foto-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    const photoInput = document.getElementById("profile-new-photo");
+    if (photoInput.files && photoInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        localStorage.setItem("profilePhoto", ev.target.result);
+        document.querySelector(".profile-img").src = ev.target.result;
+        updateProfileView();
+        alert("Foto actualizada");
+      };
+      reader.readAsDataURL(photoInput.files[0]);
+    }
+  });
+
+  function updateAttachmentList() {
+    const listContainer = document.getElementById("profile-attachment-list");
+    listContainer.innerHTML = "";
+    profileAttachments.forEach((att, index) => {
+      const attDiv = document.createElement("div");
+      attDiv.className = "attachment-item";
+      attDiv.setAttribute("data-index", index);
+      attDiv.setAttribute("data-visibility", att.visibility);
+      attDiv.setAttribute("data-file-url", att.fileUrl);
+      attDiv.innerHTML = "<strong>" + att.title + "</strong> (" + att.fileName + ") - " + (att.visibility === "public" ? "Público" : "Privado");
+      const toggleBtn = document.createElement("button");
+      toggleBtn.className = "toggle-visibility-btn";
+      toggleBtn.innerText = (att.visibility === "public") ? "Cambiar a Privado" : "Cambiar a Público";
+      toggleBtn.addEventListener("click", function () {
+        att.visibility = (att.visibility === "public") ? "private" : "public";
+        localStorage.setItem("profileAttachments", JSON.stringify(profileAttachments));
+        updateAttachmentList();
+      });
+      attDiv.appendChild(toggleBtn);
+      const viewBtn = document.createElement("button");
+      viewBtn.className = "view-att-btn";
+      viewBtn.innerText = "Visualizar";
+      viewBtn.addEventListener("click", function () {
+        openModal(att.fileUrl, att.fileName);
+      });
+      attDiv.appendChild(viewBtn);
+      const deleteAttBtn = document.createElement("button");
+      deleteAttBtn.className = "delete-att-btn";
+      deleteAttBtn.innerText = "Eliminar";
+      deleteAttBtn.addEventListener("click", function () {
+        profileAttachments.splice(index, 1);
+        localStorage.setItem("profileAttachments", JSON.stringify(profileAttachments));
+        updateAttachmentList();
+      });
+      attDiv.appendChild(deleteAttBtn);
+      listContainer.appendChild(attDiv);
+    });
+  }
+});
+
+/* Función para abrir modal en pantalla completa para visualizar archivos */
+function openModal(url, fileName) {
+  let ext = "";
+  if (fileName) {
+    ext = fileName.split(".").pop().toLowerCase();
+  } else {
+    if (url.indexOf("data:image") === 0) {
+      ext = "image";
+    } else if (url.indexOf("data:application/pdf") === 0) {
+      ext = "pdf";
+    }
+  }
+  const modal = document.getElementById("modal-viewer");
+  const modalContent = document.querySelector(".modal-content");
+  modalContent.innerHTML = "";
+  const closeBtn = document.createElement("span");
+  closeBtn.className = "close";
+  closeBtn.innerHTML = "&times;";
+  closeBtn.addEventListener("click", function () {
+    modal.style.display = "none";
+  });
+  modalContent.appendChild(closeBtn);
+  if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "image") {
+    const img = document.createElement("img");
+    img.src = url;
+    modalContent.appendChild(img);
+    img.addEventListener("click", function () {
+      modal.style.display = "none";
+    });
+  } else if (ext === "pdf") {
+    const iframe = document.createElement("iframe");
+    iframe.src = url;
+    modalContent.appendChild(iframe);
+  } else {
+    const msg = document.createElement("p");
+    msg.textContent = "Vista previa no disponible para este tipo de archivo.";
+    modalContent.appendChild(msg);
+  }
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+  modal.style.display = "block";
+}
 
   // EVENTOS DEL ADMIN PANEL
   var adminPanelLink = document.getElementById("admin-panel-link");
@@ -1869,5 +1977,5 @@ document.addEventListener("DOMContentLoaded", function () {
     localStorage.setItem("username", newUsername);
     updateProfileView();
 });
-});
+
 /* --- FIN DEL DOMCONTENTLOADED --- */
