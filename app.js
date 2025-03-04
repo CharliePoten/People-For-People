@@ -1334,19 +1334,51 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Chat de Ayuda: subcolección "messages" en "ayuda_chat"
-    const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
-    ayudaChatContainer.innerHTML = "";
-    db.collection("ayuda_chat").doc(ayuda.firebaseKey).collection("messages").orderBy("timestamp")
-      .onSnapshot(function(snapshot) {
-        snapshot.docChanges().forEach(function(change) {
-          if (change.type === "added") {
-            const msg = change.doc.data();
-            renderChatMessage(msg, ayudaChatContainer);
-          }
-        });
-      });
-    currentAyuda = ayuda;
+ // Chat de Ayuda: subcolección "messages" en "ayuda_chat"
+const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
+ayudaChatContainer.innerHTML = "";
 
+// Escuchar mensajes en tiempo real
+db.collection("ayuda_chat")
+  .doc(ayuda.firebaseKey) // Aseguramos que la referencia sea correcta
+  .collection("messages")
+  .orderBy("timestamp")
+  .onSnapshot(function (snapshot) {
+    snapshot.docChanges().forEach(function (change) {
+      if (change.type === "added") {
+        const msg = change.doc.data();
+        renderChatMessage(msg, ayudaChatContainer);
+      }
+    });
+  });
+
+// Enviar mensaje al chat
+const ayudaChatForm = document.getElementById("ayuda-chat-form");
+ayudaChatForm.onsubmit = function (e) {
+  e.preventDefault();
+  const chatInput = document.getElementById("ayuda-chat-input");
+  const message = chatInput.value.trim();
+
+  if (message !== "") {
+    // Crear el mensaje en la subcolección "messages"
+    db.collection("ayuda_chat")
+      .doc(ayuda.firebaseKey) // Aseguramos que el documento exista
+      .collection("messages")
+      .add({
+        user: localStorage.getItem("username") || "Anónimo",
+        text: message,
+        timestamp: Date.now(),
+      })
+      .then(() => {
+        console.log("Mensaje enviado correctamente");
+        chatInput.value = ""; // Limpiar el campo de entrada
+      })
+      .catch((error) => {
+        console.error("Error al enviar el mensaje:", error);
+        alert("No se pudo enviar el mensaje. Por favor, inténtalo de nuevo.");
+      });
+  }
+};
     // Mostrar el mapa pequeño
     const smallMap = new google.maps.Map(document.getElementById("small-map"), {
       center: { lat: ayuda.latitude, lng: ayuda.longitude },
