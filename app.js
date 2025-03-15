@@ -40,18 +40,20 @@ function updateAttachmentList() {
 }
 
 /* CONFIGURACIÓN DE FIREBASE */
-var firebaseConfig = {
-  apiKey: "AIzaSyCm8fUYcc6VON3F5KPknyvqsNgsm0g80gk",
-  authDomain: "people-for-people-001.firebaseapp.com",
-  databaseURL: "https://people-for-people-001.firebaseio.com",
-  projectId: "people-for-people-001",
-  storageBucket: "people-for-people-001.firebasestorage.app",
-  messagingSenderId: "77800944514",
-  appId: "1:77800944514:web:9b4f35f552f88ab5fe959b",
-  measurementId: "G-BW63R3XK9E"
-};
+import firebase from "https://esm.sh/firebase/compat/app";
+import "https://esm.sh/firebase/compat/firestore";
+
+const firebaseConfig = { 
+  apiKey: "AIzaSyDBH5IcTzsETuRp_Z4Tys2Y1Mg5-6TJRsU",
+  authDomain: "pfp01-bd51f.firebaseapp.com",
+  projectId: "pfp01-bd51f",
+  storageBucket: "pfp01-bd51f.firebasestorage.app",
+  messagingSenderId: "737471192830",
+  appId: "1:737471192830:web:ee3ebcb2290ca8c2840faf",
+  measurementId: "G-EH2HP3BRXW" };
+
 firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
+const db = firebase.firestore();
 
 /* ÍCONOS DE GOOGLE MAPS */
 const helpIcon = "http://maps.google.com/mapfiles/ms/icons/orange-dot.png";
@@ -1758,52 +1760,6 @@ ayudaChatForm.onsubmit = function (e) {
     });
   }
 });
-
-/* Función para abrir modal en pantalla completa para visualizar archivos */
-function openModal(url, fileName) {
-  let ext = "";
-  if (fileName) {
-    ext = fileName.split(".").pop().toLowerCase();
-  } else {
-    if (url.indexOf("data:image") === 0) {
-      ext = "image";
-    } else if (url.indexOf("data:application/pdf") === 0) {
-      ext = "pdf";
-    }
-  }
-  const modal = document.getElementById("modal-viewer");
-  const modalContent = document.querySelector(".modal-content");
-  modalContent.innerHTML = "";
-  const closeBtn = document.createElement("span");
-  closeBtn.className = "close";
-  closeBtn.innerHTML = "&times;";
-  closeBtn.addEventListener("click", function () {
-    modal.style.display = "none";
-  });
-  modalContent.appendChild(closeBtn);
-  if (ext === "png" || ext === "jpg" || ext === "jpeg" || ext === "image") {
-    const img = document.createElement("img");
-    img.src = url;
-    modalContent.appendChild(img);
-    img.addEventListener("click", function () {
-      modal.style.display = "none";
-    });
-  } else if (ext === "pdf") {
-    const iframe = document.createElement("iframe");
-    iframe.src = url;
-    modalContent.appendChild(iframe);
-  } else {
-    const msg = document.createElement("p");
-    msg.textContent = "Vista previa no disponible para este tipo de archivo.";
-    modalContent.appendChild(msg);
-  }
-  modal.addEventListener("click", function (e) {
-    if (e.target === modal) {
-      modal.style.display = "none";
-    }
-  });
-  modal.style.display = "block";
-}
 
   // EVENTOS DEL ADMIN PANEL
   var adminPanelLink = document.getElementById("admin-panel-link");
