@@ -308,39 +308,47 @@ function loadAdminOrganizations() {
 }
 
 /* NUEVA FUNCIÓN PARA CARGAR "MIS ORGANIZACIONES"
-   Se crea un recuadro con un encabezado, un botón para CREAR ORGANIZACIÓN y la lista de organizaciones
-   donde el usuario es administrador.
+   Se muestra la lista de organizaciones donde el usuario es administrador y
+   se utiliza el botón de "Crear Organización" ya definido en el HTML.
 */
 function loadOrganizadorList() {
+  // Asegurarse de que la sección "Mis Organizaciones" esté visible
+  const orgListSection = document.getElementById("org-list");
+  if (orgListSection) {
+    orgListSection.style.display = "block";
+  } else {
+    console.error("No se encontró la sección 'org-list'.");
+  }
+  
+  // Obtener el contenedor de la lista
   const container = document.getElementById("org-list-organizador");
   if (!container) {
     console.error("No se encontró el contenedor 'org-list-organizador'.");
     return;
   }
-  container.innerHTML = "";
-  
-  // Agregar encabezado del recuadro
-  const header = document.createElement("h3");
-  header.innerText = "Mis Organizaciones";
-  container.appendChild(header);
-  
-  // Crear botón "Crear Organización"
-  const createBtn = document.createElement("button");
-  createBtn.innerText = "Crear Organización";
-  createBtn.classList.add("action-btn");
-  createBtn.addEventListener("click", function() {
-    document.getElementById("create-org-form-orgmode-container").style.display = "block";
-  });
-  container.appendChild(createBtn);
+  container.innerHTML = ""; // Limpiar el contenido previo
 
+  // Asignar evento al botón "Crear Organización" definido en el HTML
+  const createBtn = document.getElementById("crear-org-btn-organizador");
+  if (createBtn && !createBtn.onclick) {
+    createBtn.addEventListener("click", function() {
+      const formContainer = document.getElementById("create-org-form-orgmode-container");
+      if (formContainer) {
+        formContainer.style.display = "block";
+      } else {
+        console.error("No se encontró el contenedor 'create-org-form-orgmode-container'.");
+      }
+    });
+  } else if (!createBtn) {
+    console.error("No se encontró el botón 'crear-org-btn-organizador'.");
+  }
+
+  // Consultar la colección "organizaciones" donde el usuario es administrador.
   db.collection("organizaciones")
     .where("admin", "==", activeUser)
     .orderBy("timestamp")
     .onSnapshot(function(snapshot) {
-      // Reinicializar contenedor reinsertando el encabezado y botón
-      container.innerHTML = "";
-      container.appendChild(header);
-      container.appendChild(createBtn);
+      container.innerHTML = ""; // Reiniciar el contenedor en cada actualización de datos
       let empty = true;
       snapshot.forEach(function(doc) {
         let org = doc.data();
@@ -362,6 +370,9 @@ function loadOrganizadorList() {
       }
     });
 }
+
+// Llamar a la función para cargar la lista cuando corresponda
+loadOrganizadorList();
 
 /* Actualizar la información de la organización (vista) */
 function updateOrgInfoDisplay() {
@@ -489,7 +500,6 @@ function createOrgProfileButton() {
   }
 }
 
-/* FUNCIÓN DE ALTERNANCIA DE MODO (VOLUNTARIO <-> ORGANIZADOR) */
 function toggleUserMode() {
   if (currentMode === "voluntario") {
     currentMode = "organizador";
@@ -498,18 +508,27 @@ function toggleUserMode() {
     document.getElementById("main-app").style.display = "none";
     document.getElementById("org-mode-app").style.display = "block";
     document.getElementById("profile-dropdown").style.display = "none";
-    createOrgProfileButton();
-    // Mostrar el menú de organizador y cargar las listas:
+
+    // Llamar inmediatamente a createOrgProfileButton() si aún no se ha creado el botón
+    if (!document.getElementById("org-profile-btn")) {
+      createOrgProfileButton();
+    }
+    
+    // Mostrar el resto de elementos y cargar listas
     document.getElementById("org-mode-menu").style.display = "block";
     loadAdminOrganizations();
     loadOrganizadorList();
     bindOrgModeNavigation();
-    // Cambiar el texto del botón que muestra la información a "Centro de Información"
-    document.querySelectorAll(".org-menu-btn").forEach(function(btn) {
+    
+    // Asegurar que el texto del botón que muestra información quede como "Centro de Información"
+    document.querySelectorAll(".org-menu-btn").forEach(btn => {
       if (btn.getAttribute("data-target") === "org-info") {
         btn.textContent = "Centro de Información";
       }
     });
+    
+    // Mostrar la sección inicial predeterminada en modo organizador
+    document.getElementById("org-mode-home").style.display = "block";
   } else {
     currentMode = "voluntario";
     localStorage.setItem("userMode", "voluntario");
@@ -518,6 +537,9 @@ function toggleUserMode() {
     document.getElementById("main-app").style.display = "block";
     document.getElementById("org-mode-menu").style.display = "none";
     document.getElementById("profile-dropdown").style.display = "none";
+
+    // Redirigir directamente a la vista del Mapa
+    document.querySelector('button[data-target="map-view"]').click();
   }
 }
 
@@ -1929,28 +1951,53 @@ ayudaChatForm.onsubmit = function (e) {
     adminLogoutBtn.style.cursor = "pointer";
   }
 
-  // EVENTO PARA EDITAR LA INFORMACIÓN de People for People.
-  // Se ha quitado el botón dentro del recuadro de centro de información;
-  // ahora la edición se realiza en el recuadro de información (org-info-edit)
-  // y se guarda mediante el formulario "org-info-edit-form" sin alterar el módulo de perfil.
-  document.getElementById("org-info-edit-form").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const newTitle = document.getElementById("edit-org-titulo").value.trim();
-    const newAdmin = document.getElementById("edit-org-creador").value.trim();
-    const newInfo = document.getElementById("edit-org-detalle").value.trim();
-    const newLugar = document.getElementById("edit-org-lugar").value.trim();
-    const newFecha = document.getElementById("edit-org-fecha").value;
-    db.collection("organizaciones").doc(currentOrg.firebaseKey).update({
-      title: newTitle,
-      admin: newAdmin,
-      info: newInfo,
-      lugar: newLugar,
-      timestamp: new Date(newFecha).getTime()
-    }).then(() => {
-      alert("People for People actualizada.");
-      cancelOrgInfoEditing();
-    }).catch(error => console.error("Error actualizando People for People:", error));
-  });
+// Evento para mostrar el panel de edición al hacer clic en "Editar Informacion"
+document.getElementById("btn-editar-info").addEventListener("click", function() {
+  // Ocultar el panel de visualización y mostrar el de edición
+  document.getElementById("org-info-display").style.display = "none";
+  document.getElementById("org-info-edit").style.display = "block";
+  
+  // Prellenar los campos de edición con la información actual
+  const tituloActual = document.getElementById("org-info-titulo").textContent.replace("Título: ", "").trim();
+  const creadorActual = document.getElementById("org-info-creador").textContent.replace("Creador: ", "").trim();
+  const detalleActual = document.getElementById("org-info-detalle").textContent.replace("Información: ", "").trim();
+  const lugarActual = document.getElementById("org-info-lugar").textContent.replace("Lugar: ", "").trim();
+  const fechaActual = document.getElementById("org-info-fecha").textContent.replace("Fecha de Creación: ", "").trim();
+  
+  document.getElementById("edit-org-titulo").value = tituloActual;
+  document.getElementById("edit-org-creador").value = creadorActual;
+  document.getElementById("edit-org-detalle").value = detalleActual;
+  document.getElementById("edit-org-lugar").value = lugarActual;
+  document.getElementById("edit-org-fecha").value = fechaActual;
+});
+
+// Evento para cancelar la edición al hacer clic en "Cancelar"
+document.getElementById("cancelar-editar-info").addEventListener("click", cancelOrgInfoEditing);
+
+// Evento para editar la información de la organización
+document.getElementById("org-info-edit-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+  
+  const newTitle = document.getElementById("edit-org-titulo").value.trim();
+  const newInfo = document.getElementById("edit-org-detalle").value.trim();
+  const newLugar = document.getElementById("edit-org-lugar").value.trim();
+  
+  // Actualizar la información en la base de datos (no se modifica el creador ni la fecha)
+  db.collection("organizaciones").doc(currentOrg.firebaseKey).update({
+    title: newTitle,
+    info: newInfo,
+    lugar: newLugar
+  }).then(() => {
+    alert("Información actualizada exitosamente.");
+    
+    // Actualizar los campos de visualización con los nuevos datos
+    document.getElementById("org-info-titulo").textContent = "Título: " + newTitle;
+    document.getElementById("org-info-detalle").textContent = "Información: " + newInfo;
+    document.getElementById("org-info-lugar").textContent = "Lugar: " + newLugar;
+    
+    cancelOrgInfoEditing();
+  }).catch(error => console.error("Error actualizando la información:", error));
+});
 
   // EVENTO PARA CERRAR SESIÓN desde Ajustes de Perfil
   // Este botón estará en el módulo de ajustes de perfil y redirige al formulario de registro.
