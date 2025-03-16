@@ -308,8 +308,8 @@ function loadAdminOrganizations() {
 }
 
 /* NUEVA FUNCIÓN PARA CARGAR "MIS ORGANIZACIONES"
-   Se muestra la lista de organizaciones donde el usuario es administrador y
-   se utiliza el botón de "Crear Organización" ya definido en el HTML.
+   Muestra la lista de organizaciones donde el usuario es administrador,
+   usando el contenedor y el botón ya definidos en el HTML.
 */
 function loadOrganizadorList() {
   // Asegurarse de que la sección "Mis Organizaciones" esté visible
@@ -318,20 +318,24 @@ function loadOrganizadorList() {
     orgListSection.style.display = "block";
   } else {
     console.error("No se encontró la sección 'org-list'.");
+    return;
   }
-  
-  // Obtener el contenedor de la lista
+
+  // Obtener el contenedor de la lista (en el HTML se usa "org-list-organizador")
   const container = document.getElementById("org-list-organizador");
   if (!container) {
     console.error("No se encontró el contenedor 'org-list-organizador'.");
     return;
   }
-  container.innerHTML = ""; // Limpiar el contenido previo
+  container.innerHTML = ""; // Limpiar contenido previo
 
-  // Asignar evento al botón "Crear Organización" definido en el HTML
+  // Asignar evento al botón "Crear Organización" definido en el HTML (con id "crear-org-btn-organizador")
   const createBtn = document.getElementById("crear-org-btn-organizador");
-  if (createBtn && !createBtn.onclick) {
-    createBtn.addEventListener("click", function() {
+  if (createBtn) {
+    // Clonamos el botón para remover listeners previos, si existieran
+    const newCreateBtn = createBtn.cloneNode(true);
+    createBtn.parentNode.replaceChild(newCreateBtn, createBtn);
+    newCreateBtn.addEventListener("click", function() {
       const formContainer = document.getElementById("create-org-form-orgmode-container");
       if (formContainer) {
         formContainer.style.display = "block";
@@ -339,24 +343,27 @@ function loadOrganizadorList() {
         console.error("No se encontró el contenedor 'create-org-form-orgmode-container'.");
       }
     });
-  } else if (!createBtn) {
+  } else {
     console.error("No se encontró el botón 'crear-org-btn-organizador'.");
   }
 
   // Consultar la colección "organizaciones" donde el usuario es administrador.
+  // Se utiliza el mismo criterio que en el menú modal (usando "activeUser" en el campo "admin")
   db.collection("organizaciones")
     .where("admin", "==", activeUser)
     .orderBy("timestamp")
     .onSnapshot(function(snapshot) {
-      container.innerHTML = ""; // Reiniciar el contenedor en cada actualización de datos
+      container.innerHTML = ""; // Reiniciar el contenedor en cada actualización
       let empty = true;
       snapshot.forEach(function(doc) {
         let org = doc.data();
         org.firebaseKey = doc.id;
         empty = false;
+        // Crear un ítem para cada organización
         const orgDiv = document.createElement("div");
         orgDiv.classList.add("org-item");
         orgDiv.textContent = org.title;
+        // Al hacer clic se carga la información de la organización
         orgDiv.addEventListener("click", function () {
           currentOrg = org;
           mostrarOrgDetalle(org);
@@ -371,8 +378,10 @@ function loadOrganizadorList() {
     });
 }
 
-// Llamar a la función para cargar la lista cuando corresponda
-loadOrganizadorList();
+// Ejecutar la función cuando el DOM esté completamente cargado
+document.addEventListener("DOMContentLoaded", function() {
+  loadOrganizadorList();
+});
 
 /* Actualizar la información de la organización (vista) */
 function updateOrgInfoDisplay() {
@@ -384,6 +393,8 @@ function updateOrgInfoDisplay() {
   document.getElementById("org-info-fecha").innerText =
     "Fecha de Creación: " + (currentOrg.timestamp ? new Date(currentOrg.timestamp).toLocaleDateString() : "No definida");
 }
+
+
 
 /* FUNCIÓN PARA ABRIR EL PANEL DE EDICIÓN.
    Se ha quitado el botón que estaba dentro del recuadro de People For People; ahora la edición se hace vía recuadro edit (ya implementado en el HTML).
@@ -1214,232 +1225,255 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  /* MÓDULO: PUNTOS DE AYUDA */
-  const ayudaListView = document.getElementById("ayuda-list-view");
-  const ayudaCreateForm = document.getElementById("ayuda-create-form");
-  const ayudaDetailView = document.getElementById("ayuda-detail-view");
-  const ayudaListContainer = document.getElementById("ayuda-list");
+/* MÓDULO: PUNTOS DE AYUDA */
+const ayudaListView = document.getElementById("ayuda-list-view");
+const ayudaCreateForm = document.getElementById("ayuda-create-form");
+const ayudaDetailView = document.getElementById("ayuda-detail-view");
+const ayudaListContainer = document.getElementById("ayuda-list");
 
-  document.getElementById("mostrar-ayuda-create").addEventListener("click", function () {
-    ayudaCreateForm.style.display = "block";
-    ayudaListView.style.display = "none";
-  });
-  document.getElementById("cancelar-ayuda").addEventListener("click", function () {
-    ayudaCreateForm.style.display = "none";
-    ayudaListView.style.display = "block";
-  });
-  document.getElementById("crear-ayuda-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const titulo = document.getElementById("ayuda-titulo").value.trim();
-    const info = document.getElementById("ayuda-info").value.trim();
-    const imageInput = document.getElementById("ayuda-image");
-    let newAyuda = {
-      titulo: titulo,
-      info: info,
-      creator: localStorage.getItem("username") || "Anónimo",
-      timestamp: Date.now()
-    };
-    if (currentLocationMarker) {
-      newAyuda.latitude = currentLocationMarker.getPosition().lat();
-      newAyuda.longitude = currentLocationMarker.getPosition().lng();
-    } else {
-      newAyuda.latitude = 40.416775;
-      newAyuda.longitude = -3.70379;
-    }
-    function pushAyuda() {
-      db.collection("ayuda").add(newAyuda)
-        .catch(error => console.error("Error creando punto de ayuda", error));
-    }
-    if (imageInput.files && imageInput.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        newAyuda.image = e.target.result;
-        pushAyuda();
-      };
-      reader.readAsDataURL(imageInput.files[0]);
-    } else {
-      pushAyuda();
-    }
-    this.reset();
-    ayudaCreateForm.style.display = "none";
-    ayudaListView.style.display = "block";
-  });
-  
-  // Listener en tiempo real para puntos de ayuda
-  db.collection("ayuda").orderBy("timestamp").onSnapshot(function (snapshot) {
-    snapshot.docChanges().forEach(function (change) {
-      let ayuda = change.doc.data();
-      ayuda.firebaseKey = change.doc.id;
-      if (change.type === "added") {
-        ayudaItems.push(ayuda);
-        updateAyudaList();
-        addHelpMarker(ayuda);
-      } else if (change.type === "modified") {
-        ayudaItems = ayudaItems.map(a => a.firebaseKey === ayuda.firebaseKey ? ayuda : a);
-        updateAyudaList();
-      } else if (change.type === "removed") {
-        ayudaItems = ayudaItems.filter(a => a.firebaseKey !== ayuda.firebaseKey);
-        updateAyudaList();
-        removeHelpMarker(ayuda.firebaseKey);
-      }
-    });
-  });
-  
-  function updateAyudaList() {
-    ayudaListContainer.innerHTML = "";
-    ayudaItems.sort((a, b) => a.timestamp - b.timestamp);
-    ayudaItems.forEach(function (item) {
-      const itemDiv = document.createElement("div");
-      itemDiv.classList.add("ayuda-item");
-      itemDiv.setAttribute("data-id", item.firebaseKey);
-      itemDiv.innerText = item.titulo + " - " + item.creator;
-      ayudaListContainer.appendChild(itemDiv);
-    });
+// Función para mostrar el mensaje de éxito centrado en la pantalla
+function showSuccessMessage() {
+  let successMessage = document.getElementById("success-message");
+  if (!successMessage) {
+    successMessage = document.createElement("div");
+    successMessage.id = "success-message";
+    successMessage.innerHTML = `
+      <div class="message-box">
+        <p>
+          ¡Punto de ayuda solicitado con éxito! Pronto será asignado a nuestras ONGs y conectado con un voluntario para brindar asistencia. ¡Gracias por tu apoyo!
+        </p>
+        <button id="accept-success-message" class="accept-btn">Aceptar</button>
+      </div>
+    `;
+    document.body.appendChild(successMessage);
+  } else {
+    successMessage.style.display = "flex";
   }
-  
-  ayudaListContainer.addEventListener("click", function (e) {
-    const itemDiv = e.target.closest(".ayuda-item");
-    if (itemDiv) {
-      const id = itemDiv.getAttribute("data-id");
-      db.collection("ayuda").doc(id).get().then(function(doc) {
-        if (doc.exists) {
-          let ayuda = doc.data();
-          ayuda.firebaseKey = doc.id;
-          showAyudaDetail(ayuda);
-        }
-      });
-    }
+  document.getElementById("accept-success-message").addEventListener("click", function () {
+    document.getElementById("success-message").style.display = "none";
   });
-  
-  function showAyudaDetail(ayuda) {
-    ayudaListView.style.display = "none";
-    ayudaCreateForm.style.display = "none";
-    const ayudaDetailDiv = document.getElementById("ayuda-detail");
-    ayudaDetailDiv.innerHTML = "";
-    const title = document.createElement("h3");
-    title.innerText = ayuda.titulo;
-    ayudaDetailDiv.appendChild(title);
-    const infoP = document.createElement("p");
-    infoP.innerText = "Info: " + ayuda.info;
-    ayudaDetailDiv.appendChild(infoP);
-    const creatorP = document.createElement("p");
-    creatorP.innerText = "Creado por: " + ayuda.creator;
-    ayudaDetailDiv.appendChild(creatorP);
-    if (ayuda.image) {
-      const img = document.createElement("img");
-      img.src = ayuda.image;
-      img.style.maxWidth = "100px";
-      img.style.marginBottom = "10px";
-      img.style.cursor = "pointer";
-      img.addEventListener("click", function () {
-        openModal(ayuda.image, "jpg");
-      });
-      ayudaDetailDiv.appendChild(img);
-    }
+}
 
-    // Si el usuario es el creador, agregar botón para eliminar
-    if (localStorage.getItem("username") === ayuda.creator) {
-      const deleteHelpBtn = document.createElement("button");
-      deleteHelpBtn.className = "delete-btn";
-      deleteHelpBtn.innerText = "Eliminar Punto de Ayuda";
-      deleteHelpBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        if (confirm("¿Estás seguro de eliminar este punto de ayuda?")) {
-          db.collection("ayuda").doc(ayuda.firebaseKey).delete()
-            .then(() => {
-              alert("Punto de ayuda eliminado");
-              document.getElementById("ayuda-detail-view").style.display = "none";
-              ayudaListView.style.display = "block";
-            })
-            .catch(error => console.error("Error eliminando punto de ayuda:", error));
-        }
-      });
-      ayudaDetailDiv.appendChild(deleteHelpBtn);
-    }
+document.getElementById("mostrar-ayuda-create").addEventListener("click", function () {
+  ayudaCreateForm.style.display = "block";
+  ayudaListView.style.display = "none";
+});
 
-    // Chat de Ayuda: subcolección "messages" en "ayuda_chat"
- // Chat de Ayuda: subcolección "messages" en "ayuda_chat"
-const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
-ayudaChatContainer.innerHTML = "";
+document.getElementById("cancelar-ayuda").addEventListener("click", function () {
+  ayudaCreateForm.style.display = "none";
+  ayudaListView.style.display = "block";
+});
 
-// Escuchar mensajes en tiempo real
-db.collection("ayuda_chat")
-  .doc(ayuda.firebaseKey) // Aseguramos que la referencia sea correcta
-  .collection("messages")
-  .orderBy("timestamp")
-  .onSnapshot(function (snapshot) {
-    snapshot.docChanges().forEach(function (change) {
-      if (change.type === "added") {
-        const msg = change.doc.data();
-        renderChatMessage(msg, ayudaChatContainer);
-      }
-    });
-  });
-
-// Enviar mensaje al chat
-const ayudaChatForm = document.getElementById("ayuda-chat-form");
-ayudaChatForm.onsubmit = function (e) {
+document.getElementById("crear-ayuda-form").addEventListener("submit", function (e) {
   e.preventDefault();
-  const chatInput = document.getElementById("ayuda-chat-input");
-  const message = chatInput.value.trim();
+  const titulo = document.getElementById("ayuda-titulo").value.trim();
+  const info = document.getElementById("ayuda-info").value.trim();
+  const imageInput = document.getElementById("ayuda-image");
+  let newAyuda = {
+    titulo: titulo,
+    info: info,
+    creator: localStorage.getItem("username") || "Anónimo",
+    timestamp: Date.now()
+  };
 
-  if (message !== "") {
-    // Crear el mensaje en la subcolección "messages"
-    db.collection("ayuda_chat")
-      .doc(ayuda.firebaseKey) // Aseguramos que el documento exista
-      .collection("messages")
-      .add({
-        user: localStorage.getItem("username") || "Anónimo",
-        text: message,
-        timestamp: Date.now(),
-      })
-      .then(() => {
-        console.log("Mensaje enviado correctamente");
-        chatInput.value = ""; // Limpiar el campo de entrada
-      })
-      .catch((error) => {
-        console.error("Error al enviar el mensaje:", error);
-        alert("No se pudo enviar el mensaje. Por favor, inténtalo de nuevo.");
-      });
+  if (currentLocationMarker) {
+    newAyuda.latitude = currentLocationMarker.getPosition().lat();
+    newAyuda.longitude = currentLocationMarker.getPosition().lng();
+  } else {
+    newAyuda.latitude = 40.416775;
+    newAyuda.longitude = -3.70379;
   }
-};
-    // Mostrar el mapa pequeño
-    const smallMap = new google.maps.Map(document.getElementById("small-map"), {
-      center: { lat: ayuda.latitude, lng: ayuda.longitude },
-      zoom: 15,
+
+  // Función para agregar el punto de ayuda y mostrar el mensaje de éxito
+  function pushAyuda() {
+    return db.collection("ayuda").add(newAyuda)
+      .then(() => {
+        showSuccessMessage();
+      })
+      .catch(error => console.error("Error creando punto de ayuda", error));
+  }
+
+  if (imageInput.files && imageInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      newAyuda.image = e.target.result;
+      pushAyuda().then(() => {
+        document.getElementById("crear-ayuda-form").reset();
+        ayudaCreateForm.style.display = "none";
+        ayudaListView.style.display = "block";
+      });
+    };
+    reader.readAsDataURL(imageInput.files[0]);
+  } else {
+    pushAyuda().then(() => {
+      document.getElementById("crear-ayuda-form").reset();
+      ayudaCreateForm.style.display = "none";
+      ayudaListView.style.display = "block";
     });
-    new google.maps.Marker({
-      position: { lat: ayuda.latitude, lng: ayuda.longitude },
-      map: smallMap,
-      title: "Punto de Ayuda: " + ayuda.titulo,
+  }
+});
+
+// Listener en tiempo real para puntos de ayuda
+db.collection("ayuda").orderBy("timestamp").onSnapshot(function (snapshot) {
+  snapshot.docChanges().forEach(function (change) {
+    let ayuda = change.doc.data();
+    ayuda.firebaseKey = change.doc.id;
+    if (change.type === "added") {
+      ayudaItems.push(ayuda);
+      updateAyudaList();
+      addHelpMarker(ayuda);
+    } else if (change.type === "modified") {
+      ayudaItems = ayudaItems.map(a => a.firebaseKey === ayuda.firebaseKey ? ayuda : a);
+      updateAyudaList();
+    } else if (change.type === "removed") {
+      ayudaItems = ayudaItems.filter(a => a.firebaseKey !== ayuda.firebaseKey);
+      updateAyudaList();
+      removeHelpMarker(ayuda.firebaseKey);
+    }
+  });
+});
+
+function updateAyudaList() {
+  ayudaListContainer.innerHTML = "";
+  ayudaItems.sort((a, b) => a.timestamp - b.timestamp);
+  ayudaItems.forEach(function (item) {
+    const itemDiv = document.createElement("div");
+    itemDiv.classList.add("ayuda-item");
+    itemDiv.setAttribute("data-id", item.firebaseKey);
+    itemDiv.innerText = item.titulo + " - " + item.creator;
+    ayudaListContainer.appendChild(itemDiv);
+  });
+}
+
+ayudaListContainer.addEventListener("click", function (e) {
+  const itemDiv = e.target.closest(".ayuda-item");
+  if (itemDiv) {
+    const id = itemDiv.getAttribute("data-id");
+    db.collection("ayuda").doc(id).get().then(function(doc) {
+      if (doc.exists) {
+        let ayuda = doc.data();
+        ayuda.firebaseKey = doc.id;
+        showAyudaDetail(ayuda);
+      }
+    });
+  }
+});
+
+function showAyudaDetail(ayuda) {
+  ayudaListView.style.display = "none";
+  ayudaCreateForm.style.display = "none";
+  const ayudaDetailDiv = document.getElementById("ayuda-detail");
+  ayudaDetailDiv.innerHTML = "";
+  const title = document.createElement("h3");
+  title.innerText = ayuda.titulo;
+  ayudaDetailDiv.appendChild(title);
+  const infoP = document.createElement("p");
+  infoP.innerText = "Info: " + ayuda.info;
+  ayudaDetailDiv.appendChild(infoP);
+  const creatorP = document.createElement("p");
+  creatorP.innerText = "Creado por: " + ayuda.creator;
+  ayudaDetailDiv.appendChild(creatorP);
+  if (ayuda.image) {
+    const img = document.createElement("img");
+    img.src = ayuda.image;
+    img.style.maxWidth = "100px";
+    img.style.marginBottom = "10px";
+    img.style.cursor = "pointer";
+    img.addEventListener("click", function () {
+      openModal(ayuda.image, "jpg");
+    });
+    ayudaDetailDiv.appendChild(img);
+  }
+  if (localStorage.getItem("username") === ayuda.creator) {
+    const deleteHelpBtn = document.createElement("button");
+    deleteHelpBtn.className = "delete-btn";
+    deleteHelpBtn.innerText = "Eliminar Punto de Ayuda";
+    deleteHelpBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      if (confirm("¿Estás seguro de eliminar este punto de ayuda?")) {
+        db.collection("ayuda").doc(ayuda.firebaseKey).delete()
+          .then(() => {
+            alert("Punto de ayuda eliminado");
+            document.getElementById("ayuda-detail-view").style.display = "none";
+            ayudaListView.style.display = "block";
+          })
+          .catch(error => console.error("Error eliminando punto de ayuda:", error));
+      }
+    });
+    ayudaDetailDiv.appendChild(deleteHelpBtn);
+  }
+  const ayudaChatContainer = document.getElementById("ayuda-chat-messages");
+  ayudaChatContainer.innerHTML = "";
+  db.collection("ayuda_chat")
+    .doc(ayuda.firebaseKey)
+    .collection("messages")
+    .orderBy("timestamp")
+    .onSnapshot(function (snapshot) {
+      snapshot.docChanges().forEach(function (change) {
+        if (change.type === "added") {
+          const msg = change.doc.data();
+          renderChatMessage(msg, ayudaChatContainer);
+        }
+      });
+    });
+  const ayudaChatForm = document.getElementById("ayuda-chat-form");
+  ayudaChatForm.onsubmit = function (e) {
+    e.preventDefault();
+    const chatInput = document.getElementById("ayuda-chat-input");
+    const message = chatInput.value.trim();
+    if (message !== "") {
+      db.collection("ayuda_chat")
+        .doc(ayuda.firebaseKey)
+        .collection("messages")
+        .add({
+          user: localStorage.getItem("username") || "Anónimo",
+          text: message,
+          timestamp: Date.now(),
+        })
+        .then(() => {
+          console.log("Mensaje enviado correctamente");
+          chatInput.value = "";
+        })
+        .catch((error) => {
+          console.error("Error al enviar el mensaje:", error);
+          alert("No se pudo enviar el mensaje. Por favor, inténtalo de nuevo.");
+        });
+    }
+  };
+  const smallMap = new google.maps.Map(document.getElementById("small-map"), {
+    center: { lat: ayuda.latitude, lng: ayuda.longitude },
+    zoom: 15,
+  });
+  new google.maps.Marker({
+    position: { lat: ayuda.latitude, lng: ayuda.longitude },
+    map: smallMap,
+    title: "Punto de Ayuda: " + ayuda.titulo,
+    icon: helpIcon
+  });
+  document.getElementById("ayuda-detail-view").style.display = "block";
+}
+
+document.getElementById("volver-ayuda-list").addEventListener("click", function () {
+  document.getElementById("ayuda-detail-view").style.display = "none";
+  ayudaListView.style.display = "block";
+});
+
+document.getElementById("view-on-map").addEventListener("click", function () {
+  showSection("map-view"); // Cambia a la sección del mapa
+  const pos = { lat: currentAyuda.latitude, lng: currentAyuda.longitude };
+  map.setCenter(pos);
+  map.setZoom(15);
+  if (currentLocationMarker) {
+    currentLocationMarker.setPosition(pos);
+  } else {
+    currentLocationMarker = new google.maps.Marker({
+      position: pos,
+      map: map,
+      title: "Punto de Ayuda: " + currentAyuda.titulo,
       icon: helpIcon
     });
-
-    document.getElementById("ayuda-detail-view").style.display = "block";
   }
-
-  document.getElementById("volver-ayuda-list").addEventListener("click", function () {
-    document.getElementById("ayuda-detail-view").style.display = "none";
-    ayudaListView.style.display = "block";
-  });
-
-  document.getElementById("view-on-map").addEventListener("click", function () {
-    showSection("map-view"); // Cambia a la sección del mapa
-    const pos = { lat: currentAyuda.latitude, lng: currentAyuda.longitude };
-    map.setCenter(pos);
-    map.setZoom(15); // Ajusta el zoom según sea necesario
-    if (currentLocationMarker) {
-      currentLocationMarker.setPosition(pos);
-    } else {
-      currentLocationMarker = new google.maps.Marker({
-        position: pos,
-        map: map,
-        title: "Punto de Ayuda: " + currentAyuda.titulo,
-        icon: helpIcon
-      });
-    }
-  });
-
+});
 
   /* MÓDULO: VOLUNTARIOS */
   const voluntarioListView = document.getElementById("voluntario-list-view");
