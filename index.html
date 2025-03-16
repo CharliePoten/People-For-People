@@ -5,9 +5,97 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>People For People</title>
     <link rel="stylesheet" href="styles.css" />
+
+    <!-- Estilos adicionales para las transiciones -->
+    <style>
+      /* Transición para el menú de registro */
+      #registration-screen {
+        opacity: 1;
+        transition: opacity 0.6s ease;
+      }
+      /* Cuando se agrega esta clase, se funde a opacidad cero */
+      #registration-screen.fade-out {
+        opacity: 0;
+      }
+      
+      /* Estilos para la pantalla de bienvenida */
+      #welcome-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #27ae60, #8e44ad);
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        box-sizing: border-box;
+        text-align: center;
+        opacity: 0; /* inicia oculto */
+        transition: opacity 0.6s ease;
+      }
+      /* Al añadir "visible" se activa el fade‑in */
+      #welcome-screen.visible {
+        opacity: 1;
+      }
+      /* Aumentar tamaño del logo */
+      #welcome-screen .logo {
+        width: 180px;
+        margin: 20px 0;
+      }
+      /* Título */
+      #welcome-screen .welcome-text {
+        font-size: 4em;
+        margin: 0.2em;
+      }
+      /* El eslogan inicia oculto y se animará */
+      #welcome-screen .slogan {
+        font-size: 1.5em;
+        margin-top: 10px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+      /* El botón "Comenzar" también inicia oculto; se ha bajado con margin-top: 50px */
+      #welcome-screen #start-btn {
+        margin-top: 50px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+      }
+      /* Cuando se active la clase 'show', ambos elementos pasan a estar visibles */
+      #welcome-screen .slogan.show,
+      #welcome-screen #start-btn.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Clase para fundir la pantalla */
+      #welcome-screen.fade-out {
+        opacity: 0;
+      }
+      /* Definición de la animación de onda para el título */
+      @keyframes wave {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+      }
+      /* Cada letra se muestra en bloque para poder animarla */
+      .wave-letter {
+        display: inline-block;
+      }
+      /* Clase que activa la animación de onda */
+      .wave-letter.animate-wave {
+        animation: wave 1.5s ease-in-out;
+      }
+    </style>
   </head>
   <body>
-    <!-- Mensaje de Bienvenida / Prototipo (centrado mediante CSS) -->
+    <!-- Mensaje de Bienvenida / Prototipo -->
     <div id="dev-message">
       <div class="message-box">
         <p>
@@ -18,7 +106,7 @@
       </div>
     </div>
 
-    <!-- Pantalla de Registro (centrada) -->
+    <!-- Pantalla de Registro -->
     <div id="registration-screen" class="screen">
       <div class="form-container">
         <h2>Registro</h2>
@@ -35,7 +123,6 @@
     <div id="main-app" class="screen" style="display: none;">
       <header class="app-header">
         <h1 class="app-title">People For People</h1>
-        <!-- Botón de perfil en el header con menú desplegable -->
         <div class="header-actions">
           <div class="profile-container" id="profile-btn">
             <img
@@ -45,20 +132,16 @@
               onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'"
             />
             <span class="profile-label">Mi perfil</span>
-            <!-- Menú desplegable -->
             <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
               <div class="dropdown-item" data-section="perfil">Mi perfil</div>
               <div class="dropdown-item" data-section="ajustes">Ajustes de perfil</div>
               <div class="dropdown-item" data-section="soporte">Soporte</div>
               <div class="dropdown-item" data-section="centro">People for People</div>
-              <div class="dropdown-item mode-toggle-btn" style="background-color: #800080; color: white; cursor: pointer;">
-                Cambiar a Organizador
-              </div>
+              <div class="dropdown-item mode-toggle-btn" style="background-color: #800080; color: white; cursor: pointer;">Cambiar a Organizador</div>
             </div>
           </div>
         </div>
       </header>
-
       <main class="app-content" id="content">
         <!-- Sección del Mapa -->
         <div id="map-view" class="content-section">
@@ -68,7 +151,6 @@
             <button id="fullscreen-btn">Pantalla Completa</button>
           </div>
         </div>
-
         <!-- Sección Pedir Ayuda -->
         <div id="pedir-ayuda" class="content-section" style="display:none;">
           <h2>Pedir Ayuda</h2>
@@ -84,7 +166,8 @@
                 <textarea id="ayuda-info" placeholder="Información del Punto de Ayuda" required></textarea>
                 <input type="file" id="ayuda-image" accept="image/*" />
                 <button type="submit" class="action-btn">
-                  <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
+                  <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                  Enviar
                 </button>
                 <button type="button" id="cancelar-ayuda" class="return-btn">Volver</button>
               </form>
@@ -100,14 +183,14 @@
                 <form id="ayuda-chat-form">
                   <input type="text" id="ayuda-chat-input" placeholder="Escribe tu mensaje" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                    Enviar
                   </button>
                 </form>
               </div>
             </div>
           </div>
         </div>
-
         <!-- Sección Voluntarios -->
         <div id="ofrecer-voluntario" class="content-section" style="display:none;">
           <h2>Voluntarios</h2>
@@ -145,7 +228,6 @@
             </div>
           </div>
         </div>
-
         <!-- Sección Organizaciones (Modo Voluntario) -->
         <div id="organizaciones" class="content-section" style="display:none;">
           <h2>Organizaciones de Voluntarios</h2>
@@ -178,7 +260,8 @@
                 <form id="org-admin-chat-form">
                   <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                    Enviar
                   </button>
                 </form>
               </div>
@@ -188,26 +271,22 @@
                 <form id="org-chat-form">
                   <input type="text" id="org-chat-input" placeholder="Escribe tu mensaje" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                    Enviar
                   </button>
                 </form>
               </div>
             </div>
           </div>
         </div>
-
         <!-- Módulo: Mi Perfil -->
         <div id="perfil" class="content-section" style="display:none;">
           <h2>Mi Perfil</h2>
           <div class="profile-container-new">
             <div class="profile-display">
               <div class="profile-photo-container">
-                <img
-                  id="profile-large-photo"
-                  src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true"
-                  alt="Foto de Perfil"
-                  onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'"
-                />
+                <img id="profile-large-photo" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Foto de Perfil"
+                  onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
               </div>
               <div class="profile-info">
                 <h3>Información de Perfil</h3>
@@ -269,28 +348,22 @@
               </div>
             </div>
           </div>
-
-          <!-- Secciones de Soporte y Centro de Información -->
           <div class="info-container">
             <div class="profile-info-section" id="info-center" style="display:none;">
               <h2>📌 Centro de Información</h2>
               <h3>🌟 Nuestra Misión</h3>
               <p>Conectar a Voluntarios y Personas Necesitadas: Facilitamos la vinculación entre quienes desean ayudar y aquellos que requieren asistencia.</p>
               <p>Coordinación en Tiempo Real: Trabajamos junto a ONGs y autoridades para gestionar la ayuda de manera eficiente.</p>
-              
               <h3>📱 ¿Cómo Funciona?</h3>
               <p>Plataforma Intuitiva: Nuestra aplicación permite a los voluntarios registrarse y ofrecer su ayuda según su disponibilidad y habilidades.</p>
               <p>Notificaciones en Tiempo Real: Los voluntarios reciben alertas sobre necesidades urgentes en su área.</p>
               <p>Colaboración con Entidades: Coordinamos esfuerzos con ONGs y autoridades locales para asegurar una respuesta efectiva.</p>
-              
               <h3>🤝 Beneficios de Unirse</h3>
               <p>Impacto Directo: Tu ayuda llega directamente a quienes más lo necesitan.</p>
               <p>Flexibilidad: Participa según tu disponibilidad y capacidades.</p>
               <p>Comunidad Solidaria: Forma parte de una red comprometida con el bienestar común.</p>
-              
               <p>🌐 <a href="https://www.peopleforpeople.es/" target="_blank">Visite nuestra página WEB para más información</a></p>
-
-              <div id="file-upload-container" style="margin-top: 20px; display: none;">
+              <div id="file-upload-container" style="margin-top: 20px; display:none;">
                 <h3>Subir Archivo</h3>
                 <form id="file-upload-form">
                   <input type="text" id="attachment-title" placeholder="Título del Archivo" required />
@@ -300,43 +373,36 @@
                 <div id="upload-message" style="margin-top: 10px;"></div>
               </div>
             </div>
-
             <div class="profile-info-section" id="support" style="display:none;">
               <h2>📞 Soporte y Ayuda</h2>
               <p>Bienvenido al centro de soporte. Estamos aquí para ayudarte con cualquier duda o problema que puedas tener.</p>
-              
               <h3>🔹 Contacto con Soporte</h3>
               <p>Si necesitas asistencia personalizada, nuestro equipo está disponible para ayudarte.</p>
               <p>✉ Email: <a href="mailto:peopleforpeopleofficial@gmail.com">peopleforpeopleofficial@gmail.com</a></p>
               <p>📞 Teléfono: +34 699043862</p>
-              
               <h3>🔹 Reportar un Problema</h3>
               <p>Si experimentas algún error o fallo en la aplicación, repórtalo aquí y lo solucionaremos lo antes posible.</p>
               <p>💬 Chat en Vivo: Disponible en horario laboral</p>
-              
               <div id="soporte-live-chat">
                 <h3>Chat en Vivo</h3>
                 <div class="chat-messages" id="soporte-chat-messages" style="height:200px; overflow:auto; border:1px solid #ccc; padding:10px;"></div>
                 <form id="soporte-chat-form">
                   <input type="text" id="soporte-chat-input" placeholder="Escribe tu mensaje" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                    Enviar
                   </button>
                 </form>
               </div>
-              
               <h3>🔹 Sugerencias y Comentarios</h3>
               <p>Tu opinión es importante para nosotros. Déjanos tus sugerencias para mejorar tu experiencia.</p>
-
               <div id="feedback-section">
                 <form id="feedback-form">
                   <textarea id="feedback-text" placeholder="Escribe tu comentario aquí" required></textarea>
                   <button type="submit" class="enhanced-btn">Enviar Comentario</button>
                 </form>
               </div>
-              
               <button id="admin-panel-link" class="enhanced-btn">Panel de Administrador</button>
-              
               <div id="admin-panel" style="margin-top:20px; display:none; border: 1px solid #ccc; padding: 10px;">
                 <h2>Panel de Administración</h2>
                 <form id="admin-login-form">
@@ -358,7 +424,6 @@
                     <button type="submit" class="enhanced-btn">Subir Archivo</button>
                   </form>
                   <div id="admin-upload-message" style="margin-top:10px;"></div>
-                  
                   <div id="admin-support-chats">
                     <h3>Chats de Soporte Abiertos</h3>
                     <div id="admin-support-chats-list" style="border:1px solid #ccc; padding:10px; max-height:200px; overflow:auto;"></div>
@@ -369,50 +434,32 @@
           </div>
         </div>
       </main>
-
-      <!-- Menú de Navegación Inferior (Modo Voluntario) -->
       <nav class="app-menu">
         <button class="menu-btn" data-target="map-view">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true"
-            alt="Icono Mapa"
-          />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true" alt="Icono Mapa" />
           Mapa
         </button>
         <button class="menu-btn" data-target="pedir-ayuda">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20pedir%20ayuda.png?raw=true"
-            alt="Icono Pedir Ayuda"
-          />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20pedir%20ayuda.png?raw=true" alt="Icono Pedir Ayuda" />
           Pedir Ayuda
         </button>
         <button class="menu-btn" data-target="ofrecer-voluntario">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20voluntario.png?raw=true"
-            alt="Icono Voluntario"
-          />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20voluntario.png?raw=true" alt="Icono Voluntario" />
           Voluntarios
         </button>
         <button class="menu-btn" data-target="organizaciones">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20organizaciones.png?raw=true"
-            alt="Icono Organizaciones"
-          />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20organizaciones.png?raw=true" alt="Icono Organizaciones" />
           Organizaciones
         </button>
       </nav>
     </div>
 
-    <!-- Modal para vista previa de archivos -->
+    <!-- Modal para vista previa de archivos (única instancia) -->
     <div id="modal-viewer" class="modal">
       <div class="modal-content"></div>
     </div>
 
-    <!-- Modal para Modo Organizador: Seleccionar/Crear Organización -->
+    <!-- Modal para Modo Organizador: Seleccionar/Crear Organización (única instancia) -->
     <div id="org-mode-menu" class="modal">
       <div class="modal-content org-menu-content">
         <span class="close" id="close-org-menu">&times;</span>
@@ -443,13 +490,10 @@
     <div id="org-mode-app" class="screen org-mode" style="display:none;">
       <header class="app-header org-header">
         <h1 class="app-title">Modo Organizador</h1>
-        <!-- El botón de perfil en modo organizador se creará dinámicamente -->
       </header>
       <main class="app-content org-content">
         <!-- Sección Chats -->
         <div id="org-chats" class="org-content-section" style="display:none;">
-          <h2>Centro de Chats</h2>
-          <!-- Chat Público -->
           <div id="org-chat-public" class="chat-container">
             <h3>Chat Público</h3>
             <div class="chat-messages" id="org-chat-messages-public"></div>
@@ -457,11 +501,11 @@
               <input type="text" id="org-chat-input-public" placeholder="Escribe tu mensaje" required />
               <input type="file" id="org-chat-file-public" accept="image/*, application/pdf" />
               <button type="submit" class="enhanced-btn">
-                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
+                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                Enviar
               </button>
             </form>
           </div>
-          <!-- Chat de Administrador -->
           <div id="org-chat-admin" class="chat-container">
             <h3>Chat de Administradores</h3>
             <div class="chat-messages" id="org-admin-chat-messages"></div>
@@ -469,36 +513,47 @@
               <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
               <input type="file" id="org-admin-chat-file" accept="image/*, application/pdf" />
               <button type="submit" class="enhanced-btn">
-                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" /> Enviar
+                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                Enviar
               </button>
             </form>
           </div>
         </div>
-
-        <!-- Sección Información (People for People) -->
+        <!-- Sección Información -->
         <div id="org-info" class="org-content-section" style="display:none;">
-          <h2>People for People</h2>
-          <!-- Panel de visualización -->
+          <h2>Centro de Información</h2>
           <div id="org-info-display" class="org-info-display">
             <p id="org-info-titulo">Título: </p>
             <p id="org-info-creador">Creador: </p>
             <p id="org-info-detalle">Información: </p>
             <p id="org-info-lugar">Lugar: </p>
             <p id="org-info-fecha">Fecha de Creación: </p>
-            <div id="org-info-attachments" class="attachment-display">
-              <!-- Archivos adjuntos se mostrarán aquí -->
-            </div>
-            <button id="btn-editar-info" class="action-btn">Editar People for People</button>
+            <div id="org-info-attachments" class="attachment-display"></div>
+            <button id="btn-editar-info" class="action-btn">Editar Informacion</button>
           </div>
-          <!-- Panel de edición -->
           <div id="org-info-edit" class="org-info-edit" style="display:none;">
-            <h3>Editar People for People</h3>
+            <h3>Editar Información</h3>
             <form id="org-info-edit-form">
-              <input type="text" id="edit-org-titulo" placeholder="Título" required />
-              <input type="text" id="edit-org-creador" placeholder="Creador" required />
-              <textarea id="edit-org-detalle" placeholder="Información" required></textarea>
-              <input type="text" id="edit-org-lugar" placeholder="Lugar" required />
-              <input type="date" id="edit-org-fecha" placeholder="Fecha" required />
+              <div>
+                <label for="edit-org-titulo">Título:</label>
+                <input type="text" id="edit-org-titulo" placeholder="Título" required />
+              </div>
+              <div>
+                <label for="edit-org-creador">Creador:</label>
+                <input type="text" id="edit-org-creador" placeholder="Creador" disabled />
+              </div>
+              <div>
+                <label for="edit-org-detalle">Información:</label>
+                <textarea id="edit-org-detalle" placeholder="Información" required></textarea>
+              </div>
+              <div>
+                <label for="edit-org-lugar">Lugar:</label>
+                <input type="text" id="edit-org-lugar" placeholder="Lugar" required />
+              </div>
+              <div>
+                <label for="edit-org-fecha">Fecha de Creación:</label>
+                <input type="date" id="edit-org-fecha" placeholder="Fecha" disabled />
+              </div>
               <button type="submit" class="action-btn">Guardar Cambios</button>
               <button type="button" id="cancelar-editar-info" class="return-btn">Cancelar</button>
             </form>
@@ -510,60 +565,81 @@
             </form>
           </div>
         </div>
-
         <!-- Sección Mis Organizaciones -->
         <div id="org-list" class="org-content-section" style="display:none;">
           <h2>Mis Organizaciones</h2>
           <div class="org-list-container">
-            <div id="org-list-organizador" class="list-box">
-              <!-- Lista en tiempo real de organizaciones donde eres admin o miembro -->
-            </div>
-            <button id="crear-org-btn-organizador" class="action-btn" style="background-color:#800080; color:white;">
-              Crear Organización
-            </button>
+            <div id="org-list-organizador" class="list-box"></div>
+            <button id="crear-org-btn-organizador" class="action-btn" style="background-color:#800080; color:white;">Crear Organización</button>
           </div>
         </div>
-
-        <!-- Sección de Inicio (opcional) -->
+        <!-- Sección de Inicio (Modo Organizador) -->
         <div id="org-mode-home" class="org-content-section" style="display:block;">
           <p>Bienvenido al modo organizador. Selecciona una opción del menú inferior.</p>
         </div>
       </main>
       <nav class="app-menu org-app-menu">
         <button class="menu-btn org-menu-btn" data-target="org-chats">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20chats.png?raw=true"
-            alt="Icono Chats"
-          />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20chats.png?raw=true" alt="Icono Chats" />
           Centro de Chats
         </button>
         <button class="menu-btn org-menu-btn" data-target="org-info">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20informacion.png?raw=true"
-            alt="Icono Información"
-          />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20informacion.png?raw=true" alt="Icono Información" />
           People for People
         </button>
         <button class="menu-btn org-menu-btn" data-target="org-list">
-          <img
-            class="menu-icon"
-            src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20listas.png?raw=true"
-            alt="Icono Mis Organizaciones"
-          />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20listas.png?raw=true" alt="Icono Mis Organizaciones" />
           Mis Organizaciones
         </button>
       </nav>
     </div>
 
-    <!-- Modal para vista previa de archivos -->
+    <!-- Modal para vista previa de archivos (única instancia) -->
     <div id="modal-viewer" class="modal">
       <div class="modal-content"></div>
     </div>
 
-    <!-- Se carga el archivo principal; al usar NPM este script se compila a partir de tu código fuente -->
-    <script type="module" src="app.js" defer></script>
+    <!-- Modal para Modo Organizador: Seleccionar/Crear Organización (única instancia) -->
+    <div id="org-mode-menu" class="modal">
+      <div class="modal-content org-menu-content">
+        <span class="close" id="close-org-menu">&times;</span>
+        <h2>Modo Organizador</h2>
+        <div class="org-menu-container">
+          <div class="org-menu-header">
+            <h3>Mis Organizaciones</h3>
+            <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">Crear Organización</button>
+          </div>
+          <div id="orgmode-list" class="list-box"></div>
+          <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
+            <h3>Crear Nueva Organización</h3>
+            <form id="create-org-form-orgmode">
+              <input type="text" id="orgmode-title" placeholder="Título de la Organización" required />
+              <textarea id="orgmode-info" placeholder="Información de la Organización" required></textarea>
+              <input type="file" id="orgmode-image" accept="image/*" />
+              <button type="submit" class="action-btn">Crear Organización</button>
+              <button type="button" id="cancelar-org-modal" class="return-btn">Cancelar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nueva Pantalla de Bienvenida -->
+    <div id="welcome-screen" style="display: none;">
+      <div class="container">
+        <!-- Texto con efecto de máquina de escribir -->
+        <h1 class="welcome-text" id="welcomeText"></h1>
+        <!-- Logo (más grande) -->
+        <img src="https://github.com/CharliePoten/People-For-People/blob/main/Logo%20People%20For%20People%20(2).png?raw=true" alt="Logo People For People" class="logo" />
+        <!-- Eslogan -->
+        <p class="slogan">Tu ayuda, su esperanza. ¡Nosotros os unimos!</p>
+        <!-- Botón para iniciar -->
+        <button id="start-btn" class="action-btn">Comenzar</button>
+      </div>
+      <style>
+        /* Los estilos específicos para #welcome-screen ya se definen en el bloque global */
+      </style>
+    </div>
 
     <!-- Carga asíncrona de Google Maps -->
     <script>
@@ -575,6 +651,116 @@
         script.defer = true;
         document.head.appendChild(script);
       };
+    </script>
+
+    <!-- Script para gestionar las transiciones y la animación de onda -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const fullWelcomeText = "Bienvenido a People For People";
+        const welcomeTextElem = document.getElementById("welcomeText");
+        let charIndex = 0;
+    
+        function typeWriter() {
+          if (charIndex < fullWelcomeText.length) {
+            welcomeTextElem.textContent += fullWelcomeText.charAt(charIndex);
+            charIndex++;
+            setTimeout(typeWriter, 100);
+          } else {
+            setTimeout(startWaveAnimation, 3000);
+          }
+        }
+    
+        function startWaveAnimation() {
+          const letters = fullWelcomeText.split("");
+          welcomeTextElem.innerHTML = letters
+            .map(letter =>
+              letter === " " 
+                ? `<span class="wave-letter" style="animation: none;">&nbsp;</span>`
+                : `<span class="wave-letter">${letter}</span>`
+            )
+            .join("");
+    
+          function animateLetters() {
+            const waveLetters = welcomeTextElem.querySelectorAll(".wave-letter");
+            waveLetters.forEach((letter, i) => {
+              if (letter.innerHTML.trim() !== "") {
+                setTimeout(() => {
+                  letter.classList.add("animate-wave");
+                  letter.addEventListener("animationend", () => {
+                    letter.classList.remove("animate-wave");
+                  }, { once: true });
+                }, i * 100);
+              }
+            });
+            setTimeout(animateLetters, 7000);
+          }
+          animateLetters();
+        }
+    
+        typeWriter();
+    
+        const registrationForm = document.getElementById("registration-form");
+        registrationForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          const registrationScreen = document.getElementById("registration-screen");
+          registrationScreen.classList.add("fade-out");
+          registrationScreen.addEventListener("transitionend", function handler() {
+            registrationScreen.style.display = "none";
+            registrationScreen.classList.remove("fade-out");
+    
+            const welcomeScreen = document.getElementById("welcome-screen");
+            welcomeScreen.style.display = "flex";
+            void welcomeScreen.offsetWidth;
+            welcomeScreen.classList.add("visible");
+    
+            welcomeTextElem.textContent = "";
+            charIndex = 0;
+            typeWriter();
+    
+            const sloganEl = document.querySelector("#welcome-screen .slogan");
+            const startBtnEl = document.querySelector("#welcome-screen #start-btn");
+            void sloganEl.offsetWidth;
+            void startBtnEl.offsetWidth;
+            setTimeout(() => {
+              sloganEl.classList.add("show");
+              startBtnEl.classList.add("show");
+            }, 100);
+            registrationScreen.removeEventListener("transitionend", handler);
+          });
+        });
+    
+        setTimeout(function () {
+          const registrationScreen = document.getElementById("registration-screen");
+          if (window.getComputedStyle(registrationScreen).display === "none") {
+            const welcomeScreen = document.getElementById("welcome-screen");
+            welcomeTextElem.textContent = "";
+            charIndex = 0;
+            welcomeScreen.style.display = "flex";
+            void welcomeScreen.offsetWidth;
+            welcomeScreen.classList.add("visible");
+            typeWriter();
+            const sloganEl = document.querySelector("#welcome-screen .slogan");
+            const startBtnEl = document.querySelector("#welcome-screen #start-btn");
+            void sloganEl.offsetWidth;
+            void startBtnEl.offsetWidth;
+            setTimeout(() => {
+              sloganEl.classList.add("show");
+              startBtnEl.classList.add("show");
+            }, 100);
+          }
+        }, 50);
+    
+        const startBtn = document.getElementById("start-btn");
+        startBtn.addEventListener("click", function () {
+          const welcomeScreen = document.getElementById("welcome-screen");
+          welcomeScreen.classList.add("fade-out");
+          welcomeScreen.addEventListener("transitionend", function handler() {
+            welcomeScreen.style.display = "none";
+            document.getElementById("main-app").style.display = "block";
+            welcomeScreen.removeEventListener("transitionend", handler);
+          });
+        });
+      });
     </script>
   </body>
 </html>
