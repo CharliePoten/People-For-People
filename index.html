@@ -92,6 +92,15 @@
       .wave-letter.animate-wave {
         animation: wave 1.5s ease-in-out;
       }
+      /* Animación de palpitar para el botón "Comenzar" */
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+      }
+      #welcome-screen #start-btn.pulse {
+        animation: pulse 1s infinite ease-in-out;
+      }
     </style>
   </head>
   <body>
@@ -653,7 +662,7 @@
       };
     </script>
 
-    <!-- Script para gestionar las transiciones y la animación de onda -->
+    <!-- Script para gestionar las transiciones, la animación de onda y el efecto de palpitar en el botón -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const fullWelcomeText = "Bienvenido a People For People";
@@ -666,7 +675,8 @@
             charIndex++;
             setTimeout(typeWriter, 100);
           } else {
-            setTimeout(startWaveAnimation, 3000);
+            // Se reduce el tiempo para que la animación de onda comience antes
+            setTimeout(startWaveAnimation, 1000);
           }
         }
     
@@ -724,6 +734,10 @@
             setTimeout(() => {
               sloganEl.classList.add("show");
               startBtnEl.classList.add("show");
+              // Inicia la animación de palpitar en el botón "Comenzar" después de 2 segundos
+              setTimeout(() => {
+                startBtnEl.classList.add("pulse");
+              }, 2000);
             }, 100);
             registrationScreen.removeEventListener("transitionend", handler);
           });
@@ -746,12 +760,18 @@
             setTimeout(() => {
               sloganEl.classList.add("show");
               startBtnEl.classList.add("show");
+              // Inicia la animación de palpitar en el botón "Comenzar" después de 2 segundos
+              setTimeout(() => {
+                startBtnEl.classList.add("pulse");
+              }, 2000);
             }, 100);
           }
         }, 50);
     
         const startBtn = document.getElementById("start-btn");
         startBtn.addEventListener("click", function () {
+          // Quitar la animación de palpitar al hacer clic
+          startBtn.classList.remove("pulse");
           const welcomeScreen = document.getElementById("welcome-screen");
           welcomeScreen.classList.add("fade-out");
           welcomeScreen.addEventListener("transitionend", function handler() {
