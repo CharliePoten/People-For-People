@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>People For People</title>
     <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
 
     <!-- Estilos adicionales para las transiciones -->
     <style>
@@ -36,7 +37,7 @@
         padding: 20px;
         box-sizing: border-box;
         text-align: center;
-        opacity: 0; /* Inicia oculto */
+        opacity: 0; /* inicia oculto */
         transition: opacity 0.6s ease;
       }
       /* Al añadir "visible" se activa el fade‑in */
@@ -618,9 +619,7 @@
             <h3>Mis Organizaciones</h3>
             <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">Crear Organización</button>
           </div>
-          <div id="orgmode-list" class="list-box">
-            <!-- Lista en tiempo real de organizaciones donde eres admin -->
-          </div>
+          <div id="orgmode-list" class="list-box"></div>
           <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
             <h3>Crear Nueva Organización</h3>
             <form id="create-org-form-orgmode">
@@ -664,17 +663,9 @@
       };
     </script>
 
-    <!-- Script para gestionar las transiciones, la animación de onda, 
-         el efecto de palpitar y el botón "Aceptar" del mensaje de bienvenida -->
+    <!-- Script para gestionar las transiciones, la animación de onda y el efecto de palpitar en el botón -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // Manejador para ocultar el mensaje de bienvenida del prototipo
-        const devMessage = document.getElementById("dev-message");
-        const acceptDevMessage = document.getElementById("accept-dev-message");
-        acceptDevMessage.addEventListener("click", function () {
-          devMessage.style.display = "none";
-        });
-
         const fullWelcomeText = "Bienvenido a People For People";
         const welcomeTextElem = document.getElementById("welcomeText");
         let charIndex = 0;
