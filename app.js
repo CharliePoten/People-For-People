@@ -2047,4 +2047,20 @@ document.getElementById("org-info-edit-form").addEventListener("submit", functio
     updateProfileView();
 });
 
+document.querySelectorAll('.fullscreen-chat-btn').forEach(btn => {
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    // Buscar el contenedor que engloba todo el chat
+    const chatContainer = this.closest('.chat-container');
+    if (chatContainer) {
+      if (chatContainer.requestFullscreen) {
+        chatContainer.requestFullscreen();
+      } else if (chatContainer.webkitRequestFullscreen) {
+        chatContainer.webkitRequestFullscreen(); // Safari
+      } else if (chatContainer.msRequestFullscreen) {
+        chatContainer.msRequestFullscreen(); // IE/Edge
+      }
+    }
+  });
+});
 /* --- FIN DEL DOMCONTENTLOADED --- */
