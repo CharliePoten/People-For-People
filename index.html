@@ -7,19 +7,18 @@
     <link rel="stylesheet" href="styles.css" />
     <script type="module" src="app.js"></script>
 
-    <!-- Estilos adicionales para las transiciones -->
+    <!-- Estilos adicionales: transiciones, bienvenida, chats, Calendario -->
     <style>
-      /* Transición para el menú de registro */
+      /* ------------------------------
+         Transiciones y Welcome Screen
+      ------------------------------ */
       #registration-screen {
         opacity: 1;
         transition: opacity 0.6s ease;
       }
-      /* Cuando se agrega esta clase, se funde a opacidad cero */
       #registration-screen.fade-out {
         opacity: 0;
       }
-      
-      /* Estilos para la pantalla de bienvenida */
       #welcome-screen {
         position: fixed;
         top: 0;
@@ -37,115 +36,154 @@
         padding: 20px;
         box-sizing: border-box;
         text-align: center;
-        opacity: 0; /* inicia oculto */
+        opacity: 0;
         transition: opacity 0.6s ease;
       }
-      /* Al añadir "visible" se activa el fade‑in */
-      #welcome-screen.visible {
-        opacity: 1;
-      }
-      /* Aumentar tamaño del logo */
-      #welcome-screen .logo {
-        width: 180px;
-        margin: 20px 0;
-      }
-      /* Título */
-      #welcome-screen .welcome-text {
-        font-size: 4em;
-        margin: 0.2em;
-      }
-      /* El eslogan inicia oculto y se animará */
+      #welcome-screen.visible { opacity: 1; }
+      #welcome-screen .logo { width: 180px; margin: 20px 0; }
+      #welcome-screen .welcome-text { font-size: 4em; margin: 0.2em; }
       #welcome-screen .slogan {
-        font-size: 1.5em;
-        margin-top: 10px;
-        opacity: 0;
-        transform: translateY(20px);
+        font-size: 1.5em; margin-top: 10px;
+        opacity: 0; transform: translateY(20px);
         transition: opacity 0.6s ease, transform 0.6s ease;
       }
-      /* El botón "Comenzar" también inicia oculto; se ha bajado con margin-top: 50px */
       #welcome-screen #start-btn {
-        margin-top: 50px;
-        opacity: 0;
+        margin-top: 50px; opacity: 0;
         transform: translateY(20px);
         transition: opacity 0.6s ease, transform 0.6s ease;
       }
-      /* Cuando se active la clase 'show', ambos elementos pasan a estar visibles */
       #welcome-screen .slogan.show,
       #welcome-screen #start-btn.show {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: 1; transform: translateY(0);
       }
-      /* Clase para fundir la pantalla */
-      #welcome-screen.fade-out {
-        opacity: 0;
-      }
-      /* Definición de la animación de onda para el título */
+      #welcome-screen.fade-out { opacity: 0; }
       @keyframes wave {
         0% { transform: translateY(0); }
         50% { transform: translateY(-10px); }
         100% { transform: translateY(0); }
       }
-      /* Cada letra se muestra en bloque para poder animarla */
-      .wave-letter {
-        display: inline-block;
-      }
-      /* Clase que activa la animación de onda */
-      .wave-letter.animate-wave {
-        animation: wave 1.5s ease-in-out;
-      }
-      /* Animación de palpitar para el botón "Comenzar" */
+      .wave-letter { display: inline-block; }
+      .wave-letter.animate-wave { animation: wave 1.5s ease-in-out; }
       @keyframes pulse {
         0% { transform: scale(1); }
         50% { transform: scale(1.1); }
         100% { transform: scale(1); }
       }
-      #welcome-screen #start-btn.pulse {
-        animation: pulse 1s infinite ease-in-out;
-      }
-      
-      /* Nuevos estilos para el chat en modo fullscreen */
+      #welcome-screen #start-btn.pulse { animation: pulse 1s infinite ease-in-out; }
+
+      /* ------------------------------
+         Estilos para chats en Fullscreen
+      ------------------------------ */
       .chat-container:fullscreen {
-        width: 100%;
-        height: 100%;
-        padding: 20px;
-        box-sizing: border-box;
-        background: #fff;
-        position: relative;
+        width: 100%; height: 100%; padding: 20px;
+        box-sizing: border-box; background: #fff; position: relative;
       }
       .chat-container:fullscreen .chat-messages {
-        height: calc(100% - 120px); /* Ajusta según la altura del header y formulario */
-        overflow-y: auto;
+        height: calc(100% - 120px); overflow-y: auto;
       }
       .chat-container:fullscreen form {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        right: 20px;
-        margin: 0;
+        position: absolute; bottom: 20px; left: 20px; right: 20px; margin: 0;
       }
-      
       .chat-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #f2f2f2;
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
+        display: flex; justify-content: space-between; align-items: center;
+        background: #f2f2f2; padding: 10px; border-bottom: 1px solid #ccc;
       }
-      .chat-header h3 {
-        margin: 0;
-        font-size: 1.2em;
-      }
+      .chat-header h3 { margin: 0; font-size: 1.2em; }
       .fullscreen-chat-btn {
-        background: transparent;
-        border: none;
+        background: transparent; border: none; cursor: pointer; padding: 6px 10px;
+      }
+      .fullscreen-chat-btn img { width: 24px; height: 24px; }
+
+      /* ------------------------------
+         Estilos para Calendario
+      ------------------------------ */
+      /* La sección Calendario se muestra únicamente en modo Voluntario */
+      #calendario {
+        width: 100%; height: calc(100vh - 180px);
+        padding: 20px; box-sizing: border-box;
+        background: #f9f9f9; overflow: auto;
+      }
+      #calendar-container { width: 100%; height: calc(100% - 50px); display: block; }
+      #calendar-controls { margin-bottom: 15px; }
+      #calendar-controls button { margin-right: 10px; }
+      .calendar-view-toggle {
+        background: #e0e0e0; border: none; color: #333;
+        padding: 10px 20px; border-radius: 5px; font-size: 1em;
+        cursor: pointer; transition: background 0.3s, color 0.3s, transform 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .calendar-view-toggle:hover,
+      .calendar-view-toggle.active {
+         background: #32cd32; color: #fff; transform: scale(1.05);
+      }
+      .calendar-add-event {
+        background: #007BFF; border: none; color: #fff;
+        padding: 10px 20px; border-radius: 5px; font-size: 1em;
+        cursor: pointer; transition: background 0.3s, transform 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .calendar-add-event:hover {
+         background: #0056b3; transform: scale(1.05);
+      }
+      .daily-header-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 5px 10px; background: #e0e0e0; border-radius: 4px;
+        margin-bottom: 10px; font-weight: bold;
+      }
+      .daily-header-row span { flex: 1; }
+      .daily-list { display: flex; flex-direction: column; gap: 10px; }
+      .daily-row {
+        display: flex; align-items: center; padding: 8px; border: 1px solid #ddd;
+        border-radius: 8px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         cursor: pointer;
-        padding: 6px 10px;
       }
-      .fullscreen-chat-btn img {
-        width: 24px;
-        height: 24px;
+      .daily-row .day-name { width: 100px; font-weight: bold; color: #27ae60; }
+      .daily-row .event-info { flex: 1; text-align: right; color: #333; }
+      .monthly-header {
+        display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 10px;
       }
+      .monthly-header div {
+        text-align: center; font-weight: bold; padding: 5px 0;
+        background: #e0e0e0; border-radius: 4px;
+      }
+      .monthly-grid { display: grid; grid-template-columns: repeat(7, 1fr);
+         grid-auto-rows: 1fr; grid-gap: 10px; }
+      .calendar-cell {
+        min-width: 90px; border: 1px solid #ddd; border-radius: 8px; background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center;
+        justify-content: center; position: relative; cursor: pointer; font-size: 0.9em;
+        transition: background 0.3s, transform 0.3s;
+      }
+      .calendar-cell:hover {
+        background: #e6f9e6; transform: scale(1.02);
+      }
+      #event-panel {
+        display: none; position: fixed; top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff; border: 1px solid #ccc; padding: 15px 15px 30px;
+        border-radius: 6px; box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        z-index: 100; max-width: 400px; width: 90%; max-height: 70vh;
+        overflow-y: auto;
+      }
+      #event-panel h3 { text-align: center; color: #8e44ad; margin-bottom: 15px; }
+      #event-panel label {
+        display: block; margin-bottom: 5px; font-weight: bold; color: #27ae60;
+      }
+      #event-panel input,
+      #event-panel textarea,
+      #event-panel select {
+         width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;
+         border: 1px solid #ccc; border-radius: 4px;
+      }
+      #event-panel button {
+        padding: 8px 12px; font-size: 0.9em; cursor: pointer;
+        margin-right: 5px; border: none; border-radius: 4px;
+      }
+      #event-panel button:hover { opacity: 0.9; }
+
+      /* ------------------------------
+         Resto de estilos (perfil, modales, etc.)
+      ------------------------------ */
     </style>
   </head>
   <body>
@@ -153,7 +191,9 @@
     <div id="dev-message">
       <div class="message-box">
         <p>
-          Bienvenido a People For People. Este es un prototipo de aplicación para la startup de People For People. Actualmente estamos integrando las últimas tecnologías y desarrollando nuevas funcionalidades para brindar una experiencia de usuario excepcional. Le agradecemos por participar en esta fase de pruebas.
+          Bienvenido a People For People. Este es un prototipo de aplicación para la startup de People For People.
+          Actualmente estamos integrando las últimas tecnologías y desarrollando nuevas funcionalidades para brindar una experiencia de usuario excepcional.
+          Le agradecemos por participar en esta fase de pruebas.
         </p>
         <p class="creator">Creado por: Carlos Potenciano</p>
         <button id="accept-dev-message" class="accept-btn">Aceptar</button>
@@ -178,26 +218,29 @@
       <header class="app-header">
         <h1 class="app-title">People For People</h1>
         <div class="header-actions">
+          <!-- Ícono Calendario (visible solo en modo Voluntario) -->
+          <button id="calendario-btn" data-target="calendario" style="cursor: pointer; background: transparent; border: none; margin-right: 10px;">
+            <img src="https://github.com/CharliePoten/People-For-People/blob/main/calendario%20icono.png?raw=true" alt="Calendario" class="calendario-icon" style="width:28px; height:auto;" />
+          </button>
+          <!-- Botón de Perfil -->
           <div class="profile-container" id="profile-btn">
-            <img
-              src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true"
-              alt="Perfil"
-              class="profile-img"
-              onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'"
-            />
+            <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Perfil" class="profile-img" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
             <span class="profile-label">Mi perfil</span>
             <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
               <div class="dropdown-item" data-section="perfil">Mi perfil</div>
               <div class="dropdown-item" data-section="ajustes">Ajustes de perfil</div>
               <div class="dropdown-item" data-section="soporte">Soporte</div>
               <div class="dropdown-item" data-section="centro">People for People</div>
-              <div class="dropdown-item mode-toggle-btn" style="background-color: #800080; color: white; cursor: pointer;">Cambiar a Organizador</div>
+              <!-- Botón para cambiar a organizador -->
+              <div class="dropdown-item mode-toggle-btn" style="background-color: #800080; color: white; cursor: pointer;">
+                Cambiar a Organizador
+              </div>
             </div>
           </div>
         </div>
       </header>
       <main class="app-content" id="content">
-        <!-- Sección del Mapa -->
+        <!-- Sección Mapa -->
         <div id="map-view" class="content-section">
           <h2>Mapa</h2>
           <div id="map-container">
@@ -220,8 +263,7 @@
                 <textarea id="ayuda-info" placeholder="Información del Punto de Ayuda" required></textarea>
                 <input type="file" id="ayuda-image" accept="image/*" />
                 <button type="submit" class="action-btn">
-                  <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true"
-                    class="send-icon" alt="Enviar" />
+                  <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
                   Enviar
                 </button>
                 <button type="button" id="cancelar-ayuda" class="return-btn">Volver</button>
@@ -232,7 +274,6 @@
               <div id="ayuda-detail"></div>
               <button id="view-on-map" class="map-btn">Ver en el Mapa</button>
               <div id="small-map" style="height: 150px; width: 100%; margin-top: 10px;"></div>
-              <!-- Chat de Ayuda actualizado -->
               <div id="ayuda-chat" class="chat-container">
                 <div class="chat-header">
                   <h3>Chat de Ayuda</h3>
@@ -244,8 +285,7 @@
                 <form id="ayuda-chat-form">
                   <input type="text" id="ayuda-chat-input" placeholder="Escribe tu mensaje" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true"
-                      class="send-icon" alt="Enviar" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
                     Enviar
                   </button>
                 </form>
@@ -287,7 +327,7 @@
             <div id="voluntario-detail-view" style="display:none;">
               <button id="volver-voluntario-list" class="return-btn">Volver</button>
               <div id="voluntario-detail"></div>
-              <!-- Chat Privado actualizado -->
+              <!-- Chat Privado (si aplica) -->
               <div id="voluntario-private-chat" class="chat-container">
                 <div class="chat-header">
                   <h3>Chat Privado</h3>
@@ -341,8 +381,7 @@
                 <form id="org-admin-chat-form">
                   <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true"
-                      class="send-icon" alt="Enviar" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
                     Enviar
                   </button>
                 </form>
@@ -358,8 +397,7 @@
                 <form id="org-chat-form">
                   <input type="text" id="org-chat-input" placeholder="Escribe tu mensaje" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true"
-                      class="send-icon" alt="Enviar" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
                     Enviar
                   </button>
                 </form>
@@ -373,8 +411,7 @@
           <div class="profile-container-new">
             <div class="profile-display">
               <div class="profile-photo-container">
-                <img id="profile-large-photo" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Foto de Perfil"
-                  onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
+                <img id="profile-large-photo" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Foto de Perfil" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
               </div>
               <div class="profile-info">
                 <h3>Información de Perfil</h3>
@@ -482,8 +519,7 @@
                 <form id="soporte-chat-form">
                   <input type="text" id="soporte-chat-input" placeholder="Escribe tu mensaje" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true"
-                      class="send-icon" alt="Enviar" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
                     Enviar
                   </button>
                 </form>
@@ -527,7 +563,67 @@
             </div>
           </div>
         </div>
+        <!-- Sección Calendario (Agregada, solo en modo Voluntario) -->
+        <div id="calendario" class="content-section" style="display: none;">
+          <h2>Calendario</h2>
+          <div id="calendar-controls">
+            <button class="calendar-view-toggle" data-view="diario">Diario</button>
+            <button class="calendar-view-toggle" data-view="mensual">Mensual</button>
+            <button class="calendar-add-event">Añadir Evento +</button>
+          </div>
+          <div id="calendar-container">
+            <!-- Aquí se renderiza el grid del calendario -->
+          </div>
+          <div id="event-panel">
+            <h3 id="event-panel-header">Añadir Evento</h3>
+            <div id="event-add-fields">
+              <label>Título del evento:</label>
+              <input type="text" id="event-title-input" placeholder="Título del evento" />
+              <label>Información del evento:</label>
+              <textarea id="event-info-input" placeholder="Descripción del evento"></textarea>
+              <div id="event-day-diary" style="display:none;">
+                <label>Día de la semana:</label>
+                <select id="event-day-select">
+                  <option value="">Seleccione el día</option>
+                  <option value="0">Lunes</option>
+                  <option value="1">Martes</option>
+                  <option value="2">Miércoles</option>
+                  <option value="3">Jueves</option>
+                  <option value="4">Viernes</option>
+                  <option value="5">Sábado</option>
+                  <option value="6">Domingo</option>
+                </select>
+              </div>
+              <div id="event-day-mensual" style="display:none;">
+                <label>Número del día:</label>
+                <input type="number" id="event-day-number" placeholder="Ingrese el número del día" min="1" max="31" />
+              </div>
+              <label>De:</label>
+              <input type="time" id="event-start-time" />
+              <label>a:</label>
+              <input type="time" id="event-end-time" />
+            </div>
+            <div style="text-align: center;">
+              <button id="event-save">Guardar</button>
+              <button id="event-cancel">Cancelar</button>
+            </div>
+            <div id="event-view-fields" style="display:none;">
+              <h4>Título:</h4>
+              <p id="event-title-view"></p>
+              <h4>Información:</h4>
+              <p id="event-info-view"></p>
+              <h4>Hora:</h4>
+              <p id="event-time-view"></p>
+              <h4>Día:</h4>
+              <p id="event-day-view"></p>
+              <div style="text-align: center;">
+                <button id="event-close">Cerrar</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
+      <!-- Menú inferior para modo Voluntario (no incluye Calendario) -->
       <nav class="app-menu">
         <button class="menu-btn" data-target="map-view">
           <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true" alt="Icono Mapa" />
@@ -548,12 +644,12 @@
       </nav>
     </div>
 
-    <!-- Modal para vista previa de archivos (única instancia) -->
+    <!-- Modal para vista previa de archivos -->
     <div id="modal-viewer" class="modal">
       <div class="modal-content"></div>
     </div>
 
-    <!-- Modal para Modo Organizador: Seleccionar/Crear Organización (única instancia) -->
+    <!-- Modal para Modo Organizador (Selección/Creación de Organización) -->
     <div id="org-mode-menu" class="modal">
       <div class="modal-content org-menu-content">
         <span class="close" id="close-org-menu">&times;</span>
@@ -561,7 +657,151 @@
         <div class="org-menu-container">
           <div class="org-menu-header">
             <h3>Mis Organizaciones</h3>
-            <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">Crear Organización</button>
+            <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">
+              Crear Organización
+            </button>
+          </div>
+          <div id="orgmode-list" class="list-box"></div>
+          <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
+            <h3>Crear Nueva Organización</h3>
+            <form id="create-org-form-orgmode">
+              <input type="text" id="orgmode-title" placeholder="Título de la Organización" required />
+              <textarea id="orgmode-info" placeholder="Información de la Organización" required></textarea>
+              <input type="file" id="orgmode-image" accept="image/*" />
+              <button type="submit" class="action-btn">Crear Organización</button>
+              <button type="button" id="cancelar-org-modal" class="return-btn">Cancelar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aplicación Modo Organizador -->
+    <div id="org-mode-app" class="screen org-mode" style="display:none;">
+      <header class="app-header org-header">
+        <h1 class="app-title">Modo Organizador</h1>
+      </header>
+      <main class="app-content org-content">
+        <!-- Sección Chats -->
+        <div id="org-chats" class="org-content-section" style="display:none;">
+          <div id="org-chat-public" class="chat-container">
+            <h3>Chat Público</h3>
+            <div class="chat-messages" id="org-chat-messages-public"></div>
+            <form id="org-chat-form-public">
+              <input type="text" id="org-chat-input-public" placeholder="Escribe tu mensaje" required />
+              <input type="file" id="org-chat-file-public" accept="image/*, application/pdf" />
+              <button type="submit" class="enhanced-btn">
+                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                Enviar
+              </button>
+            </form>
+          </div>
+          <div id="org-chat-admin" class="chat-container">
+            <h3>Chat de Administradores</h3>
+            <div class="chat-messages" id="org-admin-chat-messages"></div>
+            <form id="org-admin-chat-form">
+              <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
+              <input type="file" id="org-admin-chat-file" accept="image/*, application/pdf" />
+              <button type="submit" class="enhanced-btn">
+                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
+                Enviar
+              </button>
+            </form>
+          </div>
+        </div>
+        <!-- Sección Información -->
+        <div id="org-info" class="org-content-section" style="display:none;">
+          <h2>Centro de Información</h2>
+          <div id="org-info-display" class="org-info-display">
+            <p id="org-info-titulo">Título: </p>
+            <p id="org-info-creador">Creador: </p>
+            <p id="org-info-detalle">Información: </p>
+            <p id="org-info-lugar">Lugar: </p>
+            <p id="org-info-fecha">Fecha de Creación: </p>
+            <div id="org-info-attachments" class="attachment-display"></div>
+            <button id="btn-editar-info" class="action-btn">Editar Información</button>
+          </div>
+          <div id="org-info-edit" class="org-info-edit" style="display:none;">
+            <h3>Editar Información</h3>
+            <form id="org-info-edit-form">
+              <div>
+                <label for="edit-org-titulo">Título:</label>
+                <input type="text" id="edit-org-titulo" placeholder="Título" required />
+              </div>
+              <div>
+                <label for="edit-org-creador">Creador:</label>
+                <input type="text" id="edit-org-creador" placeholder="Creador" disabled />
+              </div>
+              <div>
+                <label for="edit-org-detalle">Información:</label>
+                <textarea id="edit-org-detalle" placeholder="Información" required></textarea>
+              </div>
+              <div>
+                <label for="edit-org-lugar">Lugar:</label>
+                <input type="text" id="edit-org-lugar" placeholder="Lugar" required />
+              </div>
+              <div>
+                <label for="edit-org-fecha">Fecha de Creación:</label>
+                <input type="date" id="edit-org-fecha" placeholder="Fecha" disabled />
+              </div>
+              <button type="submit" class="action-btn">Guardar Cambios</button>
+              <button type="button" id="cancelar-editar-info" class="return-btn">Cancelar</button>
+            </form>
+            <h3>Subir Archivo</h3>
+            <form id="org-file-upload-form" class="form-container">
+              <input type="text" id="org-file-title" placeholder="Título del Archivo" required />
+              <input type="file" id="org-file-upload" accept="application/pdf, image/*" required />
+              <button type="submit" class="action-btn">Subir Archivo</button>
+            </form>
+          </div>
+        </div>
+        <!-- Sección Mis Organizaciones -->
+        <div id="org-list" class="org-content-section" style="display:none;">
+          <h2>Mis Organizaciones</h2>
+          <div class="org-list-container">
+            <div id="org-list-organizador" class="list-box"></div>
+            <button id="crear-org-btn-organizador" class="action-btn" style="background-color:#800080; color:white;">
+              Crear Organización
+            </button>
+          </div>
+        </div>
+        <!-- Sección de Inicio (Modo Organizador) -->
+        <div id="org-mode-home" class="org-content-section" style="display:block;">
+          <p>Bienvenido al modo organizador. Selecciona una opción del menú inferior.</p>
+        </div>
+      </main>
+      <nav class="app-menu org-app-menu">
+        <button class="menu-btn org-menu-btn" data-target="org-chats">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20chats.png?raw=true" alt="Icono Chats" />
+          Centro de Chats
+        </button>
+        <button class="menu-btn org-menu-btn" data-target="org-info">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20informacion.png?raw=true" alt="Icono Información" />
+          People for People
+        </button>
+        <button class="menu-btn org-menu-btn" data-target="org-list">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20listas.png?raw=true" alt="Icono Mis Organizaciones" />
+          Mis Organizaciones
+        </button>
+      </nav>
+    </div>
+
+    <!-- Modal para vista previa de archivos -->
+    <div id="modal-viewer" class="modal">
+      <div class="modal-content"></div>
+    </div>
+
+    <!-- Modal para Modo Organizador: Seleccionar/Crear Organización -->
+    <div id="org-mode-menu" class="modal">
+      <div class="modal-content org-menu-content">
+        <span class="close" id="close-org-menu">&times;</span>
+        <h2>Modo Organizador</h2>
+        <div class="org-menu-container">
+          <div class="org-menu-header">
+            <h3>Mis Organizaciones</h3>
+            <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">
+              Crear Organización
+            </button>
           </div>
           <div id="orgmode-list" class="list-box"></div>
           <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
@@ -581,13 +821,9 @@
     <!-- Nueva Pantalla de Bienvenida -->
     <div id="welcome-screen" style="display: none;">
       <div class="container">
-        <!-- Texto con efecto de máquina de escribir -->
         <h1 class="welcome-text" id="welcomeText"></h1>
-        <!-- Logo (más grande) -->
         <img src="https://github.com/CharliePoten/People-For-People/blob/main/Logo%20People%20For%20People%20(2).png?raw=true" alt="Logo People For People" class="logo" />
-        <!-- Eslogan -->
         <p class="slogan">Tu ayuda, su esperanza. ¡Nosotros os unimos!</p>
-        <!-- Botón para iniciar -->
         <button id="start-btn" class="action-btn">Comenzar</button>
       </div>
       <style>
@@ -599,15 +835,14 @@
     <script>
       window.onload = function () {
         const script = document.createElement("script");
-        script.src =
-          "https://maps.googleapis.com/maps/api/js?key=AIzaSyBWlVP6ZrRsXVmKj4czhWxg6Q4bGIP8zeE&callback=initMap&v=weekly";
+        script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyBWlVP6ZrRsXVmKj4czhWxg6Q4bGIP8zeE&callback=initMap&v=weekly";
         script.async = true;
         script.defer = true;
         document.head.appendChild(script);
       };
     </script>
 
-    <!-- Script para gestionar las transiciones, animación de onda y fullscreen de chats -->
+    <!-- Script para transiciones, animación y efectos -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const fullWelcomeText = "Bienvenido a People For People";
@@ -628,9 +863,7 @@
           const letters = fullWelcomeText.split("");
           welcomeTextElem.innerHTML = letters
             .map(letter =>
-              letter === " " 
-                ? `<span class="wave-letter" style="animation: none;">&nbsp;</span>`
-                : `<span class="wave-letter">${letter}</span>`
+              letter === " " ? `<span class="wave-letter" style="animation: none;">&nbsp;</span>` : `<span class="wave-letter">${letter}</span>`
             )
             .join("");
     
@@ -666,11 +899,9 @@
             welcomeScreen.style.display = "flex";
             void welcomeScreen.offsetWidth;
             welcomeScreen.classList.add("visible");
-    
             welcomeTextElem.textContent = "";
             charIndex = 0;
             typeWriter();
-    
             const sloganEl = document.querySelector("#welcome-screen .slogan");
             const startBtnEl = document.querySelector("#welcome-screen #start-btn");
             void sloganEl.offsetWidth;
@@ -678,9 +909,7 @@
             setTimeout(() => {
               sloganEl.classList.add("show");
               startBtnEl.classList.add("show");
-              setTimeout(() => {
-                startBtnEl.classList.add("pulse");
-              }, 2000);
+              setTimeout(() => { startBtnEl.classList.add("pulse"); }, 2000);
             }, 100);
             registrationScreen.removeEventListener("transitionend", handler);
           });
@@ -703,9 +932,7 @@
             setTimeout(() => {
               sloganEl.classList.add("show");
               startBtnEl.classList.add("show");
-              setTimeout(() => {
-                startBtnEl.classList.add("pulse");
-              }, 2000);
+              setTimeout(() => { startBtnEl.classList.add("pulse"); }, 2000);
             }, 100);
           }
         }, 50);
@@ -722,11 +949,10 @@
           });
         });
     
-        // Código para el botón de pantalla completa en los chats
+        // Fullscreen para chats
         const fullscreenButtons = document.querySelectorAll('.fullscreen-chat-btn');
         fullscreenButtons.forEach(button => {
           button.addEventListener('click', function (e) {
-            // Buscar el contenedor de chat más cercano
             const chatContainer = this.closest('.chat-container');
             if (chatContainer) {
               if (!document.fullscreenElement) {
@@ -739,6 +965,307 @@
             }
           });
         });
+    
+        // Funcionalidad de menú (modo Voluntario)
+        document.querySelectorAll('.menu-btn').forEach(btn => {
+          btn.addEventListener('click', function () {
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.content-section').forEach(sec => { sec.style.display = "none"; });
+            const eventPanel = document.getElementById("event-panel");
+            if (eventPanel) { eventPanel.style.display = "none"; }
+            let target = this.getAttribute("data-target");
+            if (target) { document.getElementById(target).style.display = "block"; }
+          });
+        });
+    
+        // Botón de Calendario en header (modo Voluntario)
+        document.getElementById("calendario-btn").addEventListener("click", function() {
+          document.querySelectorAll('.content-section').forEach(sec => { sec.style.display = "none"; });
+          document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+          document.getElementById("calendario").style.display = "block";
+        });
+    
+        // Gestión del cambio de modo (Voluntario/Organizador)
+        let organizerMode = false;
+        const modeToggleBtn = document.querySelector(".mode-toggle-btn");
+        if (modeToggleBtn) {
+          modeToggleBtn.addEventListener("click", function() {
+            organizerMode = !organizerMode;
+            if (organizerMode) {
+              // Cambiar a modo Organizador:
+              // Ocultar la aplicación voluntaria (main-app) y mostrar org-mode-app
+              document.getElementById("main-app").style.display = "none";
+              document.getElementById("org-mode-app").style.display = "block";
+              // Ocultar el ícono de calendario (solo en Voluntario)
+              document.getElementById("calendario-btn").style.display = "none";
+              this.textContent = "Cambiar a Voluntario";
+            } else {
+              // Volver a modo Voluntario:
+              document.getElementById("org-mode-app").style.display = "none";
+              document.getElementById("main-app").style.display = "block";
+              document.getElementById("calendario-btn").style.display = "inline-block";
+              this.textContent = "Cambiar a Organizador";
+            }
+          });
+        }
+      });
+    </script>
+
+    <!-- Script de Calendario (Modo Voluntario) -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function(){
+        (function(){
+          const diarioTimes = [
+            { start: "08:00", end: "10:00" },
+            { start: "10:00", end: "12:00" },
+            { start: "12:00", end: "14:00" },
+            { start: "14:00", end: "16:00" }
+          ];
+          const semanalTimes = [
+            { start: "08:00", end: "10:00" },
+            { start: "10:00", end: "12:00" },
+            { start: "12:00", end: "14:00" },
+            { start: "14:00", end: "16:00" },
+            { start: "16:00", end: "18:00" }
+          ];
+          const dayNames = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+      
+          let currentView = "diario";
+          const calendarContainer = document.getElementById("calendar-container");
+          const viewToggleButtons = document.querySelectorAll(".calendar-view-toggle");
+          const addEventButton = document.querySelector(".calendar-add-event");
+          const currentUser = localStorage.getItem("username") || "Tú";
+          const eventsKey = "calendarEvents_" + currentUser;
+          let events = [];
+          try {
+            events = JSON.parse(localStorage.getItem(eventsKey)) || [];
+          } catch (error) {
+            console.error("Error leyendo eventos", error);
+            events = [];
+          }
+      
+          function saveEvents() {
+            localStorage.setItem(eventsKey, JSON.stringify(events));
+          }
+      
+          function renderCalendar() {
+            calendarContainer.innerHTML = "";
+            if (currentView === "diario") {
+              renderDiarioView();
+            } else if (currentView === "mensual") {
+              renderMonthlyView();
+            }
+          }
+      
+          function renderDiarioView() {
+            const headerRow = document.createElement("div");
+            headerRow.className = "daily-header-row";
+            const leftHeader = document.createElement("span");
+            leftHeader.innerText = "Día";
+            const rightHeader = document.createElement("span");
+            rightHeader.innerText = "Eventos";
+            headerRow.appendChild(leftHeader);
+            headerRow.appendChild(rightHeader);
+            calendarContainer.appendChild(headerRow);
+      
+            const container = document.createElement("div");
+            container.className = "daily-list";
+            for (let i = 0; i < 7; i++) {
+              const row = document.createElement("div");
+              row.className = "daily-row";
+              row.dataset.day = i;
+      
+              const leftCell = document.createElement("div");
+              leftCell.className = "day-name";
+              leftCell.innerText = dayNames[i];
+      
+              const rightCell = document.createElement("div");
+              rightCell.className = "event-info";
+              const eventObj = events.find(ev =>
+                ev.view === "diario" && parseInt(ev.day, 10) === i
+              );
+              if (eventObj) {
+                rightCell.innerText = eventObj.title + " (" + eventObj.startTime + " a " + eventObj.endTime + ")";
+                rightCell.style.color = "#32cd32";
+                rightCell.addEventListener("click", function(e) {
+                  e.stopPropagation();
+                  showEventView(eventObj);
+                });
+              } else {
+                rightCell.innerText = "Sin eventos";
+              }
+              row.appendChild(leftCell);
+              row.appendChild(rightCell);
+              row.addEventListener("click", function() {
+                showEventPanel({ view: "diario", day: i });
+              });
+              container.appendChild(row);
+            }
+            calendarContainer.appendChild(container);
+          }
+      
+          function renderMonthlyView() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+            const numDays = new Date(year, month + 1, 0).getDate();
+      
+            const header = document.createElement("div");
+            header.className = "monthly-header";
+            dayNames.forEach(day => {
+              const d = document.createElement("div");
+              d.innerText = day;
+              header.appendChild(d);
+            });
+            calendarContainer.appendChild(header);
+      
+            const grid = document.createElement("div");
+            grid.className = "monthly-grid";
+            for (let day = 1; day <= numDays; day++) {
+              const cell = document.createElement("div");
+              cell.className = "calendar-cell";
+              cell.innerText = day;
+              const eventObj = events.find(ev =>
+                ev.view === "mensual" && parseInt(ev.dayNumber, 10) === day
+              );
+              if (eventObj) {
+                const evDiv = document.createElement("div");
+                evDiv.className = "event-data";
+                evDiv.style.background = "#32cd32";
+                evDiv.style.color = "#fff";
+                evDiv.style.padding = "2px 4px";
+                evDiv.style.borderRadius = "4px";
+                evDiv.style.position = "absolute";
+                evDiv.style.bottom = "5px";
+                evDiv.style.left = "5px";
+                evDiv.style.right = "5px";
+                evDiv.style.overflow = "hidden";
+                evDiv.style.whiteSpace = "nowrap";
+                evDiv.style.textOverflow = "ellipsis";
+                evDiv.innerText = eventObj.title;
+                evDiv.addEventListener("click", function(e) {
+                  e.stopPropagation();
+                  showEventView(eventObj);
+                });
+                cell.appendChild(evDiv);
+              } else {
+                cell.addEventListener("click", function() {
+                  showEventPanel({ view: "mensual", dayNumber: day });
+                });
+              }
+              grid.appendChild(cell);
+            }
+            calendarContainer.appendChild(grid);
+          }
+      
+          let currentEventContext = null;
+      
+          function showEventPanel(context) {
+            currentEventContext = context;
+            document.getElementById("event-panel-header").innerText = "Añadir Evento";
+            document.getElementById("event-add-fields").style.display = "block";
+            document.getElementById("event-view-fields").style.display = "none";
+      
+            if (currentView === "diario") {
+              document.getElementById("event-day-diary").style.display = "block";
+              document.getElementById("event-day-mensual").style.display = "none";
+              if (typeof context.day !== "undefined") {
+                document.getElementById("event-day-select").value = context.day;
+                if (context.slot !== undefined) {
+                  const slotData = diarioTimes[context.slot] || { start: "", end: "" };
+                  document.getElementById("event-start-time").value = slotData.start;
+                  document.getElementById("event-end-time").value = slotData.end;
+                }
+              }
+            } else if (currentView === "mensual") {
+              document.getElementById("event-day-diary").style.display = "none";
+              document.getElementById("event-day-mensual").style.display = "block";
+              if (typeof context.dayNumber !== "undefined") {
+                document.getElementById("event-day-number").value = context.dayNumber;
+              }
+            }
+            document.getElementById("event-title-input").value = "";
+            document.getElementById("event-info-input").value = "";
+            document.getElementById("event-panel").style.display = "block";
+          }
+      
+          function showEventView(eventObj) {
+            currentEventContext = null;
+            document.getElementById("event-panel-header").innerText = "Detalles del Evento";
+            document.getElementById("event-add-fields").style.display = "none";
+            document.getElementById("event-view-fields").style.display = "block";
+            document.getElementById("event-title-view").innerText = eventObj.title;
+            document.getElementById("event-info-view").innerText = eventObj.info || "";
+            if (eventObj.view === "diario") {
+              document.getElementById("event-day-view").innerText = dayNames[eventObj.day];
+            } else if (eventObj.view === "mensual") {
+              document.getElementById("event-day-view").innerText = eventObj.dayNumber;
+            }
+            document.getElementById("event-time-view").innerText = eventObj.startTime + " a " + eventObj.endTime;
+            document.getElementById("event-panel").style.display = "block";
+          }
+      
+          function hideEventPanel() {
+            document.getElementById("event-panel").style.display = "none";
+            currentEventContext = null;
+          }
+      
+          document.getElementById("event-save").addEventListener("click", function(){
+            const title = document.getElementById("event-title-input").value.trim();
+            const info = document.getElementById("event-info-input").value.trim();
+            const startTime = document.getElementById("event-start-time").value;
+            const endTime = document.getElementById("event-end-time").value;
+            if (title && startTime && endTime) {
+              let newEvent = {
+                id: Date.now(),
+                title: title,
+                info: info,
+                startTime: startTime,
+                endTime: endTime,
+                view: currentView
+              };
+              if (currentView === "diario") {
+                const day = document.getElementById("event-day-select").value;
+                if (day === "") return;
+                newEvent.day = parseInt(day, 10);
+              } else if (currentView === "mensual") {
+                const dayNum = document.getElementById("event-day-number").value;
+                if (dayNum === "") return;
+                newEvent.dayNumber = parseInt(dayNum, 10);
+              }
+              events.push(newEvent);
+              saveEvents();
+              renderCalendar();
+              hideEventPanel();
+            }
+          });
+      
+          document.getElementById("event-cancel").addEventListener("click", function(){
+            hideEventPanel();
+          });
+          document.getElementById("event-close").addEventListener("click", function(){
+            hideEventPanel();
+          });
+      
+          viewToggleButtons.forEach(button=>{
+            button.addEventListener("click", function(){
+              currentView = this.dataset.view;
+              viewToggleButtons.forEach(btn => btn.classList.remove("active"));
+              this.classList.add("active");
+              renderCalendar();
+            });
+          });
+      
+          addEventButton.addEventListener("click", function(){
+            showEventPanel({});
+          });
+      
+          if (document.querySelector('.calendar-view-toggle[data-view="diario"]')) {
+            document.querySelector('.calendar-view-toggle[data-view="diario"]').classList.add("active");
+          }
+          renderCalendar();
+        })();
       });
     </script>
   </body>
