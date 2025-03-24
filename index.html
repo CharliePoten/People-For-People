@@ -3,14 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>People For People</title>
+    <title>People for People</title>
     <link rel="stylesheet" href="styles.css" />
     <script type="module" src="app.js"></script>
 
-    <!-- Estilos adicionales: transiciones, bienvenida, chats, Kalender y modo Organisator -->
+    <!-- Zusätzliche Styles: Übergänge, Begrüßung, Chats, Kalender -->
     <style>
       /* ------------------------------
-         Transiciones y Welcome Screen
+         Übergänge und Begrüßungsbildschirm
       ------------------------------ */
       #registration-screen {
         opacity: 1;
@@ -43,22 +43,18 @@
       #welcome-screen .logo { width: 180px; margin: 20px 0; }
       #welcome-screen .welcome-text { font-size: 4em; margin: 0.2em; }
       #welcome-screen .slogan {
-        font-size: 1.5em;
-        margin-top: 10px;
-        opacity: 0;
-        transform: translateY(20px);
+        font-size: 1.5em; margin-top: 10px;
+        opacity: 0; transform: translateY(20px);
         transition: opacity 0.6s ease, transform 0.6s ease;
       }
       #welcome-screen #start-btn {
-        margin-top: 50px;
-        opacity: 0;
+        margin-top: 50px; opacity: 0;
         transform: translateY(20px);
         transition: opacity 0.6s ease, transform 0.6s ease;
       }
       #welcome-screen .slogan.show,
       #welcome-screen #start-btn.show {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: 1; transform: translateY(0);
       }
       #welcome-screen.fade-out { opacity: 0; }
       @keyframes wave {
@@ -76,199 +72,125 @@
       #welcome-screen #start-btn.pulse { animation: pulse 1s infinite ease-in-out; }
 
       /* ------------------------------
-         Estilos para chats en Fullscreen
+         Styles für Chats im Vollbildmodus
       ------------------------------ */
       .chat-container:fullscreen {
-        width: 100%;
-        height: 100%;
-        padding: 20px;
-        box-sizing: border-box;
-        background: #fff;
-        position: relative;
+        width: 100%; height: 100%; padding: 20px;
+        box-sizing: border-box; background: #fff; position: relative;
       }
       .chat-container:fullscreen .chat-messages {
-        height: calc(100% - 120px);
-        overflow-y: auto;
+        height: calc(100% - 120px); overflow-y: auto;
       }
       .chat-container:fullscreen form {
-        position: absolute;
-        bottom: 20px;
-        left: 20px;
-        right: 20px;
-        margin: 0;
+        position: absolute; bottom: 20px; left: 20px; right: 20px; margin: 0;
       }
       .chat-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background: #f2f2f2;
-        padding: 10px;
-        border-bottom: 1px solid #ccc;
+        display: flex; justify-content: space-between; align-items: center;
+        background: #f2f2f2; padding: 10px; border-bottom: 1px solid #ccc;
       }
       .chat-header h3 { margin: 0; font-size: 1.2em; }
       .fullscreen-chat-btn {
-        background: transparent;
-        border: none;
-        cursor: pointer;
-        padding: 6px 10px;
+        background: transparent; border: none; cursor: pointer; padding: 6px 10px;
       }
       .fullscreen-chat-btn img { width: 24px; height: 24px; }
 
       /* ------------------------------
-         Estilos para Kalender
+         Styles für Kalender
       ------------------------------ */
+      /* Der Kalenderbereich wird nur im Freiwilligenmodus angezeigt */
       #calendario {
-        width: 100%;
-        height: calc(100vh - 180px);
-        padding: 20px;
-        box-sizing: border-box;
-        background: #f9f9f9;
-        overflow: auto;
+        width: 100%; height: calc(100vh - 180px);
+        padding: 20px; box-sizing: border-box;
+        background: #f9f9f9; overflow: auto;
       }
       #calendar-container { width: 100%; height: calc(100% - 50px); display: block; }
       #calendar-controls { margin-bottom: 15px; }
       #calendar-controls button { margin-right: 10px; }
       .calendar-view-toggle {
-        background: #e0e0e0;
-        border: none;
-        color: #333;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 1em;
-        cursor: pointer;
-        transition: background 0.3s, color 0.3s, transform 0.3s;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background: #e0e0e0; border: none; color: #333;
+        padding: 10px 20px; border-radius: 5px; font-size: 1em;
+        cursor: pointer; transition: background 0.3s, color 0.3s, transform 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
       .calendar-view-toggle:hover,
       .calendar-view-toggle.active {
-        background: #32cd32;
-        color: #fff;
-        transform: scale(1.05);
+         background: #32cd32; color: #fff; transform: scale(1.05);
       }
       .calendar-add-event {
-        background: #007BFF;
-        border: none;
-        color: #fff;
-        padding: 10px 20px;
-        border-radius: 5px;
-        font-size: 1em;
-        cursor: pointer;
-        transition: background 0.3s, transform 0.3s;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background: #007BFF; border: none; color: #fff;
+        padding: 10px 20px; border-radius: 5px; font-size: 1em;
+        cursor: pointer; transition: background 0.3s, transform 0.3s;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       }
       .calendar-add-event:hover {
-        background: #0056b3;
-        transform: scale(1.05);
+         background: #0056b3; transform: scale(1.05);
       }
       .daily-header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 5px 10px;
-        background: #e0e0e0;
-        border-radius: 4px;
-        margin-bottom: 10px;
-        font-weight: bold;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 5px 10px; background: #e0e0e0; border-radius: 4px;
+        margin-bottom: 10px; font-weight: bold;
       }
       .daily-header-row span { flex: 1; }
       .daily-list { display: flex; flex-direction: column; gap: 10px; }
       .daily-row {
-        display: flex;
-        align-items: center;
-        padding: 8px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background: #fff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex; align-items: center; padding: 8px; border: 1px solid #ddd;
+        border-radius: 8px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         cursor: pointer;
       }
       .daily-row .day-name { width: 100px; font-weight: bold; color: #27ae60; }
       .daily-row .event-info { flex: 1; text-align: right; color: #333; }
       .monthly-header {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        margin-bottom: 10px;
+        display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 10px;
       }
       .monthly-header div {
-        text-align: center;
-        font-weight: bold;
-        padding: 5px 0;
-        background: #e0e0e0;
-        border-radius: 4px;
+        text-align: center; font-weight: bold; padding: 5px 0;
+        background: #e0e0e0; border-radius: 4px;
       }
-      .monthly-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        grid-auto-rows: 1fr;
-        grid-gap: 10px;
-      }
+      .monthly-grid { display: grid; grid-template-columns: repeat(7, 1fr);
+         grid-auto-rows: 1fr; grid-gap: 10px; }
       .calendar-cell {
-        min-width: 90px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background: #fff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        cursor: pointer;
-        font-size: 0.9em;
+        min-width: 90px; border: 1px solid #ddd; border-radius: 8px; background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center;
+        justify-content: center; position: relative; cursor: pointer; font-size: 0.9em;
         transition: background 0.3s, transform 0.3s;
       }
       .calendar-cell:hover {
-        background: #e6f9e6;
-        transform: scale(1.02);
+        background: #e6f9e6; transform: scale(1.02);
       }
       #event-panel {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
+        display: none; position: fixed; top: 50%; left: 50%;
         transform: translate(-50%, -50%);
-        background: #fff;
-        border: 1px solid #ccc;
-        padding: 15px 15px 30px;
-        border-radius: 6px;
-        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-        z-index: 100;
-        max-width: 400px;
-        width: 90%;
-        max-height: 70vh;
+        background: #fff; border: 1px solid #ccc; padding: 15px 15px 30px;
+        border-radius: 6px; box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        z-index: 100; max-width: 400px; width: 90%; max-height: 70vh;
         overflow-y: auto;
       }
       #event-panel h3 { text-align: center; color: #8e44ad; margin-bottom: 15px; }
       #event-panel label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #27ae60;
+        display: block; margin-bottom: 5px; font-weight: bold; color: #27ae60;
       }
       #event-panel input,
       #event-panel textarea,
       #event-panel select {
-        width: 100%;
-        padding: 8px;
-        margin-bottom: 10px;
-        box-sizing: border-box;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+         width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;
+         border: 1px solid #ccc; border-radius: 4px;
       }
       #event-panel button {
-        padding: 8px 12px;
-        font-size: 0.9em;
-        cursor: pointer;
-        margin-right: 5px;
-        border: none;
-        border-radius: 4px;
+        padding: 8px 12px; font-size: 0.9em; cursor: pointer;
+        margin-right: 5px; border: none; border-radius: 4px;
       }
       #event-panel button:hover { opacity: 0.9; }
 
+      /* Regel zum Anzeigen des Kalender-Buttons, wenn die Klasse "visible" vorhanden ist */
+      #calendario-btn.visible {
+        display: inline-block !important;
+      }
+
       /* ------------------------------
-         Resto de estilos (perfil, modales, etc.)
+         Restliche Styles (Profil, Modals, etc.)
       ------------------------------ */
       .terms-container {
-        padding: 10px;
+        padding: 5px;
         margin: 10px 0;
         display: inline-flex;
         align-items: center;
@@ -285,7 +207,7 @@
         text-decoration: underline;
         cursor: pointer;
       }
-      /* Estilos para el modal de Términos (centrar imágenes y sin recuadro de la cabecera) */
+      /* Styles für das Modal der Datenschutzbestimmungen (zentriert, ohne Kopfzeile) */
       #terms-modal {
         display: none;
         position: fixed;
@@ -327,20 +249,20 @@
     </style>
   </head>
   <body>
-    <!-- Mensaje de Bienvenida / Prototipo -->
+    <!-- Begrüßungsnachricht / Prototyp -->
     <div id="dev-message">
       <div class="message-box">
         <p>
-          Willkommen bei People For People. Dies ist ein Prototyp der Anwendung für das Startup People For People.
-          Derzeit integrieren wir die neuesten Technologien und entwickeln neue Funktionen, um ein außergewöhnliches Benutzererlebnis zu bieten.
-          Wir danken Ihnen für Ihre Teilnahme an dieser Testphase.
+          Willkommen bei People for People. Dies ist ein Prototyp einer Anwendung für das Startup von People for People.
+          Wir integrieren derzeit die neuesten Technologien und entwickeln neue Funktionen, um ein außergewöhnliches Nutzererlebnis zu bieten.
+          Wir danken Ihnen, dass Sie an dieser Testphase teilnehmen.
         </p>
         <p class="creator">Erstellt von: Carlos Potenciano</p>
         <button id="accept-dev-message" class="accept-btn">Akzeptieren</button>
       </div>
     </div>
 
-    <!-- Pantalla de Registro -->
+    <!-- Registrierungsbildschirm -->
     <div id="registration-screen" class="screen">
       <div class="form-container">
         <h2>Registrierung</h2>
@@ -348,45 +270,45 @@
           <input type="text" id="username" placeholder="Benutzername" required />
           <input type="email" id="email" placeholder="E-Mail" required />
           <input type="password" id="password" placeholder="Passwort" required />
-          <!-- Bloque de Términos de Privacidad -->
+          <!-- Datenschutzbestimmungen -->
           <div class="terms-container">
             <input type="checkbox" id="accept-terms" required />
-            <label for="accept-terms">Ich akzeptiere die <span class="terms-link" onclick="openTermsModal()">Datenschutzbestimmungen</span></label>
+            <label for="accept-terms">Akzeptiere die <span class="terms-link" onclick="openTermsModal()">Datenschutzbestimmungen</span></label>
           </div>
           <button type="submit" class="enhanced-btn">Registrieren</button>
         </form>
       </div>
     </div>
+    <button type="submit" class="enhanced-btn">Registrieren</button>
 
-    <!-- Aplicación Principal (Modo Freiwilliger) -->
+    <!-- Hauptanwendung (Freiwilligenmodus) -->
     <div id="main-app" class="screen" style="display: none;">
       <header class="app-header">
-        <h1 class="app-title">People For People</h1>
+        <h1 class="app-title">People for People</h1>
         <div class="header-actions">
-          <!-- Ícono Kalender (visible solo en modo Freiwilliger) -->
-          <button id="calendario-btn" data-target="calendario" style="cursor: pointer; background: transparent; border: none; margin-right: 10px;">
+          <!-- Kalender-Icon (nur im Freiwilligenmodus sichtbar) -->
+          <button id="calendario-btn" data-target="calendario" class="visible" style="cursor: pointer; background: transparent; border: none; margin-right: 10px;">
             <img src="https://github.com/CharliePoten/People-For-People/blob/main/calendario%20icono.png?raw=true" alt="Kalender" class="calendario-icon" style="width:28px; height:auto;" />
           </button>
-          <!-- Botón de Perfil -->
+          <!-- Profil-Button -->
           <div class="profile-container" id="profile-btn">
-            <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Profil" class="profile-img"
-              onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
+            <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Profil" class="profile-img" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
             <span class="profile-label">Mein Profil</span>
             <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
               <div class="dropdown-item" data-section="perfil">Mein Profil</div>
               <div class="dropdown-item" data-section="ajustes">Profileinstellungen</div>
               <div class="dropdown-item" data-section="soporte">Support</div>
-              <div class="dropdown-item" data-section="centro">People For People</div>
-              <!-- Botón para cambiar a organizador -->
+              <div class="dropdown-item" data-section="centro">People for People</div>
+              <!-- Button zum Wechsel in den Organisator-Modus -->
               <div class="dropdown-item mode-toggle-btn" style="background-color: #800080; color: white; cursor: pointer;">
-                Wechsel zum Organisator-Modus
+                Zum Organisator wechseln
               </div>
             </div>
           </div>
         </div>
       </header>
       <main class="app-content" id="content">
-        <!-- Sección Mapa -->
+        <!-- Kartenbereich -->
         <div id="map-view" class="content-section">
           <h2>Karte</h2>
           <div id="map-container">
@@ -394,7 +316,7 @@
             <button id="fullscreen-btn">Vollbild</button>
           </div>
         </div>
-        <!-- Sección Hilfe anfordern -->
+        <!-- Hilfe anfordern -->
         <div id="pedir-ayuda" class="content-section" style="display:none;">
           <h2>Hilfe anfordern</h2>
           <div id="ayuda-view">
@@ -405,8 +327,8 @@
             <div id="ayuda-create-form" class="form-container" style="display:none;">
               <h3>Neuer Hilfepunkt</h3>
               <form id="crear-ayuda-form">
-                <input type="text" id="ayuda-titulo" placeholder="Hilfepunkt-Titel" required />
-                <textarea id="ayuda-info" placeholder="Hilfepunkt-Informationen" required></textarea>
+                <input type="text" id="ayuda-titulo" placeholder="Titel des Hilfepunkts" required />
+                <textarea id="ayuda-info" placeholder="Informationen zum Hilfepunkt" required></textarea>
                 <input type="file" id="ayuda-image" accept="image/*" />
                 <button type="submit" class="action-btn">
                   <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Senden" />
@@ -439,19 +361,19 @@
             </div>
           </div>
         </div>
-        <!-- Sección Freiwillige -->
+        <!-- Freiwillige -->
         <div id="ofrecer-voluntario" class="content-section" style="display:none;">
           <h2>Freiwillige</h2>
           <div id="voluntario-view">
             <div id="voluntario-list-view">
-              <button id="mostrar-voluntario-create" class="action-btn">Als Freiwilliger anbieten</button>
+              <button id="mostrar-voluntario-create" class="action-btn">Mich als Freiwilliger anbieten</button>
               <div id="voluntario-list" class="list-box"></div>
             </div>
             <div id="voluntario-create-form" class="form-container" style="display:none;">
               <h3>Verfügbare Zeiten</h3>
               <form id="crear-voluntario-form">
                 <div class="slider-group">
-                  <label for="dia-inicio">Anfangstag: <span id="dia-inicio-label">Montag</span></label>
+                  <label for="dia-inicio">Starttag: <span id="dia-inicio-label">Montag</span></label>
                   <input type="range" id="dia-inicio" name="dia-inicio" min="0" max="6" value="0" />
                   <label for="dia-fin">Endtag: <span id="dia-fin-label">Freitag</span></label>
                   <input type="range" id="dia-fin" name="dia-fin" min="0" max="6" value="4" />
@@ -466,14 +388,14 @@
                   <label for="voluntario-habilidades">Fähigkeiten</label>
                   <textarea id="voluntario-habilidades" placeholder="Beispiel: Erste Hilfe, Tischlerei, etc." required></textarea>
                 </div>
-                <button type="submit" class="action-btn">Als Freiwilliger anmelden</button>
+                <button type="submit" class="action-btn">Mich als Freiwilliger anbieten</button>
                 <button type="button" id="cancelar-voluntario" class="return-btn">Zurück</button>
               </form>
             </div>
             <div id="voluntario-detail-view" style="display:none;">
               <button id="volver-voluntario-list" class="return-btn">Zurück</button>
               <div id="voluntario-detail"></div>
-              <!-- Chat Privado (si aplica) -->
+              <!-- Privater Chat (falls zutreffend) -->
               <div id="voluntario-private-chat" class="chat-container">
                 <div class="chat-header">
                   <h3>Privater Chat</h3>
@@ -490,9 +412,9 @@
             </div>
           </div>
         </div>
-        <!-- Sección Organisationen (Modo Freiwilliger) -->
+        <!-- Organisationen (Freiwilligenmodus) -->
         <div id="organizaciones" class="content-section" style="display:none;">
-          <h2>Organisationen</h2>
+          <h2>Freiwilligenorganisationen</h2>
           <div id="org-view">
             <div id="org-list-view">
               <button id="mostrar-org-create" class="action-btn">Organisation erstellen</button>
@@ -501,7 +423,7 @@
             <div id="org-create-form" class="form-container" style="display:none;">
               <h3>Neue Organisation</h3>
               <form id="crear-org-form">
-                <input type="text" id="org-title" placeholder="Organisationstitel" required />
+                <input type="text" id="org-title" placeholder="Titel der Organisation" required />
                 <textarea id="org-info-text" placeholder="Weitere Informationen" required></textarea>
                 <input type="file" id="org-image" accept="image/*" />
                 <button type="submit" class="action-btn">Organisation erstellen</button>
@@ -518,7 +440,7 @@
               <button id="unirse-org" class="join-org-btn">Organisation beitreten</button>
               <div id="org-admin-chat" class="chat-container">
                 <div class="chat-header">
-                  <h3>Administrator-Chat</h3>
+                  <h3>Chat der Administratoren</h3>
                   <button type="button" class="fullscreen-chat-btn">
                     <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Vollbild" />
                   </button>
@@ -534,7 +456,7 @@
               </div>
               <div id="org-chat" class="chat-container">
                 <div class="chat-header">
-                  <h3>Organisations-Chat</h3>
+                  <h3>Organisationschat</h3>
                   <button type="button" class="fullscreen-chat-btn">
                     <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Vollbild" />
                   </button>
@@ -551,14 +473,13 @@
             </div>
           </div>
         </div>
-        <!-- Módulo: Mein Profil -->
+        <!-- Modul: Mein Profil -->
         <div id="perfil" class="content-section" style="display:none;">
           <h2>Mein Profil</h2>
           <div class="profile-container-new">
             <div class="profile-display">
               <div class="profile-photo-container">
-                <img id="profile-large-photo" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true"
-                  alt="Profilfoto" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
+                <img id="profile-large-photo" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Profilfoto" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
               </div>
               <div class="profile-info">
                 <h3>Profilinformationen</h3>
@@ -624,16 +545,16 @@
             <div class="profile-info-section" id="info-center" style="display:none;">
               <h2>📌 Informationszentrum</h2>
               <h3>🌟 Unsere Mission</h3>
-              <p>Freiwillige und Bedürftige verbinden: Wir erleichtern die Verbindung zwischen denen, die helfen möchten, und denen, die Unterstützung benötigen.</p>
-              <p>Echtzeit-Koordination: Wir arbeiten mit NGOs und Behörden zusammen, um Hilfe effizient zu verwalten.</p>
+              <p>Freiwillige und bedürftige Personen verbinden: Wir erleichtern die Verbindung zwischen denen, die helfen wollen, und denen, die Unterstützung benötigen.</p>
+              <p>Echtzeit-Koordination: Wir arbeiten mit NGOs und Behörden zusammen, um Hilfe effizient zu organisieren.</p>
               <h3>📱 Wie funktioniert es?</h3>
-              <p>Intuitive Plattform: Unsere Anwendung ermöglicht es Freiwilligen, sich zu registrieren und Hilfe basierend auf ihrer Verfügbarkeit und ihren Fähigkeiten anzubieten.</p>
-              <p>Echtzeitbenachrichtigungen: Freiwillige erhalten Warnungen über dringenden Bedarf in ihrer Region.</p>
-              <p>Zusammenarbeit mit Organisationen: Wir koordinieren uns mit NGOs und lokalen Behörden, um eine effektive Reaktion zu gewährleisten.</p>
-              <h3>🤝 Vorteile der Teilnahme</h3>
-              <p>Direkte Wirkung: Deine Hilfe erreicht diejenigen, die sie am dringendsten benötigen.</p>
-              <p>Flexibilität: Beteilige dich nach deiner Verfügbarkeit und deinen Fähigkeiten.</p>
-              <p>Solidarische Gemeinschaft: Werde Teil eines Netzwerks, das sich für das Gemeinwohl engagiert.</p>
+              <p>Intuitive Plattform: Unsere Anwendung ermöglicht es Freiwilligen, sich zu registrieren und ihre Hilfe entsprechend ihrer Verfügbarkeit und Fähigkeiten anzubieten.</p>
+              <p>Echtzeit-Benachrichtigungen: Freiwillige erhalten Warnungen über dringenden Bedarf in ihrer Region.</p>
+              <p>Zusammenarbeit mit Institutionen: Wir koordinieren unsere Bemühungen mit NGOs und lokalen Behörden, um eine effektive Reaktion sicherzustellen.</p>
+              <h3>🤝 Vorteile des Beitritts</h3>
+              <p>Direkter Einfluss: Ihre Hilfe erreicht direkt die, die sie am dringendsten benötigen.</p>
+              <p>Flexibilität: Nehmen Sie entsprechend Ihrer Verfügbarkeit und Fähigkeiten teil.</p>
+              <p>Solidarische Gemeinschaft: Werden Sie Teil eines Netzwerks, das sich für das gemeinsame Wohl einsetzt.</p>
               <p>🌐 <a href="https://www.peopleforpeople.es/" target="_blank">Besuchen Sie unsere Webseite für weitere Informationen</a></p>
               <div id="file-upload-container" style="margin-top: 20px; display:none;">
                 <h3>Datei hochladen</h3>
@@ -647,14 +568,14 @@
             </div>
             <div class="profile-info-section" id="support" style="display:none;">
               <h2>📞 Support und Hilfe</h2>
-              <p>Willkommen im Supportcenter. Wir sind hier, um dir bei Fragen oder Problemen zu helfen.</p>
+              <p>Willkommen im Supportzentrum. Wir sind hier, um Ihnen bei Fragen oder Problemen zu helfen.</p>
               <h3>🔹 Kontakt zum Support</h3>
-              <p>Falls du persönliche Unterstützung benötigst, steht unser Team dir zur Verfügung.</p>
-              <p>✉ Email: <a href="mailto:peopleforpeopleofficial@gmail.com">peopleforpeopleofficial@gmail.com</a></p>
+              <p>Wenn Sie persönliche Unterstützung benötigen, steht Ihnen unser Team zur Verfügung.</p>
+              <p>✉ E-Mail: <a href="mailto:peopleforpeopleofficial@gmail.com">peopleforpeopleofficial@gmail.com</a></p>
               <p>📞 Telefon: +34 699043862</p>
-              <h3>🔹 Ein Problem melden</h3>
-              <p>Wenn du einen Fehler in der Anwendung entdeckst, melde ihn hier, und wir werden ihn so schnell wie möglich beheben.</p>
-              <p>💬 Live-Chat: Verfügbar während der Geschäftszeiten</p>
+              <h3>🔹 Problem melden</h3>
+              <p>Wenn Sie einen Fehler in der Anwendung feststellen, melden Sie ihn hier – wir werden ihn so schnell wie möglich beheben.</p>
+              <p>💬 Live-Chat: Während der Geschäftszeiten verfügbar</p>
               <div id="soporte-live-chat">
                 <div class="chat-header">
                   <h3>Live-Chat</h3>
@@ -671,21 +592,21 @@
                   </button>
                 </form>
               </div>
-              <h3>🔹 Feedback und Kommentare</h3>
-              <p>Deine Meinung ist uns wichtig. Hinterlasse uns dein Feedback, um deine Erfahrung zu verbessern.</p>
+              <h3>🔹 Vorschläge und Kommentare</h3>
+              <p>Ihre Meinung ist uns wichtig. Bitte hinterlassen Sie uns Ihre Vorschläge zur Verbesserung Ihrer Erfahrung.</p>
               <div id="feedback-section">
                 <form id="feedback-form">
                   <textarea id="feedback-text" placeholder="Schreibe deinen Kommentar hier" required></textarea>
                   <button type="submit" class="enhanced-btn">Kommentar senden</button>
                 </form>
               </div>
-              <button id="admin-panel-link" class="enhanced-btn">Admin-Panel</button>
+              <button id="admin-panel-link" class="enhanced-btn">Admin-Bereich</button>
               <div id="admin-panel" style="margin-top:20px; display:none; border: 1px solid #ccc; padding: 10px;">
-                <h2>Administrationspanel</h2>
+                <h2>Verwaltungsbereich</h2>
                 <form id="admin-login-form">
-                  <input type="email" id="admin-email" placeholder="Admin-E-Mail" required />
+                  <input type="email" id="admin-email" placeholder="Administrator-E-Mail" required />
                   <input type="password" id="admin-password" placeholder="Passwort" required />
-                  <button type="submit" class="enhanced-btn">Anmelden</button>
+                  <button type="submit" class="enhanced-btn">Einloggen</button>
                 </form>
                 <div id="admin-content" style="display:none;">
                   <button id="admin-logout-btn" class="enhanced-btn" style="float: right;">Abmelden</button>
@@ -702,7 +623,7 @@
                   </form>
                   <div id="admin-upload-message" style="margin-top:10px;"></div>
                   <div id="admin-support-chats">
-                    <h3>Offene Supportchats</h3>
+                    <h3>Offene Support-Chats</h3>
                     <div id="admin-support-chats-list" style="border:1px solid #ccc; padding:10px; max-height:200px; overflow:auto;"></div>
                   </div>
                 </div>
@@ -710,7 +631,7 @@
             </div>
           </div>
         </div>
-        <!-- Sección Kalender (Agregada, solo en modo Freiwilliger) -->
+        <!-- Kalender (nur im Freiwilligenmodus) -->
         <div id="calendario" class="content-section" style="display: none;">
           <h2>Kalender</h2>
           <div id="calendar-controls">
@@ -719,7 +640,7 @@
             <button class="calendar-add-event">Ereignis hinzufügen +</button>
           </div>
           <div id="calendar-container">
-            <!-- Hier wird das Kalender-Grid gerendert -->
+            <!-- Hier wird das Kalendergrid gerendert -->
           </div>
           <div id="event-panel">
             <h3 id="event-panel-header">Ereignis hinzufügen</h3>
@@ -731,7 +652,7 @@
               <div id="event-day-diary" style="display:none;">
                 <label>Wochentag:</label>
                 <select id="event-day-select">
-                  <option value="">Wählen Sie den Tag</option>
+                  <option value="">Wählen Sie einen Tag</option>
                   <option value="0">Montag</option>
                   <option value="1">Dienstag</option>
                   <option value="2">Mittwoch</option>
@@ -742,12 +663,12 @@
                 </select>
               </div>
               <div id="event-day-mensual" style="display:none;">
-                <label>Tag:</label>
+                <label>Tagesnummer:</label>
                 <input type="number" id="event-day-number" placeholder="Geben Sie die Tagesnummer ein" min="1" max="31" />
               </div>
               <label>Von:</label>
               <input type="time" id="event-start-time" />
-              <label>Bis:</label>
+              <label>bis:</label>
               <input type="time" id="event-end-time" />
             </div>
             <div style="text-align: center;">
@@ -759,7 +680,7 @@
               <p id="event-title-view"></p>
               <h4>Information:</h4>
               <p id="event-info-view"></p>
-              <h4>Zeit:</h4>
+              <h4>Uhrzeit:</h4>
               <p id="event-time-view"></p>
               <h4>Tag:</h4>
               <p id="event-day-view"></p>
@@ -770,71 +691,40 @@
           </div>
         </div>
       </main>
-      <!-- Menú inferior (Freiwilliger) -->
+      <!-- Untermenü im Freiwilligenmodus (ohne Kalender) -->
       <nav class="app-menu">
         <button class="menu-btn" data-target="map-view">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true" alt="Karten-Icon" />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true" alt="Karten-Symbol" />
           Karte
         </button>
         <button class="menu-btn" data-target="pedir-ayuda">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20pedir%20ayuda.png?raw=true" alt="Hilfe anfragen Icon" />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20pedir%20ayuda.png?raw=true" alt="Hilfe anfordern Symbol" />
           Hilfe anfordern
         </button>
         <button class="menu-btn" data-target="ofrecer-voluntario">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20voluntario.png?raw=true" alt="Freiwilligen-Icon" />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20voluntario.png?raw=true" alt="Freiwillige Symbol" />
           Freiwillige
         </button>
         <button class="menu-btn" data-target="organizaciones">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20organizaciones.png?raw=true" alt="Organisations-Icon" />
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20organizaciones.png?raw=true" alt="Organisationen Symbol" />
           Organisationen
         </button>
       </nav>
     </div>
 
-    <!-- Contenedor para el Modo Organizador -->
-    <div id="org-mode-app" class="screen org-mode" style="display: none;">
-      <header class="app-header org-header">
-        <h1 class="app-title">Organisator-Modus</h1>
-        <div class="header-actions">
-          <!-- Se eliminó el botón de "Cerrar Sesión" aquí para que el único botón sea el de Ajustes de Perfil -->
-        </div>
-      </header>
-      <main class="app-content org-content">
-        <p>Willkommen im Organisator-Modus. Wähle eine Option im unteren Menü.</p>
-      </main>
-      <nav class="app-menu org-app-menu">
-        <button class="menu-btn org-menu-btn" data-target="org-chats">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20chats.png?raw=true" alt="Chat-Icon" />
-          Chat-Zentrum
-        </button>
-        <button class="menu-btn org-menu-btn" data-target="org-info">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20informacion.png?raw=true" alt="Informations-Icon" />
-          People For People
-        </button>
-        <button class="menu-btn org-menu-btn" data-target="org-list">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20listas.png?raw=true" alt="Meine Organisationen-Icon" />
-          Meine Organisationen
-        </button>
-      </nav>
-    </div>
-
-    <!-- Modal para vista previa de archivos -->
+    <!-- Modal für Dateivorschau -->
     <div id="modal-viewer" class="modal">
       <div class="modal-content"></div>
     </div>
-
-    <!-- Modal para Datenschutzbestimmungen -->
+    <!-- Modal für Datenschutzbestimmungen -->
     <div id="terms-modal">
-      <div class="modal-content">
         <span id="close-terms">&times;</span>
-        <h2>Datenschutzbestimmungen</h2>
-        <p>Hier finden Sie die Datenschutzbedingungen im Detail. Bitte nehmen Sie sich die Zeit, diese sorgfältig zu lesen, bevor Sie fortfahren.</p>
-        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%201.jpeg?raw=true" alt="Datenschutzbestimmungen 1" />
-        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%202.jpeg?raw=true" alt="Datenschutzbestimmungen 2" />
+        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%201.jpeg?raw=true" alt="Datenschutz 1" />
+        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%202.jpeg?raw=true" alt="Datenschutz 2" />
       </div>
     </div>
 
-    <!-- Modal para Modo Organizador: Seleccionar/Crear Organización -->
+    <!-- Modal für Organisator-Modus: Auswahl/Erstellung einer Organisation -->
     <div id="org-mode-menu" class="modal">
       <div class="modal-content org-menu-content">
         <span class="close" id="close-org-menu">&times;</span>
@@ -850,8 +740,8 @@
           <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
             <h3>Neue Organisation erstellen</h3>
             <form id="create-org-form-orgmode">
-              <input type="text" id="orgmode-title" placeholder="Organisationstitel" required />
-              <textarea id="orgmode-info" placeholder="Organisationsinformation" required></textarea>
+              <input type="text" id="orgmode-title" placeholder="Titel der Organisation" required />
+              <textarea id="orgmode-info" placeholder="Informationen zur Organisation" required></textarea>
               <input type="file" id="orgmode-image" accept="image/*" />
               <button type="submit" class="action-btn">Organisation erstellen</button>
               <button type="button" id="cancelar-org-modal" class="return-btn">Abbrechen</button>
@@ -861,20 +751,162 @@
       </div>
     </div>
 
-    <!-- Neue Willkommensseite -->
+    <!-- Anwendung Organisator-Modus -->
+    <div id="org-mode-app" class="screen org-mode" style="display:none;">
+      <header class="app-header org-header">
+        <h1 class="app-title">Organisator-Modus</h1>
+      </header>
+      <main class="app-content org-content">
+        <!-- Chats Bereich -->
+        <div id="org-chats" class="org-content-section" style="display:none;">
+          <div id="org-chat-public" class="chat-container">
+            <h3>Öffentlicher Chat</h3>
+            <div class="chat-messages" id="org-chat-messages-public"></div>
+            <form id="org-chat-form-public">
+              <input type="text" id="org-chat-input-public" placeholder="Schreibe deine Nachricht" required />
+              <input type="file" id="org-chat-file-public" accept="image/*, application/pdf" />
+              <button type="submit" class="enhanced-btn">
+                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Senden" />
+                Senden
+              </button>
+            </form>
+          </div>
+          <div id="org-chat-admin" class="chat-container">
+            <h3>Chat der Administratoren</h3>
+            <div class="chat-messages" id="org-admin-chat-messages"></div>
+            <form id="org-admin-chat-form">
+              <input type="text" id="org-admin-chat-input" placeholder="Schreibe deine Nachricht" required />
+              <input type="file" id="org-admin-chat-file" accept="image/*, application/pdf" />
+              <button type="submit" class="enhanced-btn">
+                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Senden" />
+                Senden
+              </button>
+            </form>
+          </div>
+        </div>
+        <!-- Informationsbereich -->
+        <div id="org-info" class="org-content-section" style="display:none;">
+          <h2>Informationszentrum</h2>
+          <div id="org-info-display" class="org-info-display">
+            <p id="org-info-titulo">Titel: </p>
+            <p id="org-info-creador">Ersteller: </p>
+            <p id="org-info-detalle">Information: </p>
+            <p id="org-info-lugar">Ort: </p>
+            <p id="org-info-fecha">Erstellungsdatum: </p>
+            <div id="org-info-attachments" class="attachment-display"></div>
+            <button id="btn-editar-info" class="action-btn">Informationen bearbeiten</button>
+          </div>
+          <div id="org-info-edit" class="org-info-edit" style="display:none;">
+            <h3>Informationen bearbeiten</h3>
+            <form id="org-info-edit-form">
+              <div>
+                <label for="edit-org-titulo">Titel:</label>
+                <input type="text" id="edit-org-titulo" placeholder="Titel" required />
+              </div>
+              <div>
+                <label for="edit-org-creador">Ersteller:</label>
+                <input type="text" id="edit-org-creador" placeholder="Ersteller" disabled />
+              </div>
+              <div>
+                <label for="edit-org-detalle">Informationen:</label>
+                <textarea id="edit-org-detalle" placeholder="Informationen" required></textarea>
+              </div>
+              <div>
+                <label for="edit-org-lugar">Ort:</label>
+                <input type="text" id="edit-org-lugar" placeholder="Ort" required />
+              </div>
+              <div>
+                <label for="edit-org-fecha">Erstellungsdatum:</label>
+                <input type="date" id="edit-org-fecha" placeholder="Datum" disabled />
+              </div>
+              <button type="submit" class="action-btn">Änderungen speichern</button>
+              <button type="button" id="cancelar-editar-info" class="return-btn">Abbrechen</button>
+            </form>
+            <h3>Datei hochladen</h3>
+            <form id="org-file-upload-form" class="form-container">
+              <input type="text" id="org-file-title" placeholder="Titel der Datei" required />
+              <input type="file" id="org-file-upload" accept="application/pdf, image/*" required />
+              <button type="submit" class="action-btn">Datei hochladen</button>
+            </form>
+          </div>
+        </div>
+        <!-- Meine Organisationen -->
+        <div id="org-list" class="org-content-section" style="display:none;">
+          <h2>Meine Organisationen</h2>
+          <div class="org-list-container">
+            <div id="org-list-organizador" class="list-box"></div>
+            <button id="crear-org-btn-organizador" class="action-btn" style="background-color:#800080; color:white;">
+              Organisation erstellen
+            </button>
+          </div>
+        </div>
+        <!-- Startseite (Organisator-Modus) -->
+        <div id="org-mode-home" class="org-content-section" style="display:block;">
+          <p>Willkommen im Organisator-Modus. Wählen Sie eine Option im unteren Menü.</p>
+        </div>
+      </main>
+      <nav class="app-menu org-app-menu">
+        <button class="menu-btn org-menu-btn" data-target="org-chats">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20chats.png?raw=true" alt="Chats-Symbol" />
+          Chat-Zentrum
+        </button>
+        <button class="menu-btn org-menu-btn" data-target="org-info">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20informacion.png?raw=true" alt="Informations-Symbol" />
+          People for People
+        </button>
+        <button class="menu-btn org-menu-btn" data-target="org-list">
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20listas.png?raw=true" alt="Meine Organisationen Symbol" />
+          Meine Organisationen
+        </button>
+      </nav>
+    </div>
+
+    <!-- Modal für Dateivorschau -->
+    <div id="modal-viewer" class="modal">
+      <div class="modal-content"></div>
+    </div>
+
+    <!-- Modal für Organisator-Modus: Auswahl/Erstellung einer Organisation -->
+    <div id="org-mode-menu" class="modal">
+      <div class="modal-content org-menu-content">
+        <span class="close" id="close-org-menu">&times;</span>
+        <h2>Organisator-Modus</h2>
+        <div class="org-menu-container">
+          <div class="org-menu-header">
+            <h3>Meine Organisationen</h3>
+            <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">
+              Organisation erstellen
+            </button>
+          </div>
+          <div id="orgmode-list" class="list-box"></div>
+          <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
+            <h3>Neue Organisation erstellen</h3>
+            <form id="create-org-form-orgmode">
+              <input type="text" id="orgmode-title" placeholder="Titel der Organisation" required />
+              <textarea id="orgmode-info" placeholder="Informationen zur Organisation" required></textarea>
+              <input type="file" id="orgmode-image" accept="image/*" />
+              <button type="submit" class="action-btn">Organisation erstellen</button>
+              <button type="button" id="cancelar-org-modal" class="return-btn">Abbrechen</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Neuer Begrüßungsbildschirm -->
     <div id="welcome-screen" style="display: none;">
       <div class="container">
         <h1 class="welcome-text" id="welcomeText"></h1>
-        <img src="https://github.com/CharliePoten/People-For-People/blob/main/Logo%20People%20For%20People%20(2).png?raw=true" alt="Logo People For People" class="logo" />
-        <p class="slogan">Deine Hilfe, ihre Hoffnung. Wir bringen euch zusammen!</p>
+        <img src="https://github.com/CharliePoten/People-For-People/blob/main/Logo%20People%20For%20People%20(2).png?raw=true" alt="Logo Menschen für Menschen" class="logo" />
+        <p class="slogan">Helfen wollen und Hilfe brauche. Wir verbinden!</p>
         <button id="start-btn" class="action-btn">Starten</button>
       </div>
       <style>
-        /* Los estilos específicos para #welcome-screen ya se definen en el bloque global */
+        /* Die spezifischen Styles für #welcome-screen sind bereits im globalen Block definiert */
       </style>
     </div>
 
-    <!-- Carga asíncrona de Google Maps -->
+    <!-- Asynchrones Laden von Google Maps -->
     <script>
       window.onload = function () {
         const script = document.createElement("script");
@@ -885,13 +917,13 @@
       };
     </script>
 
-    <!-- Script para transiciones, animación, cierre de sesión, alternancia de modos y demás funcionalidades -->
+    <!-- Script für Übergänge, Animation und Effekte -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const fullWelcomeText = "Willkommen bei People For People";
+        const fullWelcomeText = "Willkommen bei People for People";
         const welcomeTextElem = document.getElementById("welcomeText");
         let charIndex = 0;
-      
+    
         function typeWriter() {
           if (charIndex < fullWelcomeText.length) {
             welcomeTextElem.textContent += fullWelcomeText.charAt(charIndex);
@@ -901,7 +933,7 @@
             setTimeout(startWaveAnimation, 1000);
           }
         }
-      
+    
         function startWaveAnimation() {
           const letters = fullWelcomeText.split("");
           welcomeTextElem.innerHTML = letters
@@ -909,7 +941,7 @@
               letter === " " ? `<span class="wave-letter" style="animation: none;">&nbsp;</span>` : `<span class="wave-letter">${letter}</span>`
             )
             .join("");
-      
+    
           function animateLetters() {
             const waveLetters = welcomeTextElem.querySelectorAll(".wave-letter");
             waveLetters.forEach((letter, i) => {
@@ -926,10 +958,9 @@
           }
           animateLetters();
         }
-      
+    
         typeWriter();
-      
-        // Registro y bienvenida
+    
         const registrationForm = document.getElementById("registration-form");
         registrationForm.addEventListener("submit", function (e) {
           e.preventDefault();
@@ -938,7 +969,7 @@
           registrationScreen.addEventListener("transitionend", function handler() {
             registrationScreen.style.display = "none";
             registrationScreen.classList.remove("fade-out");
-      
+    
             const welcomeScreen = document.getElementById("welcome-screen");
             welcomeScreen.style.display = "flex";
             void welcomeScreen.offsetWidth;
@@ -958,7 +989,7 @@
             registrationScreen.removeEventListener("transitionend", handler);
           });
         });
-      
+    
         setTimeout(function () {
           const registrationScreen = document.getElementById("registration-screen");
           if (window.getComputedStyle(registrationScreen).display === "none") {
@@ -980,7 +1011,7 @@
             }, 100);
           }
         }, 50);
-      
+    
         const startBtn = document.getElementById("start-btn");
         startBtn.addEventListener("click", function () {
           startBtn.classList.remove("pulse");
@@ -992,8 +1023,8 @@
             welcomeScreen.removeEventListener("transitionend", handler);
           });
         });
-      
-        // Funcionalidad de pantalla completa en chats
+    
+        // Vollbild für Chats
         const fullscreenButtons = document.querySelectorAll('.fullscreen-chat-btn');
         fullscreenButtons.forEach(button => {
           button.addEventListener('click', function (e) {
@@ -1009,69 +1040,55 @@
             }
           });
         });
-      
-        // Menú de navegación (modo Freiwilliger)
+    
+        // Menü-Funktionalität (Freiwilligenmodus)
         document.querySelectorAll('.menu-btn').forEach(btn => {
           btn.addEventListener('click', function () {
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove("active"));
-            this.classList.add("active");
-            document.querySelectorAll(".content-section").forEach(sec => { sec.style.display = "none"; });
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelectorAll('.content-section').forEach(sec => { sec.style.display = "none"; });
             const eventPanel = document.getElementById("event-panel");
             if (eventPanel) { eventPanel.style.display = "none"; }
             let target = this.getAttribute("data-target");
             if (target) { document.getElementById(target).style.display = "block"; }
           });
         });
-      
-        // Botón de Kalender en header (modo Freiwilliger)
+    
+        // Kalender-Button im Header (Freiwilligenmodus)
         document.getElementById("calendario-btn").addEventListener("click", function() {
-          document.querySelectorAll(".content-section").forEach(sec => { sec.style.display = "none"; });
-          document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll('.content-section').forEach(sec => { sec.style.display = "none"; });
+          document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
           document.getElementById("calendario").style.display = "block";
         });
-      
-        // Alternancia de modo (Freiwilliger <-> Organisator)
+    
+        // Moduswechsel (Freiwillig/Organisator)
         let organizerMode = false;
         const modeToggleBtn = document.querySelector(".mode-toggle-btn");
         if (modeToggleBtn) {
           modeToggleBtn.addEventListener("click", function() {
             organizerMode = !organizerMode;
             if (organizerMode) {
+              // Wechsel in den Organisator-Modus:
+              // Freiwilligenanwendung (main-app) ausblenden und org-mode-app anzeigen
               document.getElementById("main-app").style.display = "none";
               document.getElementById("org-mode-app").style.display = "block";
-              document.getElementById("calendario-btn").style.display = "none";
-              this.textContent = "Wechsel zu Freiwilligenmodus";
+              // Kalender-Icon (nur im Freiwilligenmodus) ausblenden
+              document.getElementById("calendario-btn").classList.remove("visible");
+              this.textContent = "Zum Freiwilligen wechseln";
             } else {
+              // Zurück in den Freiwilligenmodus:
               document.getElementById("org-mode-app").style.display = "none";
               document.getElementById("main-app").style.display = "block";
-              document.getElementById("calendario-btn").style.display = "inline-block";
-              this.textContent = "Wechsel zum Organisator-Modus";
+              // Kalender-Icon anzeigen
+              document.getElementById("calendario-btn").classList.add("visible");
+              this.textContent = "Zum Organisator wechseln";
             }
           });
         }
-      
-        // Función para cerrar sesión (Modo Freiwilliger) – este es el único botón de logout que se debe utilizar
-        const logoutBtn = document.getElementById("logout-btn");
-        if (logoutBtn) {
-          logoutBtn.addEventListener("click", function() {
-            localStorage.clear();
-            window.location.reload();
-          });
-        }
-      
-        // Se mantiene el event listener del admin-logout-btn por si acaso (aunque no afecta al logout principal)
-        const adminLogoutBtn = document.getElementById("admin-logout-btn");
-        if (adminLogoutBtn) {
-          adminLogoutBtn.addEventListener("click", function() {
-            localStorage.clear();
-            window.location.reload();
-          });
-        }
-      
       });
     </script>
-      
-    <!-- Script de Kalender (Modo Freiwilliger) -->
+
+    <!-- Script für den Kalender (Freiwilligenmodus) -->
     <script>
       document.addEventListener("DOMContentLoaded", function(){
         (function(){
@@ -1100,7 +1117,7 @@
           try {
             events = JSON.parse(localStorage.getItem(eventsKey)) || [];
           } catch (error) {
-            console.error("Fehler beim Lesen der Ereignisse", error);
+            console.error("Error beim Lesen der Ereignisse", error);
             events = [];
           }
       
@@ -1141,7 +1158,9 @@
       
               const rightCell = document.createElement("div");
               rightCell.className = "event-info";
-              const eventObj = events.find(ev => ev.view === "diario" && parseInt(ev.day, 10) === i);
+              const eventObj = events.find(ev =>
+                ev.view === "diario" && parseInt(ev.day, 10) === i
+              );
               if (eventObj) {
                 rightCell.innerText = eventObj.title + " (" + eventObj.startTime + " bis " + eventObj.endTime + ")";
                 rightCell.style.color = "#32cd32";
@@ -1154,7 +1173,9 @@
               }
               row.appendChild(leftCell);
               row.appendChild(rightCell);
-              row.addEventListener("click", function() { showEventPanel({ view: "diario", day: i }); });
+              row.addEventListener("click", function() {
+                showEventPanel({ view: "diario", day: i });
+              });
               container.appendChild(row);
             }
             calendarContainer.appendChild(container);
@@ -1181,7 +1202,9 @@
               const cell = document.createElement("div");
               cell.className = "calendar-cell";
               cell.innerText = day;
-              const eventObj = events.find(ev => ev.view === "mensual" && parseInt(ev.dayNumber, 10) === day);
+              const eventObj = events.find(ev =>
+                ev.view === "mensual" && parseInt(ev.dayNumber, 10) === day
+              );
               if (eventObj) {
                 const evDiv = document.createElement("div");
                 evDiv.className = "event-data";
@@ -1203,7 +1226,9 @@
                 });
                 cell.appendChild(evDiv);
               } else {
-                cell.addEventListener("click", function() { showEventPanel({ view: "mensual", dayNumber: day }); });
+                cell.addEventListener("click", function() {
+                  showEventPanel({ view: "mensual", dayNumber: day });
+                });
               }
               grid.appendChild(cell);
             }
@@ -1217,6 +1242,7 @@
             document.getElementById("event-panel-header").innerText = "Ereignis hinzufügen";
             document.getElementById("event-add-fields").style.display = "block";
             document.getElementById("event-view-fields").style.display = "none";
+      
             if (currentView === "diario") {
               document.getElementById("event-day-diary").style.display = "block";
               document.getElementById("event-day-mensual").style.display = "none";
@@ -1298,7 +1324,7 @@
             hideEventPanel();
           });
       
-          viewToggleButtons.forEach(button => {
+          viewToggleButtons.forEach(button=>{
             button.addEventListener("click", function(){
               currentView = this.dataset.view;
               viewToggleButtons.forEach(btn => btn.classList.remove("active"));
@@ -1318,8 +1344,7 @@
         })();
       });
     </script>
-      
-    <!-- Script para el Modal de Datenschutzbestimmungen -->
+    <!-- Script für das Modal der Datenschutzbestimmungen -->
     <script>
       function openTermsModal() {
         document.getElementById("terms-modal").style.display = "block";
@@ -1329,7 +1354,7 @@
       }
       document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("close-terms").addEventListener("click", closeTermsModal);
-        // Cierra el modal si se hace clic fuera del contenido
+        // Schließt das Modal, wenn außerhalb des Inhalts geklickt wird
         window.addEventListener("click", function(event) {
           var modal = document.getElementById("terms-modal");
           if (event.target === modal) {
