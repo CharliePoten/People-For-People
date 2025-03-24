@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css" />
     <script type="module" src="app.js"></script>
 
-    <!-- Estilos adicionales: transiciones, bienvenida, chats, Calendario -->
+    <!-- Estilos adicionales: transiciones, bienvenida, chats, Calendario y modo Organizador -->
     <style>
       /* ------------------------------
          Transiciones y Welcome Screen
@@ -43,18 +43,22 @@
       #welcome-screen .logo { width: 180px; margin: 20px 0; }
       #welcome-screen .welcome-text { font-size: 4em; margin: 0.2em; }
       #welcome-screen .slogan {
-        font-size: 1.5em; margin-top: 10px;
-        opacity: 0; transform: translateY(20px);
+        font-size: 1.5em;
+        margin-top: 10px;
+        opacity: 0;
+        transform: translateY(20px);
         transition: opacity 0.6s ease, transform 0.6s ease;
       }
       #welcome-screen #start-btn {
-        margin-top: 50px; opacity: 0;
+        margin-top: 50px;
+        opacity: 0;
         transform: translateY(20px);
         transition: opacity 0.6s ease, transform 0.6s ease;
       }
       #welcome-screen .slogan.show,
       #welcome-screen #start-btn.show {
-        opacity: 1; transform: translateY(0);
+        opacity: 1;
+        transform: translateY(0);
       }
       #welcome-screen.fade-out { opacity: 0; }
       @keyframes wave {
@@ -75,115 +79,251 @@
          Estilos para chats en Fullscreen
       ------------------------------ */
       .chat-container:fullscreen {
-        width: 100%; height: 100%; padding: 20px;
-        box-sizing: border-box; background: #fff; position: relative;
+        width: 100%;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        background: #fff;
+        position: relative;
       }
       .chat-container:fullscreen .chat-messages {
-        height: calc(100% - 120px); overflow-y: auto;
+        height: calc(100% - 120px);
+        overflow-y: auto;
       }
       .chat-container:fullscreen form {
-        position: absolute; bottom: 20px; left: 20px; right: 20px; margin: 0;
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        margin: 0;
       }
       .chat-header {
-        display: flex; justify-content: space-between; align-items: center;
-        background: #f2f2f2; padding: 10px; border-bottom: 1px solid #ccc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f2f2f2;
+        padding: 10px;
+        border-bottom: 1px solid #ccc;
       }
       .chat-header h3 { margin: 0; font-size: 1.2em; }
       .fullscreen-chat-btn {
-        background: transparent; border: none; cursor: pointer; padding: 6px 10px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 6px 10px;
       }
       .fullscreen-chat-btn img { width: 24px; height: 24px; }
 
       /* ------------------------------
          Estilos para Calendario
       ------------------------------ */
-      /* La sección Calendario se muestra únicamente en modo Voluntario */
       #calendario {
-        width: 100%; height: calc(100vh - 180px);
-        padding: 20px; box-sizing: border-box;
-        background: #f9f9f9; overflow: auto;
+        width: 100%;
+        height: calc(100vh - 180px);
+        padding: 20px;
+        box-sizing: border-box;
+        background: #f9f9f9;
+        overflow: auto;
       }
       #calendar-container { width: 100%; height: calc(100% - 50px); display: block; }
       #calendar-controls { margin-bottom: 15px; }
       #calendar-controls button { margin-right: 10px; }
       .calendar-view-toggle {
-        background: #e0e0e0; border: none; color: #333;
-        padding: 10px 20px; border-radius: 5px; font-size: 1em;
-        cursor: pointer; transition: background 0.3s, color 0.3s, transform 0.3s;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background: #e0e0e0;
+        border: none;
+        color: #333;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s, transform 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .calendar-view-toggle:hover,
       .calendar-view-toggle.active {
-         background: #32cd32; color: #fff; transform: scale(1.05);
+        background: #32cd32;
+        color: #fff;
+        transform: scale(1.05);
       }
       .calendar-add-event {
-        background: #007BFF; border: none; color: #fff;
-        padding: 10px 20px; border-radius: 5px; font-size: 1em;
-        cursor: pointer; transition: background 0.3s, transform 0.3s;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        background: #007BFF;
+        border: none;
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.3s;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
       }
       .calendar-add-event:hover {
-         background: #0056b3; transform: scale(1.05);
+        background: #0056b3;
+        transform: scale(1.05);
       }
       .daily-header-row {
-        display: flex; justify-content: space-between; align-items: center;
-        padding: 5px 10px; background: #e0e0e0; border-radius: 4px;
-        margin-bottom: 10px; font-weight: bold;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px 10px;
+        background: #e0e0e0;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        font-weight: bold;
       }
       .daily-header-row span { flex: 1; }
       .daily-list { display: flex; flex-direction: column; gap: 10px; }
       .daily-row {
-        display: flex; align-items: center; padding: 8px; border: 1px solid #ddd;
-        border-radius: 8px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         cursor: pointer;
       }
       .daily-row .day-name { width: 100px; font-weight: bold; color: #27ae60; }
       .daily-row .event-info { flex: 1; text-align: right; color: #333; }
       .monthly-header {
-        display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 10px;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        margin-bottom: 10px;
       }
       .monthly-header div {
-        text-align: center; font-weight: bold; padding: 5px 0;
-        background: #e0e0e0; border-radius: 4px;
+        text-align: center;
+        font-weight: bold;
+        padding: 5px 0;
+        background: #e0e0e0;
+        border-radius: 4px;
       }
-      .monthly-grid { display: grid; grid-template-columns: repeat(7, 1fr);
-         grid-auto-rows: 1fr; grid-gap: 10px; }
+      .monthly-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-auto-rows: 1fr;
+        grid-gap: 10px;
+      }
       .calendar-cell {
-        min-width: 90px; border: 1px solid #ddd; border-radius: 8px; background: #fff;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; align-items: center;
-        justify-content: center; position: relative; cursor: pointer; font-size: 0.9em;
+        min-width: 90px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        cursor: pointer;
+        font-size: 0.9em;
         transition: background 0.3s, transform 0.3s;
       }
       .calendar-cell:hover {
-        background: #e6f9e6; transform: scale(1.02);
+        background: #e6f9e6;
+        transform: scale(1.02);
       }
       #event-panel {
-        display: none; position: fixed; top: 50%; left: 50%;
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
-        background: #fff; border: 1px solid #ccc; padding: 15px 15px 30px;
-        border-radius: 6px; box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-        z-index: 100; max-width: 400px; width: 90%; max-height: 70vh;
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 15px 15px 30px;
+        border-radius: 6px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+        z-index: 100;
+        max-width: 400px;
+        width: 90%;
+        max-height: 70vh;
         overflow-y: auto;
       }
       #event-panel h3 { text-align: center; color: #8e44ad; margin-bottom: 15px; }
       #event-panel label {
-        display: block; margin-bottom: 5px; font-weight: bold; color: #27ae60;
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #27ae60;
       }
       #event-panel input,
       #event-panel textarea,
       #event-panel select {
-         width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box;
-         border: 1px solid #ccc; border-radius: 4px;
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
       }
       #event-panel button {
-        padding: 8px 12px; font-size: 0.9em; cursor: pointer;
-        margin-right: 5px; border: none; border-radius: 4px;
+        padding: 8px 12px;
+        font-size: 0.9em;
+        cursor: pointer;
+        margin-right: 5px;
+        border: none;
+        border-radius: 4px;
       }
       #event-panel button:hover { opacity: 0.9; }
 
       /* ------------------------------
          Resto de estilos (perfil, modales, etc.)
       ------------------------------ */
+      .terms-container {
+        padding: 10px;
+        margin: 10px 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        background: #fefefe;
+        white-space: nowrap;
+      }
+      .terms-container label {
+        margin-left: 5px;
+        font-size: 0.9em;
+      }
+      .terms-link {
+        color: blue;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      /* Estilos para el modal de Términos (centrar imágenes y sin recuadro de la cabecera) */
+      #terms-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+      #terms-modal .modal-content {
+        background: #fff;
+        margin: 10% auto;
+        padding: 20px;
+        border: none;
+        width: 90%;
+        max-width: 800px;
+        text-align: center;
+        position: relative;
+      }
+      #terms-modal #close-terms {
+        color: #aaa;
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      #terms-modal img {
+        display: block;
+        margin: -10px auto 10px;
+        max-width: 70%;
+        height: auto;
+        border: none;
+        box-shadow: none;
+      }
     </style>
   </head>
   <body>
@@ -208,6 +348,11 @@
           <input type="text" id="username" placeholder="Nombre de Usuario" required />
           <input type="email" id="email" placeholder="Correo electrónico" required />
           <input type="password" id="password" placeholder="Contraseña" required />
+          <!-- Bloque de Términos de Privacidad -->
+          <div class="terms-container">
+            <input type="checkbox" id="accept-terms" required />
+            <label for="accept-terms">Acepto los <span class="terms-link" onclick="openTermsModal()">Términos de Privacidad</span></label>
+          </div>
           <button type="submit" class="enhanced-btn">Registrarse</button>
         </form>
       </div>
@@ -224,7 +369,8 @@
           </button>
           <!-- Botón de Perfil -->
           <div class="profile-container" id="profile-btn">
-            <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Perfil" class="profile-img" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
+            <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Perfil" class="profile-img"
+              onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
             <span class="profile-label">Mi perfil</span>
             <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
               <div class="dropdown-item" data-section="perfil">Mi perfil</div>
@@ -411,7 +557,8 @@
           <div class="profile-container-new">
             <div class="profile-display">
               <div class="profile-photo-container">
-                <img id="profile-large-photo" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Foto de Perfil" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
+                <img id="profile-large-photo" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true"
+                  alt="Foto de Perfil" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
               </div>
               <div class="profile-info">
                 <h3>Información de Perfil</h3>
@@ -623,7 +770,7 @@
           </div>
         </div>
       </main>
-      <!-- Menú inferior para modo Voluntario (no incluye Calendario) -->
+      <!-- Menú inferior (Voluntario) -->
       <nav class="app-menu">
         <button class="menu-btn" data-target="map-view">
           <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true" alt="Icono Mapa" />
@@ -644,131 +791,16 @@
       </nav>
     </div>
 
-    <!-- Modal para vista previa de archivos -->
-    <div id="modal-viewer" class="modal">
-      <div class="modal-content"></div>
-    </div>
-
-    <!-- Modal para Modo Organizador (Selección/Creación de Organización) -->
-    <div id="org-mode-menu" class="modal">
-      <div class="modal-content org-menu-content">
-        <span class="close" id="close-org-menu">&times;</span>
-        <h2>Modo Organizador</h2>
-        <div class="org-menu-container">
-          <div class="org-menu-header">
-            <h3>Mis Organizaciones</h3>
-            <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">
-              Crear Organización
-            </button>
-          </div>
-          <div id="orgmode-list" class="list-box"></div>
-          <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
-            <h3>Crear Nueva Organización</h3>
-            <form id="create-org-form-orgmode">
-              <input type="text" id="orgmode-title" placeholder="Título de la Organización" required />
-              <textarea id="orgmode-info" placeholder="Información de la Organización" required></textarea>
-              <input type="file" id="orgmode-image" accept="image/*" />
-              <button type="submit" class="action-btn">Crear Organización</button>
-              <button type="button" id="cancelar-org-modal" class="return-btn">Cancelar</button>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Aplicación Modo Organizador -->
-    <div id="org-mode-app" class="screen org-mode" style="display:none;">
+    <!-- Contenedor para el Modo Organizador -->
+    <div id="org-mode-app" class="screen org-mode" style="display: none;">
       <header class="app-header org-header">
         <h1 class="app-title">Modo Organizador</h1>
+        <div class="header-actions">
+          <!-- Se eliminó el botón de "Cerrar Sesión" aquí para que el único botón sea el de Ajustes de Perfil -->
+        </div>
       </header>
       <main class="app-content org-content">
-        <!-- Sección Chats -->
-        <div id="org-chats" class="org-content-section" style="display:none;">
-          <div id="org-chat-public" class="chat-container">
-            <h3>Chat Público</h3>
-            <div class="chat-messages" id="org-chat-messages-public"></div>
-            <form id="org-chat-form-public">
-              <input type="text" id="org-chat-input-public" placeholder="Escribe tu mensaje" required />
-              <input type="file" id="org-chat-file-public" accept="image/*, application/pdf" />
-              <button type="submit" class="enhanced-btn">
-                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
-                Enviar
-              </button>
-            </form>
-          </div>
-          <div id="org-chat-admin" class="chat-container">
-            <h3>Chat de Administradores</h3>
-            <div class="chat-messages" id="org-admin-chat-messages"></div>
-            <form id="org-admin-chat-form">
-              <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
-              <input type="file" id="org-admin-chat-file" accept="image/*, application/pdf" />
-              <button type="submit" class="enhanced-btn">
-                <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
-                Enviar
-              </button>
-            </form>
-          </div>
-        </div>
-        <!-- Sección Información -->
-        <div id="org-info" class="org-content-section" style="display:none;">
-          <h2>Centro de Información</h2>
-          <div id="org-info-display" class="org-info-display">
-            <p id="org-info-titulo">Título: </p>
-            <p id="org-info-creador">Creador: </p>
-            <p id="org-info-detalle">Información: </p>
-            <p id="org-info-lugar">Lugar: </p>
-            <p id="org-info-fecha">Fecha de Creación: </p>
-            <div id="org-info-attachments" class="attachment-display"></div>
-            <button id="btn-editar-info" class="action-btn">Editar Información</button>
-          </div>
-          <div id="org-info-edit" class="org-info-edit" style="display:none;">
-            <h3>Editar Información</h3>
-            <form id="org-info-edit-form">
-              <div>
-                <label for="edit-org-titulo">Título:</label>
-                <input type="text" id="edit-org-titulo" placeholder="Título" required />
-              </div>
-              <div>
-                <label for="edit-org-creador">Creador:</label>
-                <input type="text" id="edit-org-creador" placeholder="Creador" disabled />
-              </div>
-              <div>
-                <label for="edit-org-detalle">Información:</label>
-                <textarea id="edit-org-detalle" placeholder="Información" required></textarea>
-              </div>
-              <div>
-                <label for="edit-org-lugar">Lugar:</label>
-                <input type="text" id="edit-org-lugar" placeholder="Lugar" required />
-              </div>
-              <div>
-                <label for="edit-org-fecha">Fecha de Creación:</label>
-                <input type="date" id="edit-org-fecha" placeholder="Fecha" disabled />
-              </div>
-              <button type="submit" class="action-btn">Guardar Cambios</button>
-              <button type="button" id="cancelar-editar-info" class="return-btn">Cancelar</button>
-            </form>
-            <h3>Subir Archivo</h3>
-            <form id="org-file-upload-form" class="form-container">
-              <input type="text" id="org-file-title" placeholder="Título del Archivo" required />
-              <input type="file" id="org-file-upload" accept="application/pdf, image/*" required />
-              <button type="submit" class="action-btn">Subir Archivo</button>
-            </form>
-          </div>
-        </div>
-        <!-- Sección Mis Organizaciones -->
-        <div id="org-list" class="org-content-section" style="display:none;">
-          <h2>Mis Organizaciones</h2>
-          <div class="org-list-container">
-            <div id="org-list-organizador" class="list-box"></div>
-            <button id="crear-org-btn-organizador" class="action-btn" style="background-color:#800080; color:white;">
-              Crear Organización
-            </button>
-          </div>
-        </div>
-        <!-- Sección de Inicio (Modo Organizador) -->
-        <div id="org-mode-home" class="org-content-section" style="display:block;">
-          <p>Bienvenido al modo organizador. Selecciona una opción del menú inferior.</p>
-        </div>
+        <p>Bienvenido al modo organizador. Selecciona una opción del menú inferior.</p>
       </main>
       <nav class="app-menu org-app-menu">
         <button class="menu-btn org-menu-btn" data-target="org-chats">
@@ -789,6 +821,17 @@
     <!-- Modal para vista previa de archivos -->
     <div id="modal-viewer" class="modal">
       <div class="modal-content"></div>
+    </div>
+
+    <!-- Modal para Términos de Privacidad -->
+    <div id="terms-modal">
+      <div class="modal-content">
+        <span id="close-terms">&times;</span>
+        <h2>Términos de Privacidad</h2>
+        <p>Aquí se detallan los términos y condiciones de privacidad. Por favor, tómese el tiempo de leerlos detenidamente antes de continuar.</p>
+        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%201.jpeg?raw=true" alt="Términos 1" />
+        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%202.jpeg?raw=true" alt="Términos 2" />
+      </div>
     </div>
 
     <!-- Modal para Modo Organizador: Seleccionar/Crear Organización -->
@@ -842,13 +885,13 @@
       };
     </script>
 
-    <!-- Script para transiciones, animación y efectos -->
+    <!-- Script para transiciones, animación, cierre de sesión, alternancia de modos y demás funcionalidades -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const fullWelcomeText = "Bienvenido a People For People";
         const welcomeTextElem = document.getElementById("welcomeText");
         let charIndex = 0;
-    
+      
         function typeWriter() {
           if (charIndex < fullWelcomeText.length) {
             welcomeTextElem.textContent += fullWelcomeText.charAt(charIndex);
@@ -858,7 +901,7 @@
             setTimeout(startWaveAnimation, 1000);
           }
         }
-    
+      
         function startWaveAnimation() {
           const letters = fullWelcomeText.split("");
           welcomeTextElem.innerHTML = letters
@@ -866,7 +909,7 @@
               letter === " " ? `<span class="wave-letter" style="animation: none;">&nbsp;</span>` : `<span class="wave-letter">${letter}</span>`
             )
             .join("");
-    
+      
           function animateLetters() {
             const waveLetters = welcomeTextElem.querySelectorAll(".wave-letter");
             waveLetters.forEach((letter, i) => {
@@ -883,9 +926,10 @@
           }
           animateLetters();
         }
-    
+      
         typeWriter();
-    
+      
+        // Registro y bienvenida
         const registrationForm = document.getElementById("registration-form");
         registrationForm.addEventListener("submit", function (e) {
           e.preventDefault();
@@ -894,7 +938,7 @@
           registrationScreen.addEventListener("transitionend", function handler() {
             registrationScreen.style.display = "none";
             registrationScreen.classList.remove("fade-out");
-    
+      
             const welcomeScreen = document.getElementById("welcome-screen");
             welcomeScreen.style.display = "flex";
             void welcomeScreen.offsetWidth;
@@ -914,7 +958,7 @@
             registrationScreen.removeEventListener("transitionend", handler);
           });
         });
-    
+      
         setTimeout(function () {
           const registrationScreen = document.getElementById("registration-screen");
           if (window.getComputedStyle(registrationScreen).display === "none") {
@@ -936,7 +980,7 @@
             }, 100);
           }
         }, 50);
-    
+      
         const startBtn = document.getElementById("start-btn");
         startBtn.addEventListener("click", function () {
           startBtn.classList.remove("pulse");
@@ -948,8 +992,8 @@
             welcomeScreen.removeEventListener("transitionend", handler);
           });
         });
-    
-        // Fullscreen para chats
+      
+        // Funcionalidad de pantalla completa en chats
         const fullscreenButtons = document.querySelectorAll('.fullscreen-chat-btn');
         fullscreenButtons.forEach(button => {
           button.addEventListener('click', function (e) {
@@ -965,43 +1009,39 @@
             }
           });
         });
-    
-        // Funcionalidad de menú (modo Voluntario)
+      
+        // Menú de navegación (modo Voluntario)
         document.querySelectorAll('.menu-btn').forEach(btn => {
           btn.addEventListener('click', function () {
-            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            document.querySelectorAll('.content-section').forEach(sec => { sec.style.display = "none"; });
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove("active"));
+            this.classList.add("active");
+            document.querySelectorAll(".content-section").forEach(sec => { sec.style.display = "none"; });
             const eventPanel = document.getElementById("event-panel");
             if (eventPanel) { eventPanel.style.display = "none"; }
             let target = this.getAttribute("data-target");
             if (target) { document.getElementById(target).style.display = "block"; }
           });
         });
-    
+      
         // Botón de Calendario en header (modo Voluntario)
         document.getElementById("calendario-btn").addEventListener("click", function() {
-          document.querySelectorAll('.content-section').forEach(sec => { sec.style.display = "none"; });
-          document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll(".content-section").forEach(sec => { sec.style.display = "none"; });
+          document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
           document.getElementById("calendario").style.display = "block";
         });
-    
-        // Gestión del cambio de modo (Voluntario/Organizador)
+      
+        // Alternancia de modo (Voluntario <-> Organizador)
         let organizerMode = false;
         const modeToggleBtn = document.querySelector(".mode-toggle-btn");
         if (modeToggleBtn) {
           modeToggleBtn.addEventListener("click", function() {
             organizerMode = !organizerMode;
             if (organizerMode) {
-              // Cambiar a modo Organizador:
-              // Ocultar la aplicación voluntaria (main-app) y mostrar org-mode-app
               document.getElementById("main-app").style.display = "none";
               document.getElementById("org-mode-app").style.display = "block";
-              // Ocultar el ícono de calendario (solo en Voluntario)
               document.getElementById("calendario-btn").style.display = "none";
               this.textContent = "Cambiar a Voluntario";
             } else {
-              // Volver a modo Voluntario:
               document.getElementById("org-mode-app").style.display = "none";
               document.getElementById("main-app").style.display = "block";
               document.getElementById("calendario-btn").style.display = "inline-block";
@@ -1009,9 +1049,28 @@
             }
           });
         }
+      
+        // Función para cerrar sesión (Modo Voluntario) – este es el único botón de logout que se debe utilizar
+        const logoutBtn = document.getElementById("logout-btn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", function() {
+            localStorage.clear();
+            window.location.reload();
+          });
+        }
+      
+        // Se mantiene el event listener del admin-logout-btn por si acaso (aunque no afecta al logout principal)
+        const adminLogoutBtn = document.getElementById("admin-logout-btn");
+        if (adminLogoutBtn) {
+          adminLogoutBtn.addEventListener("click", function() {
+            localStorage.clear();
+            window.location.reload();
+          });
+        }
+      
       });
     </script>
-
+      
     <!-- Script de Calendario (Modo Voluntario) -->
     <script>
       document.addEventListener("DOMContentLoaded", function(){
@@ -1082,9 +1141,7 @@
       
               const rightCell = document.createElement("div");
               rightCell.className = "event-info";
-              const eventObj = events.find(ev =>
-                ev.view === "diario" && parseInt(ev.day, 10) === i
-              );
+              const eventObj = events.find(ev => ev.view === "diario" && parseInt(ev.day, 10) === i);
               if (eventObj) {
                 rightCell.innerText = eventObj.title + " (" + eventObj.startTime + " a " + eventObj.endTime + ")";
                 rightCell.style.color = "#32cd32";
@@ -1097,9 +1154,7 @@
               }
               row.appendChild(leftCell);
               row.appendChild(rightCell);
-              row.addEventListener("click", function() {
-                showEventPanel({ view: "diario", day: i });
-              });
+              row.addEventListener("click", function() { showEventPanel({ view: "diario", day: i }); });
               container.appendChild(row);
             }
             calendarContainer.appendChild(container);
@@ -1126,9 +1181,7 @@
               const cell = document.createElement("div");
               cell.className = "calendar-cell";
               cell.innerText = day;
-              const eventObj = events.find(ev =>
-                ev.view === "mensual" && parseInt(ev.dayNumber, 10) === day
-              );
+              const eventObj = events.find(ev => ev.view === "mensual" && parseInt(ev.dayNumber, 10) === day);
               if (eventObj) {
                 const evDiv = document.createElement("div");
                 evDiv.className = "event-data";
@@ -1150,9 +1203,7 @@
                 });
                 cell.appendChild(evDiv);
               } else {
-                cell.addEventListener("click", function() {
-                  showEventPanel({ view: "mensual", dayNumber: day });
-                });
+                cell.addEventListener("click", function() { showEventPanel({ view: "mensual", dayNumber: day }); });
               }
               grid.appendChild(cell);
             }
@@ -1166,7 +1217,6 @@
             document.getElementById("event-panel-header").innerText = "Añadir Evento";
             document.getElementById("event-add-fields").style.display = "block";
             document.getElementById("event-view-fields").style.display = "none";
-      
             if (currentView === "diario") {
               document.getElementById("event-day-diary").style.display = "block";
               document.getElementById("event-day-mensual").style.display = "none";
@@ -1248,7 +1298,7 @@
             hideEventPanel();
           });
       
-          viewToggleButtons.forEach(button=>{
+          viewToggleButtons.forEach(button => {
             button.addEventListener("click", function(){
               currentView = this.dataset.view;
               viewToggleButtons.forEach(btn => btn.classList.remove("active"));
@@ -1266,6 +1316,26 @@
           }
           renderCalendar();
         })();
+      });
+    </script>
+      
+    <!-- Script para el Modal de Términos de Privacidad -->
+    <script>
+      function openTermsModal() {
+        document.getElementById("terms-modal").style.display = "block";
+      }
+      function closeTermsModal() {
+        document.getElementById("terms-modal").style.display = "none";
+      }
+      document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("close-terms").addEventListener("click", closeTermsModal);
+        // Cierra el modal si se hace clic fuera del contenido
+        window.addEventListener("click", function(event) {
+          var modal = document.getElementById("terms-modal");
+          if (event.target === modal) {
+            modal.style.display = "none";
+          }
+        });
       });
     </script>
   </body>
