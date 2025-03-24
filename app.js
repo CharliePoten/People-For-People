@@ -459,14 +459,14 @@ function createOrgProfileButton() {
     divProfile.appendChild(img);
     let span = document.createElement("span");
     span.className = "profile-label";
-    span.innerText = "Mi perfil";
+    span.innerText = "Mein Profil";
     divProfile.appendChild(span);
     let items = [
-      { text: "Mi perfil", section: "perfil" },
-      { text: "Ajustes de perfil", section: "ajustes" },
-      { text: "Soporte", section: "soporte" },
+      { text: "Mein Profil", section: "perfil" },
+      { text: "Profileinstellungen", section: "ajustes" },
+      { text: "Support", section: "soporte" },
       { text: "People For People", section: "centro" },
-      { text: "Cambiar a Voluntario", isToggle: true }
+      { text: "Zu Freiwilligem wechseln", isToggle: true }
     ];
     let dropdown = document.createElement("div");
     dropdown.id = "org-profile-dropdown";
@@ -534,7 +534,7 @@ function toggleUserMode() {
     // Asegurar que el texto del botón que muestra información quede como "Centro de Información"
     document.querySelectorAll(".org-menu-btn").forEach(btn => {
       if (btn.getAttribute("data-target") === "org-info") {
-        btn.textContent = "Centro de Información";
+        btn.textContent = "Informationszentrum";
       }
     });
     
@@ -543,7 +543,7 @@ function toggleUserMode() {
   } else {
     currentMode = "voluntario";
     localStorage.setItem("userMode", "voluntario");
-    document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Cambiar a Organizador");
+    document.querySelectorAll(".mode-toggle-btn").forEach(b => b.textContent = "Zu Organisator wechseln");
     document.getElementById("org-mode-app").style.display = "none";
     document.getElementById("main-app").style.display = "block";
     document.getElementById("org-mode-menu").style.display = "none";
@@ -643,15 +643,15 @@ function updateProfileSubsection(option) {
 
 function updateProfileView() {
   document.getElementById("profile-username-display").innerText =
-    "Usuario: " + (localStorage.getItem("username") || "");
+    "Benutzer: " + (localStorage.getItem("username") || "");
   document.getElementById("profile-name-display").innerText =
-    "Nombre: " + (localStorage.getItem("profileNombre") || "");
+    "Name: " + (localStorage.getItem("profileNombre") || "");
   document.getElementById("profile-surname-display").innerText =
-    "Apellido: " + (localStorage.getItem("profileApellido") || "");
+    "Nachname: " + (localStorage.getItem("profileApellido") || "");
   document.getElementById("profile-dob-display").innerText =
-    "Fecha de nacimiento: " + (localStorage.getItem("profileDob") || "");
+    "Geburtsdatum: " + (localStorage.getItem("profileDob") || "");
   document.getElementById("profile-formation-display").innerText =
-    "Formación Profesional: " + (localStorage.getItem("profileFormation") || "");
+    "Berufsausbildung: " + (localStorage.getItem("profileFormation") || "");
   document.getElementById("profile-large-photo").src =
     localStorage.getItem("profilePhoto") || "https://via.placeholder.com/100/FFFFFF/000000?text=Perfil";
 }
@@ -1240,7 +1240,7 @@ function showSuccessMessage() {
     successMessage.innerHTML = `
       <div class="message-box">
         <p>
-          ¡Punto de ayuda solicitado con éxito! Pronto será asignado a nuestras ONGs y conectado con un voluntario para brindar asistencia. ¡Gracias por tu apoyo!
+          Hilfepunkt erfolgreich angefordert! Er wird bald unseren NGOs zugewiesen und mit einem Freiwilligen verbunden, um Unterstützung zu leisten. Danke für deine Hilfe!“
         </p>
         <button id="accept-success-message" class="accept-btn">Aceptar</button>
       </div>
@@ -1387,7 +1387,7 @@ function showAyudaDetail(ayuda) {
   if (localStorage.getItem("username") === ayuda.creator) {
     const deleteHelpBtn = document.createElement("button");
     deleteHelpBtn.className = "delete-btn";
-    deleteHelpBtn.innerText = "Eliminar Punto de Ayuda";
+    deleteHelpBtn.innerText = "Hilfepunkt entfernen";
     deleteHelpBtn.addEventListener("click", function (e) {
       e.stopPropagation();
       if (confirm("¿Estás seguro de eliminar este punto de ayuda?")) {
