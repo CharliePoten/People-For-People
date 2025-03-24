@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css" />
     <script type="module" src="app.js"></script>
 
-    <!-- Estilos adicionales: transiciones, bienvenida, chats, Calendario y modo Organizador -->
+    <!-- Estilos adicionales: transiciones, bienvenida, chats, Kalender y modo Organisator -->
     <style>
       /* ------------------------------
          Transiciones y Welcome Screen
@@ -115,7 +115,7 @@
       .fullscreen-chat-btn img { width: 24px; height: 24px; }
 
       /* ------------------------------
-         Estilos para Calendario
+         Estilos para Kalender
       ------------------------------ */
       #calendario {
         width: 100%;
@@ -331,55 +331,55 @@
     <div id="dev-message">
       <div class="message-box">
         <p>
-          Bienvenido a People For People. Este es un prototipo de aplicación para la startup de People For People.
-          Actualmente estamos integrando las últimas tecnologías y desarrollando nuevas funcionalidades para brindar una experiencia de usuario excepcional.
-          Le agradecemos por participar en esta fase de pruebas.
+          Willkommen bei People For People. Dies ist ein Prototyp der Anwendung für das Startup People For People.
+          Derzeit integrieren wir die neuesten Technologien und entwickeln neue Funktionen, um ein außergewöhnliches Benutzererlebnis zu bieten.
+          Wir danken Ihnen für Ihre Teilnahme an dieser Testphase.
         </p>
-        <p class="creator">Creado por: Carlos Potenciano</p>
-        <button id="accept-dev-message" class="accept-btn">Aceptar</button>
+        <p class="creator">Erstellt von: Carlos Potenciano</p>
+        <button id="accept-dev-message" class="accept-btn">Akzeptieren</button>
       </div>
     </div>
 
     <!-- Pantalla de Registro -->
     <div id="registration-screen" class="screen">
       <div class="form-container">
-        <h2>Registro</h2>
+        <h2>Registrierung</h2>
         <form id="registration-form">
-          <input type="text" id="username" placeholder="Nombre de Usuario" required />
-          <input type="email" id="email" placeholder="Correo electrónico" required />
-          <input type="password" id="password" placeholder="Contraseña" required />
+          <input type="text" id="username" placeholder="Benutzername" required />
+          <input type="email" id="email" placeholder="E-Mail" required />
+          <input type="password" id="password" placeholder="Passwort" required />
           <!-- Bloque de Términos de Privacidad -->
           <div class="terms-container">
             <input type="checkbox" id="accept-terms" required />
-            <label for="accept-terms">Acepto los <span class="terms-link" onclick="openTermsModal()">Términos de Privacidad</span></label>
+            <label for="accept-terms">Ich akzeptiere die <span class="terms-link" onclick="openTermsModal()">Datenschutzbestimmungen</span></label>
           </div>
-          <button type="submit" class="enhanced-btn">Registrarse</button>
+          <button type="submit" class="enhanced-btn">Registrieren</button>
         </form>
       </div>
     </div>
 
-    <!-- Aplicación Principal (Modo Voluntario) -->
+    <!-- Aplicación Principal (Modo Freiwilliger) -->
     <div id="main-app" class="screen" style="display: none;">
       <header class="app-header">
         <h1 class="app-title">People For People</h1>
         <div class="header-actions">
-          <!-- Ícono Calendario (visible solo en modo Voluntario) -->
+          <!-- Ícono Kalender (visible solo en modo Freiwilliger) -->
           <button id="calendario-btn" data-target="calendario" style="cursor: pointer; background: transparent; border: none; margin-right: 10px;">
-            <img src="https://github.com/CharliePoten/People-For-People/blob/main/calendario%20icono.png?raw=true" alt="Calendario" class="calendario-icon" style="width:28px; height:auto;" />
+            <img src="https://github.com/CharliePoten/People-For-People/blob/main/calendario%20icono.png?raw=true" alt="Kalender" class="calendario-icon" style="width:28px; height:auto;" />
           </button>
           <!-- Botón de Perfil -->
           <div class="profile-container" id="profile-btn">
-            <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Perfil" class="profile-img"
+            <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true" alt="Profil" class="profile-img"
               onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
-            <span class="profile-label">Mi perfil</span>
+            <span class="profile-label">Mein Profil</span>
             <div id="profile-dropdown" class="profile-dropdown" style="display: none;">
-              <div class="dropdown-item" data-section="perfil">Mi perfil</div>
-              <div class="dropdown-item" data-section="ajustes">Ajustes de perfil</div>
-              <div class="dropdown-item" data-section="soporte">Soporte</div>
-              <div class="dropdown-item" data-section="centro">People for People</div>
+              <div class="dropdown-item" data-section="perfil">Mein Profil</div>
+              <div class="dropdown-item" data-section="ajustes">Profileinstellungen</div>
+              <div class="dropdown-item" data-section="soporte">Support</div>
+              <div class="dropdown-item" data-section="centro">People For People</div>
               <!-- Botón para cambiar a organizador -->
               <div class="dropdown-item mode-toggle-btn" style="background-color: #800080; color: white; cursor: pointer;">
-                Cambiar a Organizador
+                Wechsel zum Organisator-Modus
               </div>
             </div>
           </div>
@@ -388,223 +388,223 @@
       <main class="app-content" id="content">
         <!-- Sección Mapa -->
         <div id="map-view" class="content-section">
-          <h2>Mapa</h2>
+          <h2>Karte</h2>
           <div id="map-container">
             <div id="map"></div>
-            <button id="fullscreen-btn">Pantalla Completa</button>
+            <button id="fullscreen-btn">Vollbild</button>
           </div>
         </div>
-        <!-- Sección Pedir Ayuda -->
+        <!-- Sección Hilfe anfordern -->
         <div id="pedir-ayuda" class="content-section" style="display:none;">
-          <h2>Pedir Ayuda</h2>
+          <h2>Hilfe anfordern</h2>
           <div id="ayuda-view">
             <div id="ayuda-list-view">
-              <button id="mostrar-ayuda-create" class="action-btn">Crear Punto de Ayuda</button>
+              <button id="mostrar-ayuda-create" class="action-btn">Hilfepunkt erstellen</button>
               <div id="ayuda-list" class="list-box"></div>
             </div>
             <div id="ayuda-create-form" class="form-container" style="display:none;">
-              <h3>Nuevo Punto de Ayuda</h3>
+              <h3>Neuer Hilfepunkt</h3>
               <form id="crear-ayuda-form">
-                <input type="text" id="ayuda-titulo" placeholder="Título del Punto de Ayuda" required />
-                <textarea id="ayuda-info" placeholder="Información del Punto de Ayuda" required></textarea>
+                <input type="text" id="ayuda-titulo" placeholder="Hilfepunkt-Titel" required />
+                <textarea id="ayuda-info" placeholder="Hilfepunkt-Informationen" required></textarea>
                 <input type="file" id="ayuda-image" accept="image/*" />
                 <button type="submit" class="action-btn">
-                  <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
-                  Enviar
+                  <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Senden" />
+                  Senden
                 </button>
-                <button type="button" id="cancelar-ayuda" class="return-btn">Volver</button>
+                <button type="button" id="cancelar-ayuda" class="return-btn">Zurück</button>
               </form>
             </div>
             <div id="ayuda-detail-view" style="display:none;">
-              <button id="volver-ayuda-list" class="return-btn">Volver</button>
+              <button id="volver-ayuda-list" class="return-btn">Zurück</button>
               <div id="ayuda-detail"></div>
-              <button id="view-on-map" class="map-btn">Ver en el Mapa</button>
+              <button id="view-on-map" class="map-btn">Auf der Karte anzeigen</button>
               <div id="small-map" style="height: 150px; width: 100%; margin-top: 10px;"></div>
               <div id="ayuda-chat" class="chat-container">
                 <div class="chat-header">
-                  <h3>Chat de Ayuda</h3>
+                  <h3>Hilfe-Chat</h3>
                   <button type="button" class="fullscreen-chat-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Pantalla Completa" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Vollbild" />
                   </button>
                 </div>
                 <div class="chat-messages" id="ayuda-chat-messages"></div>
                 <form id="ayuda-chat-form">
-                  <input type="text" id="ayuda-chat-input" placeholder="Escribe tu mensaje" required />
+                  <input type="text" id="ayuda-chat-input" placeholder="Schreibe deine Nachricht" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
-                    Enviar
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Senden" />
+                    Senden
                   </button>
                 </form>
               </div>
             </div>
           </div>
         </div>
-        <!-- Sección Voluntarios -->
+        <!-- Sección Freiwillige -->
         <div id="ofrecer-voluntario" class="content-section" style="display:none;">
-          <h2>Voluntarios</h2>
+          <h2>Freiwillige</h2>
           <div id="voluntario-view">
             <div id="voluntario-list-view">
-              <button id="mostrar-voluntario-create" class="action-btn">Ofrecerme como Voluntario</button>
+              <button id="mostrar-voluntario-create" class="action-btn">Als Freiwilliger anbieten</button>
               <div id="voluntario-list" class="list-box"></div>
             </div>
             <div id="voluntario-create-form" class="form-container" style="display:none;">
-              <h3>Horarios Disponibles</h3>
+              <h3>Verfügbare Zeiten</h3>
               <form id="crear-voluntario-form">
                 <div class="slider-group">
-                  <label for="dia-inicio">Día inicio: <span id="dia-inicio-label">Lunes</span></label>
+                  <label for="dia-inicio">Anfangstag: <span id="dia-inicio-label">Montag</span></label>
                   <input type="range" id="dia-inicio" name="dia-inicio" min="0" max="6" value="0" />
-                  <label for="dia-fin">Día fin: <span id="dia-fin-label">Viernes</span></label>
+                  <label for="dia-fin">Endtag: <span id="dia-fin-label">Freitag</span></label>
                   <input type="range" id="dia-fin" name="dia-fin" min="0" max="6" value="4" />
                 </div>
                 <div class="slider-group">
-                  <label for="hora-inicio">Hora inicio: <span id="hora-inicio-label">9:00</span></label>
+                  <label for="hora-inicio">Startzeit: <span id="hora-inicio-label">9:00</span></label>
                   <input type="range" id="hora-inicio" name="hora-inicio" min="0" max="23" value="9" />
-                  <label for="hora-fin">Hora fin: <span id="hora-fin-label">17:00</span></label>
+                  <label for="hora-fin">Endzeit: <span id="hora-fin-label">17:00</span></label>
                   <input type="range" id="hora-fin" name="hora-fin" min="0" max="23" value="17" />
                 </div>
                 <div class="form-group-voluntario">
-                  <label for="voluntario-habilidades">Habilidades</label>
-                  <textarea id="voluntario-habilidades" placeholder="Ejemplo: primeros auxilios, carpintería, etc." required></textarea>
+                  <label for="voluntario-habilidades">Fähigkeiten</label>
+                  <textarea id="voluntario-habilidades" placeholder="Beispiel: Erste Hilfe, Tischlerei, etc." required></textarea>
                 </div>
-                <button type="submit" class="action-btn">Ofrecerme voluntario</button>
-                <button type="button" id="cancelar-voluntario" class="return-btn">Volver</button>
+                <button type="submit" class="action-btn">Als Freiwilliger anmelden</button>
+                <button type="button" id="cancelar-voluntario" class="return-btn">Zurück</button>
               </form>
             </div>
             <div id="voluntario-detail-view" style="display:none;">
-              <button id="volver-voluntario-list" class="return-btn">Volver</button>
+              <button id="volver-voluntario-list" class="return-btn">Zurück</button>
               <div id="voluntario-detail"></div>
               <!-- Chat Privado (si aplica) -->
               <div id="voluntario-private-chat" class="chat-container">
                 <div class="chat-header">
-                  <h3>Chat Privado</h3>
+                  <h3>Privater Chat</h3>
                   <button type="button" class="fullscreen-chat-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Pantalla Completa" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Vollbild" />
                   </button>
                 </div>
                 <div class="chat-messages" id="voluntario-private-chat-messages"></div>
                 <form id="voluntario-private-chat-form">
-                  <input type="text" id="voluntario-private-chat-input" placeholder="Escribe tu mensaje" required />
-                  <button type="submit" class="enhanced-btn">Enviar</button>
+                  <input type="text" id="voluntario-private-chat-input" placeholder="Schreibe deine Nachricht" required />
+                  <button type="submit" class="enhanced-btn">Senden</button>
                 </form>
               </div>
             </div>
           </div>
         </div>
-        <!-- Sección Organizaciones (Modo Voluntario) -->
+        <!-- Sección Organisationen (Modo Freiwilliger) -->
         <div id="organizaciones" class="content-section" style="display:none;">
-          <h2>Organizaciones de Voluntarios</h2>
+          <h2>Organisationen</h2>
           <div id="org-view">
             <div id="org-list-view">
-              <button id="mostrar-org-create" class="action-btn">Crear Organización</button>
+              <button id="mostrar-org-create" class="action-btn">Organisation erstellen</button>
               <div id="org-list" class="list-box"></div>
             </div>
             <div id="org-create-form" class="form-container" style="display:none;">
-              <h3>Nueva Organización</h3>
+              <h3>Neue Organisation</h3>
               <form id="crear-org-form">
-                <input type="text" id="org-title" placeholder="Título de la Organización" required />
-                <textarea id="org-info-text" placeholder="Más información" required></textarea>
+                <input type="text" id="org-title" placeholder="Organisationstitel" required />
+                <textarea id="org-info-text" placeholder="Weitere Informationen" required></textarea>
                 <input type="file" id="org-image" accept="image/*" />
-                <button type="submit" class="action-btn">Crear Organización</button>
-                <button type="button" id="cancelar-org" class="return-btn">Volver</button>
+                <button type="submit" class="action-btn">Organisation erstellen</button>
+                <button type="button" id="cancelar-org" class="return-btn">Zurück</button>
               </form>
             </div>
             <div id="org-detail-view" style="display:none;">
-              <button id="volver-org-list" class="return-btn">Volver</button>
+              <button id="volver-org-list" class="return-btn">Zurück</button>
               <div id="org-detail"></div>
               <div id="org-members">
-                <h4>Miembros de la Organización:</h4>
+                <h4>Mitglieder der Organisation:</h4>
                 <ul id="org-member-list"></ul>
               </div>
-              <button id="unirse-org" class="join-org-btn">Unirse a Organización</button>
+              <button id="unirse-org" class="join-org-btn">Organisation beitreten</button>
               <div id="org-admin-chat" class="chat-container">
                 <div class="chat-header">
-                  <h3>Chat de Administradores</h3>
+                  <h3>Administrator-Chat</h3>
                   <button type="button" class="fullscreen-chat-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Pantalla Completa" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Vollbild" />
                   </button>
                 </div>
                 <div class="chat-messages" id="org-admin-chat-messages"></div>
                 <form id="org-admin-chat-form">
-                  <input type="text" id="org-admin-chat-input" placeholder="Escribe tu mensaje" required />
+                  <input type="text" id="org-admin-chat-input" placeholder="Schreibe deine Nachricht" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
-                    Enviar
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Senden" />
+                    Senden
                   </button>
                 </form>
               </div>
               <div id="org-chat" class="chat-container">
                 <div class="chat-header">
-                  <h3>Chat de Organización</h3>
+                  <h3>Organisations-Chat</h3>
                   <button type="button" class="fullscreen-chat-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Pantalla Completa" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Vollbild" />
                   </button>
                 </div>
                 <div class="chat-messages" id="org-chat-messages"></div>
                 <form id="org-chat-form">
-                  <input type="text" id="org-chat-input" placeholder="Escribe tu mensaje" required />
+                  <input type="text" id="org-chat-input" placeholder="Schreibe deine Nachricht" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
-                    Enviar
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Senden" />
+                    Senden
                   </button>
                 </form>
               </div>
             </div>
           </div>
         </div>
-        <!-- Módulo: Mi Perfil -->
+        <!-- Módulo: Mein Profil -->
         <div id="perfil" class="content-section" style="display:none;">
-          <h2>Mi Perfil</h2>
+          <h2>Mein Profil</h2>
           <div class="profile-container-new">
             <div class="profile-display">
               <div class="profile-photo-container">
                 <img id="profile-large-photo" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true"
-                  alt="Foto de Perfil" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
+                  alt="Profilfoto" onerror="this.onerror=null; this.src='https://github.com/CharliePoten/People-For-People/blob/main/icono%20perfil.png?raw=true'" />
               </div>
               <div class="profile-info">
-                <h3>Información de Perfil</h3>
-                <p id="profile-username-display">Usuario: </p>
-                <p id="profile-name-display">Nombre: </p>
-                <p id="profile-surname-display">Apellido: </p>
-                <p id="profile-dob-display">Fecha de nacimiento: </p>
-                <p id="profile-formation-display">Formación Profesional: </p>
+                <h3>Profilinformationen</h3>
+                <p id="profile-username-display">Benutzer: </p>
+                <p id="profile-name-display">Vorname: </p>
+                <p id="profile-surname-display">Nachname: </p>
+                <p id="profile-dob-display">Geburtsdatum: </p>
+                <p id="profile-formation-display">Berufsausbildung: </p>
                 <div id="profile-attachments"></div>
               </div>
             </div>
             <div class="profile-settings">
-              <h3>Ajustes de Perfil</h3>
+              <h3>Profileinstellungen</h3>
               <div class="profile-tabs">
-                <button type="button" class="profile-tab-btn active" data-target="profile-datos">Datos Personales</button>
-                <button type="button" class="profile-tab-btn" data-target="profile-formacion">Formación Profesional</button>
-                <button type="button" class="profile-tab-btn" data-target="profile-foto">Cambiar Foto</button>
+                <button type="button" class="profile-tab-btn active" data-target="profile-datos">Persönliche Daten</button>
+                <button type="button" class="profile-tab-btn" data-target="profile-formacion">Berufsausbildung</button>
+                <button type="button" class="profile-tab-btn" data-target="profile-foto">Foto ändern</button>
               </div>
               <div class="profile-tab-content" id="profile-datos" style="display:block;">
                 <form id="profile-datos-form">
-                  <input type="text" id="profile-nombre" placeholder="Nombre" required />
-                  <input type="text" id="profile-apellido" placeholder="Apellido" required />
-                  <input type="text" id="new-username" placeholder="Nombre de Usuario" />
+                  <input type="text" id="profile-nombre" placeholder="Vorname" required />
+                  <input type="text" id="profile-apellido" placeholder="Nachname" required />
+                  <input type="text" id="new-username" placeholder="Benutzername" />
                   <input type="date" id="profile-dob" required />
-                  <input type="text" id="profile-phone" placeholder="Teléfono (opcional)" />
-                  <button type="submit" class="enhanced-btn">Guardar Datos</button>
+                  <input type="text" id="profile-phone" placeholder="Telefon (optional)" />
+                  <button type="submit" class="enhanced-btn">Daten speichern</button>
                 </form>
               </div>
               <div class="profile-tab-content" id="profile-formacion">
                 <form id="profile-formacion-form">
-                  <input type="text" id="profile-titulo" placeholder="Título" required />
-                  <input type="text" id="profile-institucion" placeholder="Institución" required />
-                  <input type="number" id="profile-anio" placeholder="Año" required />
-                  <button type="submit" class="enhanced-btn">Guardar Formación</button>
+                  <input type="text" id="profile-titulo" placeholder="Titel" required />
+                  <input type="text" id="profile-institucion" placeholder="Institution" required />
+                  <input type="number" id="profile-anio" placeholder="Jahr" required />
+                  <button type="submit" class="enhanced-btn">Ausbildung speichern</button>
                 </form>
                 <div class="file-attachment">
-                  <h4>Adjuntar Archivo (para uso general)</h4>
+                  <h4>Datei anhängen (für allgemeinen Gebrauch)</h4>
                   <form id="profile-attachment-form">
-                    <input type="text" id="attachment-title" placeholder="Título del Archivo" required />
+                    <input type="text" id="attachment-title" placeholder="Dateititel" required />
                     <input type="file" id="attachment-file" accept="application/pdf, image/*, .docx" required />
-                    <label for="attachment-visibility">Visibilidad:</label>
+                    <label for="attachment-visibility">Sichtbarkeit:</label>
                     <select id="attachment-visibility">
-                      <option value="public">Público</option>
-                      <option value="private" selected>Privado</option>
+                      <option value="public">Öffentlich</option>
+                      <option value="private" selected>Privat</option>
                     </select>
-                    <button type="submit" class="enhanced-btn">Adjuntar Archivo</button>
+                    <button type="submit" class="enhanced-btn">Datei anhängen</button>
                   </form>
                   <div id="profile-attachment-list"></div>
                 </div>
@@ -612,97 +612,97 @@
               <div class="profile-tab-content" id="profile-foto">
                 <form id="profile-foto-form">
                   <input type="file" id="profile-new-photo" accept="image/*" required />
-                  <button type="submit" class="enhanced-btn">Actualizar Foto</button>
+                  <button type="submit" class="enhanced-btn">Foto aktualisieren</button>
                 </form>
               </div>
               <div class="logout-section">
-                <button type="button" id="logout-btn" class="logout-btn">Cerrar Sesión</button>
+                <button type="button" id="logout-btn" class="logout-btn">Abmelden</button>
               </div>
             </div>
           </div>
           <div class="info-container">
             <div class="profile-info-section" id="info-center" style="display:none;">
-              <h2>📌 Centro de Información</h2>
-              <h3>🌟 Nuestra Misión</h3>
-              <p>Conectar a Voluntarios y Personas Necesitadas: Facilitamos la vinculación entre quienes desean ayudar y aquellos que requieren asistencia.</p>
-              <p>Coordinación en Tiempo Real: Trabajamos junto a ONGs y autoridades para gestionar la ayuda de manera eficiente.</p>
-              <h3>📱 ¿Cómo Funciona?</h3>
-              <p>Plataforma Intuitiva: Nuestra aplicación permite a los voluntarios registrarse y ofrecer su ayuda según su disponibilidad y habilidades.</p>
-              <p>Notificaciones en Tiempo Real: Los voluntarios reciben alertas sobre necesidades urgentes en su área.</p>
-              <p>Colaboración con Entidades: Coordinamos esfuerzos con ONGs y autoridades locales para asegurar una respuesta efectiva.</p>
-              <h3>🤝 Beneficios de Unirse</h3>
-              <p>Impacto Directo: Tu ayuda llega directamente a quienes más lo necesitan.</p>
-              <p>Flexibilidad: Participa según tu disponibilidad y capacidades.</p>
-              <p>Comunidad Solidaria: Forma parte de una red comprometida con el bienestar común.</p>
-              <p>🌐 <a href="https://www.peopleforpeople.es/" target="_blank">Visite nuestra página WEB para más información</a></p>
+              <h2>📌 Informationszentrum</h2>
+              <h3>🌟 Unsere Mission</h3>
+              <p>Freiwillige und Bedürftige verbinden: Wir erleichtern die Verbindung zwischen denen, die helfen möchten, und denen, die Unterstützung benötigen.</p>
+              <p>Echtzeit-Koordination: Wir arbeiten mit NGOs und Behörden zusammen, um Hilfe effizient zu verwalten.</p>
+              <h3>📱 Wie funktioniert es?</h3>
+              <p>Intuitive Plattform: Unsere Anwendung ermöglicht es Freiwilligen, sich zu registrieren und Hilfe basierend auf ihrer Verfügbarkeit und ihren Fähigkeiten anzubieten.</p>
+              <p>Echtzeitbenachrichtigungen: Freiwillige erhalten Warnungen über dringenden Bedarf in ihrer Region.</p>
+              <p>Zusammenarbeit mit Organisationen: Wir koordinieren uns mit NGOs und lokalen Behörden, um eine effektive Reaktion zu gewährleisten.</p>
+              <h3>🤝 Vorteile der Teilnahme</h3>
+              <p>Direkte Wirkung: Deine Hilfe erreicht diejenigen, die sie am dringendsten benötigen.</p>
+              <p>Flexibilität: Beteilige dich nach deiner Verfügbarkeit und deinen Fähigkeiten.</p>
+              <p>Solidarische Gemeinschaft: Werde Teil eines Netzwerks, das sich für das Gemeinwohl engagiert.</p>
+              <p>🌐 <a href="https://www.peopleforpeople.es/" target="_blank">Besuchen Sie unsere Webseite für weitere Informationen</a></p>
               <div id="file-upload-container" style="margin-top: 20px; display:none;">
-                <h3>Subir Archivo</h3>
+                <h3>Datei hochladen</h3>
                 <form id="file-upload-form">
-                  <input type="text" id="attachment-title" placeholder="Título del Archivo" required />
+                  <input type="text" id="attachment-title" placeholder="Dateititel" required />
                   <input type="file" id="attachment-file" accept="application/pdf, image/*" required />
-                  <button type="submit" class="enhanced-btn">Subir Archivo</button>
+                  <button type="submit" class="enhanced-btn">Datei hochladen</button>
                 </form>
                 <div id="upload-message" style="margin-top: 10px;"></div>
               </div>
             </div>
             <div class="profile-info-section" id="support" style="display:none;">
-              <h2>📞 Soporte y Ayuda</h2>
-              <p>Bienvenido al centro de soporte. Estamos aquí para ayudarte con cualquier duda o problema que puedas tener.</p>
-              <h3>🔹 Contacto con Soporte</h3>
-              <p>Si necesitas asistencia personalizada, nuestro equipo está disponible para ayudarte.</p>
+              <h2>📞 Support und Hilfe</h2>
+              <p>Willkommen im Supportcenter. Wir sind hier, um dir bei Fragen oder Problemen zu helfen.</p>
+              <h3>🔹 Kontakt zum Support</h3>
+              <p>Falls du persönliche Unterstützung benötigst, steht unser Team dir zur Verfügung.</p>
               <p>✉ Email: <a href="mailto:peopleforpeopleofficial@gmail.com">peopleforpeopleofficial@gmail.com</a></p>
-              <p>📞 Teléfono: +34 699043862</p>
-              <h3>🔹 Reportar un Problema</h3>
-              <p>Si experimentas algún error o fallo en la aplicación, repórtalo aquí y lo solucionaremos lo antes posible.</p>
-              <p>💬 Chat en Vivo: Disponible en horario laboral</p>
+              <p>📞 Telefon: +34 699043862</p>
+              <h3>🔹 Ein Problem melden</h3>
+              <p>Wenn du einen Fehler in der Anwendung entdeckst, melde ihn hier, und wir werden ihn so schnell wie möglich beheben.</p>
+              <p>💬 Live-Chat: Verfügbar während der Geschäftszeiten</p>
               <div id="soporte-live-chat">
                 <div class="chat-header">
-                  <h3>Chat en Vivo</h3>
+                  <h3>Live-Chat</h3>
                   <button type="button" class="fullscreen-chat-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Pantalla Completa" />
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/Pantalla%20completa.png?raw=true" alt="Vollbild" />
                   </button>
                 </div>
                 <div class="chat-messages" id="soporte-chat-messages" style="height:200px; overflow:auto; border:1px solid #ccc; padding:10px;"></div>
                 <form id="soporte-chat-form">
-                  <input type="text" id="soporte-chat-input" placeholder="Escribe tu mensaje" required />
+                  <input type="text" id="soporte-chat-input" placeholder="Schreibe deine Nachricht" required />
                   <button type="submit" class="enhanced-btn">
-                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Enviar" />
-                    Enviar
+                    <img src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20enviar.png?raw=true" class="send-icon" alt="Senden" />
+                    Senden
                   </button>
                 </form>
               </div>
-              <h3>🔹 Sugerencias y Comentarios</h3>
-              <p>Tu opinión es importante para nosotros. Déjanos tus sugerencias para mejorar tu experiencia.</p>
+              <h3>🔹 Feedback und Kommentare</h3>
+              <p>Deine Meinung ist uns wichtig. Hinterlasse uns dein Feedback, um deine Erfahrung zu verbessern.</p>
               <div id="feedback-section">
                 <form id="feedback-form">
-                  <textarea id="feedback-text" placeholder="Escribe tu comentario aquí" required></textarea>
-                  <button type="submit" class="enhanced-btn">Enviar Comentario</button>
+                  <textarea id="feedback-text" placeholder="Schreibe deinen Kommentar hier" required></textarea>
+                  <button type="submit" class="enhanced-btn">Kommentar senden</button>
                 </form>
               </div>
-              <button id="admin-panel-link" class="enhanced-btn">Panel de Administrador</button>
+              <button id="admin-panel-link" class="enhanced-btn">Admin-Panel</button>
               <div id="admin-panel" style="margin-top:20px; display:none; border: 1px solid #ccc; padding: 10px;">
-                <h2>Panel de Administración</h2>
+                <h2>Administrationspanel</h2>
                 <form id="admin-login-form">
-                  <input type="email" id="admin-email" placeholder="Email de Administrador" required />
-                  <input type="password" id="admin-password" placeholder="Contraseña" required />
-                  <button type="submit" class="enhanced-btn">Acceder</button>
+                  <input type="email" id="admin-email" placeholder="Admin-E-Mail" required />
+                  <input type="password" id="admin-password" placeholder="Passwort" required />
+                  <button type="submit" class="enhanced-btn">Anmelden</button>
                 </form>
                 <div id="admin-content" style="display:none;">
-                  <button id="admin-logout-btn" class="enhanced-btn" style="float: right;">Cerrar Sesión</button>
-                  <h3>Editar Información</h3>
+                  <button id="admin-logout-btn" class="enhanced-btn" style="float: right;">Abmelden</button>
+                  <h3>Informationen bearbeiten</h3>
                   <form id="admin-edit-form">
-                    <textarea id="admin-info" placeholder="Nueva Información..." required></textarea>
-                    <button type="submit" class="enhanced-btn">Guardar Cambios</button>
+                    <textarea id="admin-info" placeholder="Neue Informationen..." required></textarea>
+                    <button type="submit" class="enhanced-btn">Änderungen speichern</button>
                   </form>
-                  <h3>Subir Archivo</h3>
+                  <h3>Datei hochladen</h3>
                   <form id="admin-upload-form">
-                    <input type="text" id="admin-attachment-title" placeholder="Título del Archivo" required />
+                    <input type="text" id="admin-attachment-title" placeholder="Dateititel" required />
                     <input type="file" id="admin-attachment-file" accept="application/pdf, image/*" required />
-                    <button type="submit" class="enhanced-btn">Subir Archivo</button>
+                    <button type="submit" class="enhanced-btn">Datei hochladen</button>
                   </form>
                   <div id="admin-upload-message" style="margin-top:10px;"></div>
                   <div id="admin-support-chats">
-                    <h3>Chats de Soporte Abiertos</h3>
+                    <h3>Offene Supportchats</h3>
                     <div id="admin-support-chats-list" style="border:1px solid #ccc; padding:10px; max-height:200px; overflow:auto;"></div>
                   </div>
                 </div>
@@ -710,83 +710,83 @@
             </div>
           </div>
         </div>
-        <!-- Sección Calendario (Agregada, solo en modo Voluntario) -->
+        <!-- Sección Kalender (Agregada, solo en modo Freiwilliger) -->
         <div id="calendario" class="content-section" style="display: none;">
-          <h2>Calendario</h2>
+          <h2>Kalender</h2>
           <div id="calendar-controls">
-            <button class="calendar-view-toggle" data-view="diario">Diario</button>
-            <button class="calendar-view-toggle" data-view="mensual">Mensual</button>
-            <button class="calendar-add-event">Añadir Evento +</button>
+            <button class="calendar-view-toggle" data-view="diario">Täglich</button>
+            <button class="calendar-view-toggle" data-view="mensual">Monatlich</button>
+            <button class="calendar-add-event">Ereignis hinzufügen +</button>
           </div>
           <div id="calendar-container">
-            <!-- Aquí se renderiza el grid del calendario -->
+            <!-- Hier wird das Kalender-Grid gerendert -->
           </div>
           <div id="event-panel">
-            <h3 id="event-panel-header">Añadir Evento</h3>
+            <h3 id="event-panel-header">Ereignis hinzufügen</h3>
             <div id="event-add-fields">
-              <label>Título del evento:</label>
-              <input type="text" id="event-title-input" placeholder="Título del evento" />
-              <label>Información del evento:</label>
-              <textarea id="event-info-input" placeholder="Descripción del evento"></textarea>
+              <label>Ereignistitel:</label>
+              <input type="text" id="event-title-input" placeholder="Ereignistitel" />
+              <label>Ereignisinformation:</label>
+              <textarea id="event-info-input" placeholder="Beschreibung des Ereignisses"></textarea>
               <div id="event-day-diary" style="display:none;">
-                <label>Día de la semana:</label>
+                <label>Wochentag:</label>
                 <select id="event-day-select">
-                  <option value="">Seleccione el día</option>
-                  <option value="0">Lunes</option>
-                  <option value="1">Martes</option>
-                  <option value="2">Miércoles</option>
-                  <option value="3">Jueves</option>
-                  <option value="4">Viernes</option>
-                  <option value="5">Sábado</option>
-                  <option value="6">Domingo</option>
+                  <option value="">Wählen Sie den Tag</option>
+                  <option value="0">Montag</option>
+                  <option value="1">Dienstag</option>
+                  <option value="2">Mittwoch</option>
+                  <option value="3">Donnerstag</option>
+                  <option value="4">Freitag</option>
+                  <option value="5">Samstag</option>
+                  <option value="6">Sonntag</option>
                 </select>
               </div>
               <div id="event-day-mensual" style="display:none;">
-                <label>Número del día:</label>
-                <input type="number" id="event-day-number" placeholder="Ingrese el número del día" min="1" max="31" />
+                <label>Tag:</label>
+                <input type="number" id="event-day-number" placeholder="Geben Sie die Tagesnummer ein" min="1" max="31" />
               </div>
-              <label>De:</label>
+              <label>Von:</label>
               <input type="time" id="event-start-time" />
-              <label>a:</label>
+              <label>Bis:</label>
               <input type="time" id="event-end-time" />
             </div>
             <div style="text-align: center;">
-              <button id="event-save">Guardar</button>
-              <button id="event-cancel">Cancelar</button>
+              <button id="event-save">Speichern</button>
+              <button id="event-cancel">Abbrechen</button>
             </div>
             <div id="event-view-fields" style="display:none;">
-              <h4>Título:</h4>
+              <h4>Titel:</h4>
               <p id="event-title-view"></p>
-              <h4>Información:</h4>
+              <h4>Information:</h4>
               <p id="event-info-view"></p>
-              <h4>Hora:</h4>
+              <h4>Zeit:</h4>
               <p id="event-time-view"></p>
-              <h4>Día:</h4>
+              <h4>Tag:</h4>
               <p id="event-day-view"></p>
               <div style="text-align: center;">
-                <button id="event-close">Cerrar</button>
+                <button id="event-close">Schließen</button>
               </div>
             </div>
           </div>
         </div>
       </main>
-      <!-- Menú inferior (Voluntario) -->
+      <!-- Menú inferior (Freiwilliger) -->
       <nav class="app-menu">
         <button class="menu-btn" data-target="map-view">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true" alt="Icono Mapa" />
-          Mapa
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20mapa.png?raw=true" alt="Karten-Icon" />
+          Karte
         </button>
         <button class="menu-btn" data-target="pedir-ayuda">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20pedir%20ayuda.png?raw=true" alt="Icono Pedir Ayuda" />
-          Pedir Ayuda
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20pedir%20ayuda.png?raw=true" alt="Hilfe anfragen Icon" />
+          Hilfe anfordern
         </button>
         <button class="menu-btn" data-target="ofrecer-voluntario">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20voluntario.png?raw=true" alt="Icono Voluntario" />
-          Voluntarios
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20voluntario.png?raw=true" alt="Freiwilligen-Icon" />
+          Freiwillige
         </button>
         <button class="menu-btn" data-target="organizaciones">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20organizaciones.png?raw=true" alt="Icono Organizaciones" />
-          Organizaciones
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20organizaciones.png?raw=true" alt="Organisations-Icon" />
+          Organisationen
         </button>
       </nav>
     </div>
@@ -794,26 +794,26 @@
     <!-- Contenedor para el Modo Organizador -->
     <div id="org-mode-app" class="screen org-mode" style="display: none;">
       <header class="app-header org-header">
-        <h1 class="app-title">Modo Organizador</h1>
+        <h1 class="app-title">Organisator-Modus</h1>
         <div class="header-actions">
           <!-- Se eliminó el botón de "Cerrar Sesión" aquí para que el único botón sea el de Ajustes de Perfil -->
         </div>
       </header>
       <main class="app-content org-content">
-        <p>Bienvenido al modo organizador. Selecciona una opción del menú inferior.</p>
+        <p>Willkommen im Organisator-Modus. Wähle eine Option im unteren Menü.</p>
       </main>
       <nav class="app-menu org-app-menu">
         <button class="menu-btn org-menu-btn" data-target="org-chats">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20chats.png?raw=true" alt="Icono Chats" />
-          Centro de Chats
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20chats.png?raw=true" alt="Chat-Icon" />
+          Chat-Zentrum
         </button>
         <button class="menu-btn org-menu-btn" data-target="org-info">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20informacion.png?raw=true" alt="Icono Información" />
-          People for People
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20informacion.png?raw=true" alt="Informations-Icon" />
+          People For People
         </button>
         <button class="menu-btn org-menu-btn" data-target="org-list">
-          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20listas.png?raw=true" alt="Icono Mis Organizaciones" />
-          Mis Organizaciones
+          <img class="menu-icon" src="https://github.com/CharliePoten/People-For-People/blob/main/icono%20listas.png?raw=true" alt="Meine Organisationen-Icon" />
+          Meine Organisationen
         </button>
       </nav>
     </div>
@@ -823,14 +823,14 @@
       <div class="modal-content"></div>
     </div>
 
-    <!-- Modal para Términos de Privacidad -->
+    <!-- Modal para Datenschutzbestimmungen -->
     <div id="terms-modal">
       <div class="modal-content">
         <span id="close-terms">&times;</span>
-        <h2>Términos de Privacidad</h2>
-        <p>Aquí se detallan los términos y condiciones de privacidad. Por favor, tómese el tiempo de leerlos detenidamente antes de continuar.</p>
-        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%201.jpeg?raw=true" alt="Términos 1" />
-        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%202.jpeg?raw=true" alt="Términos 2" />
+        <h2>Datenschutzbestimmungen</h2>
+        <p>Hier finden Sie die Datenschutzbedingungen im Detail. Bitte nehmen Sie sich die Zeit, diese sorgfältig zu lesen, bevor Sie fortfahren.</p>
+        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%201.jpeg?raw=true" alt="Datenschutzbestimmungen 1" />
+        <img src="https://github.com/PeopleFP/PeopleFPWeb/blob/main/nutz%202.jpeg?raw=true" alt="Datenschutzbestimmungen 2" />
       </div>
     </div>
 
@@ -838,36 +838,36 @@
     <div id="org-mode-menu" class="modal">
       <div class="modal-content org-menu-content">
         <span class="close" id="close-org-menu">&times;</span>
-        <h2>Modo Organizador</h2>
+        <h2>Organisator-Modus</h2>
         <div class="org-menu-container">
           <div class="org-menu-header">
-            <h3>Mis Organizaciones</h3>
+            <h3>Meine Organisationen</h3>
             <button id="crear-org-organizador-btn" class="action-btn" style="background-color:#800080; color:white;">
-              Crear Organización
+              Organisation erstellen
             </button>
           </div>
           <div id="orgmode-list" class="list-box"></div>
           <div id="create-org-form-orgmode-container" style="display:none;" class="form-container">
-            <h3>Crear Nueva Organización</h3>
+            <h3>Neue Organisation erstellen</h3>
             <form id="create-org-form-orgmode">
-              <input type="text" id="orgmode-title" placeholder="Título de la Organización" required />
-              <textarea id="orgmode-info" placeholder="Información de la Organización" required></textarea>
+              <input type="text" id="orgmode-title" placeholder="Organisationstitel" required />
+              <textarea id="orgmode-info" placeholder="Organisationsinformation" required></textarea>
               <input type="file" id="orgmode-image" accept="image/*" />
-              <button type="submit" class="action-btn">Crear Organización</button>
-              <button type="button" id="cancelar-org-modal" class="return-btn">Cancelar</button>
+              <button type="submit" class="action-btn">Organisation erstellen</button>
+              <button type="button" id="cancelar-org-modal" class="return-btn">Abbrechen</button>
             </form>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Nueva Pantalla de Bienvenida -->
+    <!-- Neue Willkommensseite -->
     <div id="welcome-screen" style="display: none;">
       <div class="container">
         <h1 class="welcome-text" id="welcomeText"></h1>
         <img src="https://github.com/CharliePoten/People-For-People/blob/main/Logo%20People%20For%20People%20(2).png?raw=true" alt="Logo People For People" class="logo" />
-        <p class="slogan">Tu ayuda, su esperanza. ¡Nosotros os unimos!</p>
-        <button id="start-btn" class="action-btn">Comenzar</button>
+        <p class="slogan">Deine Hilfe, ihre Hoffnung. Wir bringen euch zusammen!</p>
+        <button id="start-btn" class="action-btn">Starten</button>
       </div>
       <style>
         /* Los estilos específicos para #welcome-screen ya se definen en el bloque global */
@@ -888,7 +888,7 @@
     <!-- Script para transiciones, animación, cierre de sesión, alternancia de modos y demás funcionalidades -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const fullWelcomeText = "Bienvenido a People For People";
+        const fullWelcomeText = "Willkommen bei People For People";
         const welcomeTextElem = document.getElementById("welcomeText");
         let charIndex = 0;
       
@@ -1001,7 +1001,7 @@
             if (chatContainer) {
               if (!document.fullscreenElement) {
                 chatContainer.requestFullscreen().catch(err => {
-                  console.error(`Error al activar pantalla completa: ${err.message}`);
+                  console.error(`Fehler beim Aktivieren des Vollbildmodus: ${err.message}`);
                 });
               } else {
                 document.exitFullscreen();
@@ -1010,7 +1010,7 @@
           });
         });
       
-        // Menú de navegación (modo Voluntario)
+        // Menú de navegación (modo Freiwilliger)
         document.querySelectorAll('.menu-btn').forEach(btn => {
           btn.addEventListener('click', function () {
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove("active"));
@@ -1023,14 +1023,14 @@
           });
         });
       
-        // Botón de Calendario en header (modo Voluntario)
+        // Botón de Kalender en header (modo Freiwilliger)
         document.getElementById("calendario-btn").addEventListener("click", function() {
           document.querySelectorAll(".content-section").forEach(sec => { sec.style.display = "none"; });
           document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
           document.getElementById("calendario").style.display = "block";
         });
       
-        // Alternancia de modo (Voluntario <-> Organizador)
+        // Alternancia de modo (Freiwilliger <-> Organisator)
         let organizerMode = false;
         const modeToggleBtn = document.querySelector(".mode-toggle-btn");
         if (modeToggleBtn) {
@@ -1040,17 +1040,17 @@
               document.getElementById("main-app").style.display = "none";
               document.getElementById("org-mode-app").style.display = "block";
               document.getElementById("calendario-btn").style.display = "none";
-              this.textContent = "Cambiar a Voluntario";
+              this.textContent = "Wechsel zu Freiwilligenmodus";
             } else {
               document.getElementById("org-mode-app").style.display = "none";
               document.getElementById("main-app").style.display = "block";
               document.getElementById("calendario-btn").style.display = "inline-block";
-              this.textContent = "Cambiar a Organizador";
+              this.textContent = "Wechsel zum Organisator-Modus";
             }
           });
         }
       
-        // Función para cerrar sesión (Modo Voluntario) – este es el único botón de logout que se debe utilizar
+        // Función para cerrar sesión (Modo Freiwilliger) – este es el único botón de logout que se debe utilizar
         const logoutBtn = document.getElementById("logout-btn");
         if (logoutBtn) {
           logoutBtn.addEventListener("click", function() {
@@ -1071,7 +1071,7 @@
       });
     </script>
       
-    <!-- Script de Calendario (Modo Voluntario) -->
+    <!-- Script de Kalender (Modo Freiwilliger) -->
     <script>
       document.addEventListener("DOMContentLoaded", function(){
         (function(){
@@ -1088,19 +1088,19 @@
             { start: "14:00", end: "16:00" },
             { start: "16:00", end: "18:00" }
           ];
-          const dayNames = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+          const dayNames = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
       
           let currentView = "diario";
           const calendarContainer = document.getElementById("calendar-container");
           const viewToggleButtons = document.querySelectorAll(".calendar-view-toggle");
           const addEventButton = document.querySelector(".calendar-add-event");
-          const currentUser = localStorage.getItem("username") || "Tú";
+          const currentUser = localStorage.getItem("username") || "Du";
           const eventsKey = "calendarEvents_" + currentUser;
           let events = [];
           try {
             events = JSON.parse(localStorage.getItem(eventsKey)) || [];
           } catch (error) {
-            console.error("Error leyendo eventos", error);
+            console.error("Fehler beim Lesen der Ereignisse", error);
             events = [];
           }
       
@@ -1121,9 +1121,9 @@
             const headerRow = document.createElement("div");
             headerRow.className = "daily-header-row";
             const leftHeader = document.createElement("span");
-            leftHeader.innerText = "Día";
+            leftHeader.innerText = "Tag";
             const rightHeader = document.createElement("span");
-            rightHeader.innerText = "Eventos";
+            rightHeader.innerText = "Ereignisse";
             headerRow.appendChild(leftHeader);
             headerRow.appendChild(rightHeader);
             calendarContainer.appendChild(headerRow);
@@ -1143,14 +1143,14 @@
               rightCell.className = "event-info";
               const eventObj = events.find(ev => ev.view === "diario" && parseInt(ev.day, 10) === i);
               if (eventObj) {
-                rightCell.innerText = eventObj.title + " (" + eventObj.startTime + " a " + eventObj.endTime + ")";
+                rightCell.innerText = eventObj.title + " (" + eventObj.startTime + " bis " + eventObj.endTime + ")";
                 rightCell.style.color = "#32cd32";
                 rightCell.addEventListener("click", function(e) {
                   e.stopPropagation();
                   showEventView(eventObj);
                 });
               } else {
-                rightCell.innerText = "Sin eventos";
+                rightCell.innerText = "Keine Ereignisse";
               }
               row.appendChild(leftCell);
               row.appendChild(rightCell);
@@ -1214,7 +1214,7 @@
       
           function showEventPanel(context) {
             currentEventContext = context;
-            document.getElementById("event-panel-header").innerText = "Añadir Evento";
+            document.getElementById("event-panel-header").innerText = "Ereignis hinzufügen";
             document.getElementById("event-add-fields").style.display = "block";
             document.getElementById("event-view-fields").style.display = "none";
             if (currentView === "diario") {
@@ -1242,7 +1242,7 @@
       
           function showEventView(eventObj) {
             currentEventContext = null;
-            document.getElementById("event-panel-header").innerText = "Detalles del Evento";
+            document.getElementById("event-panel-header").innerText = "Ereignisdetails";
             document.getElementById("event-add-fields").style.display = "none";
             document.getElementById("event-view-fields").style.display = "block";
             document.getElementById("event-title-view").innerText = eventObj.title;
@@ -1252,7 +1252,7 @@
             } else if (eventObj.view === "mensual") {
               document.getElementById("event-day-view").innerText = eventObj.dayNumber;
             }
-            document.getElementById("event-time-view").innerText = eventObj.startTime + " a " + eventObj.endTime;
+            document.getElementById("event-time-view").innerText = eventObj.startTime + " bis " + eventObj.endTime;
             document.getElementById("event-panel").style.display = "block";
           }
       
@@ -1319,7 +1319,7 @@
       });
     </script>
       
-    <!-- Script para el Modal de Términos de Privacidad -->
+    <!-- Script para el Modal de Datenschutzbestimmungen -->
     <script>
       function openTermsModal() {
         document.getElementById("terms-modal").style.display = "block";
